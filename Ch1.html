@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 TIMS 初階行銷企劃證照 - 第一章 行銷源典</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Mermaid.js -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        secondary: '#f59e0b',
+                        accent: '#10b981',
+                        tims: '#4f46e5' 
+                    }
+                }
+            }
+        }
+        
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#eff6ff',
+                primaryTextColor: '#1e3a8a',
+                primaryBorderColor: '#93c5fd',
+                lineColor: '#3b82f6',
+                secondaryColor: '#fef3c7',
+                tertiaryColor: '#fffbeb'
+            }
+        });
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+        
+        .tims-viewpoint {
+            border-left: 5px solid #4f46e5;
+            background: linear-gradient(to right, #eef2ff, #ffffff);
+        }
+        
+        /* Interactive Keyword Style */
+        .kw { 
+            color: #2563eb; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border-bottom: 2px dashed #93c5fd; 
+            transition: all 0.2s;
+            padding: 0 2px;
+        }
+        .kw:hover { background-color: #dbeafe; border-bottom: 2px solid #2563eb; border-radius: 2px; }
+
+        /* Quiz Styles */
+        .quiz-option { transition: all 0.2s ease-in-out; }
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; }
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; }
+        .explanation { display: none; }
+        .explanation.show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .ai-content p { margin-bottom: 0.5rem; }
+        .ai-content strong { color: #1e3a8a; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 h-screen flex flex-col font-sans overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white shadow-md z-20 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center justify-center w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition mr-2" title="返回學習大廳">
+                    <i class="fa-solid fa-house text-lg"></i>
+                </a>
+                <i class="fa-solid fa-graduation-cap text-3xl text-primary hidden sm:block"></i>
+                <div>
+                    <h1 class="text-xl font-bold text-primary">TIMS 互動教學平台 <span class="text-secondary ml-1">第一章</span></h1>
+                    <p class="text-xs text-gray-500 hidden md:block">當前載入教材：<span class="font-mono bg-gray-200 px-1 rounded">第一章行銷源典</span> (點擊虛線 <span class="kw" onclick="showKw('關鍵字')">關鍵字</span> 可看解釋)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="flex flex-col md:flex-row items-center gap-2 bg-blue-50 p-2 rounded-lg border border-blue-100">
+                    <i class="fa-solid fa-key text-blue-500"></i>
+                    <input type="password" id="apiKeyInput" placeholder="輸入 Gemini API Key 以啟用 AI 解析..." class="text-sm px-2 py-1 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400 w-48 lg:w-64">
+                    <button onclick="saveApiKey()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1.5 rounded transition shadow-sm">儲存</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-white border-r shadow-sm flex flex-col hidden lg:flex shrink-0 my-4 rounded-l-2xl overflow-hidden">
+            <div class="p-4 bg-primary text-white font-bold text-lg flex items-center justify-between">
+                <span>課程大綱</span>
+                <span class="text-xs bg-white text-primary px-2 py-1 rounded-full">第 1 章</span>
+            </div>
+            <div class="overflow-y-auto flex-1 p-3" id="chapterNav">
+                <button class="w-full text-left px-4 py-3 rounded-lg mb-2 text-sm font-bold bg-blue-50 text-primary border border-blue-200 shadow-sm">
+                    <i class="fa-solid fa-bookmark mr-2"></i> 第一章 行銷源典
+                </button>
+                <div class="pl-8 text-xs text-gray-600 space-y-4 mt-3 border-l-2 border-gray-200 ml-4 pb-4">
+                    <a href="#section-1" class="block hover:text-primary hover:font-bold transition">1-1 行銷的定義與意涵</a>
+                    <a href="#section-3" class="block hover:text-primary hover:font-bold transition">1-3 價值創造與專屬</a>
+                    <a href="#section-4" class="block hover:text-primary hover:font-bold transition">1-4 企業經營思維演進</a>
+                    <a href="#section-5" class="block hover:text-primary hover:font-bold transition">1-5 四大行銷學派</a>
+                    <a href="#section-6" class="block hover:text-primary hover:font-bold transition">1-6 異質性與動態性</a>
+                    <a href="#section-7" class="block hover:text-primary hover:font-bold transition">1-7 行銷思潮典範移轉</a>
+                    <a href="#section-8" class="block hover:text-primary hover:font-bold transition">1-8 B2B與B2C行銷特性</a>
+                    <a href="#section-9" class="block hover:text-primary hover:font-bold transition">1-9 企劃人員核心任務</a>
+                    <a href="#quiz-section" class="block text-secondary font-bold hover:text-orange-600 transition mt-4 pt-4 border-t border-gray-200"><i class="fa-solid fa-pen-to-square"></i> 模擬測驗系統 (68題庫)</a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden relative my-0 md:my-4 rounded-none lg:rounded-r-2xl bg-transparent scroll-smooth">
+            <div class="flex-1 overflow-y-auto px-4 md:px-8 pb-20" id="mainContentArea">
+                
+                <!-- 教材本文區 -->
+                <div class="bg-white p-6 md:p-10 rounded-2xl shadow-sm mb-6 mt-4 md:mt-0 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 text-[10rem] pointer-events-none -mt-10 -mr-10 text-primary"><i class="fa-solid fa-seedling"></i></div>
+                    
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 border-b-4 border-secondary pb-4 mb-4 inline-block">第一章 行銷源典</h1>
+                    <p class="text-xl font-bold text-gray-500 mb-8 bg-gray-100 p-4 rounded-lg border-l-4 border-gray-400">“無法預測未來商業變化，但應知道未來不變的根本道理”</p>
+
+                    <!-- 1-1 & 1-2 -->
+                    <section id="section-1" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">1</span>1-1 行銷的定義與 1-2 企劃意涵</h2>
+                        <p class="mb-3 text-lg text-gray-700">根據台灣行銷科學學會（Taiwan Institute of Marketing Science）的定義，行銷是一種促成雙方 <span class="kw" onclick="showKw('價值交換')">價值交換</span> 的活動過程。其核心在於「交易」與「交換」，除了企業銷售產品並完成金錢交易外，也涵蓋所有形式的價值互換行為。在這樣的定義中，行銷的本質不再僅侷限於商業獲利或買賣行為，而是擴及任何一種促使買賣雙方交換所需的價值。這些交換價值可以是商品、服務、資訊、信任、理念，甚至是情感關係。</p>
+                        
+                        <p class="mb-4 text-lg text-gray-700">當企業或組織擁有自身的產品或服務後，首要挑戰的任務是如何將其價值有效導入市場。而產品與服務的價值，不僅取決於其本質特性，更關鍵在於能否精準觸及目標族群，並傳遞品牌核心價值，讓消費者理解與共鳴，以強化市場競爭力。</p>
+                        <p class="mb-4 text-lg text-gray-700">「行銷企劃」作為提升市場競爭力的核心策略，主要是透過系統性的規劃與執行，可確保品牌定位清晰、開拓市場，以及與消費者建立長期關係，進而改善產品或提升品牌忠誠度。完整且精準的行銷企劃能為企業提供明確的發展方向與可執行的步驟，協助其在競爭激烈的環境中脫穎而出，持續創造商業價值。</p>
+                        
+                        <div class="tims-viewpoint p-6 rounded-r-xl my-6 shadow-sm border border-indigo-100">
+                            <h4 class="font-bold text-tims text-lg mb-2 flex items-center"><i class="fa-solid fa-chart-line mr-2"></i> TIMS 觀點：企業獲利可以說明行銷企劃成功嗎？</h4>
+                            <p class="text-gray-700 text-sm">企業的獲利並不代表行銷企劃的成功，關鍵在於消費者的長期認同與企業的獲利期程。短期獲利可能來自市場紅利、技術優勢或促銷優惠，但如果未能建立品牌價值與消費者忠誠，企業的競爭力將難以持續。真正成功的行銷企劃，應該能夠維持消費者認同，讓消費者願意持續選擇企業的產品與服務。因此，賺錢只是結果，行銷企劃的關鍵在於能否創造可持續的市場價值與競爭優勢。</p>
+                        </div>
+                    </section>
+
+                    <hr class="my-8 border-gray-200">
+
+                    <!-- 1-3 -->
+                    <section id="section-3" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">2</span>1-3 價值創造與價值專屬</h2>
+                        <p class="mb-4 text-lg text-gray-700">價值創造本身並非稀有能力，在競爭市場中，許多企業都能打造出「有價值的產品」，但若這些價值無法與競爭對手區隔，消費者仍可輕易轉向其他品牌，企業也難以獲得長期利益。因此，價值創造只是起點，真正能讓企業脫穎而出的，是如何讓這份價值專屬，並在消費者心中形成難以被取代的獨特定位。以下將各別說明與舉例：</p>
+                        
+                        <div class="overflow-x-auto mt-6">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-primary text-white">
+                                        <th class="p-3 border w-1/4">名稱</th>
+                                        <th class="p-3 border w-1/3">說明</th>
+                                        <th class="p-3 border">舉例</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white text-gray-700">
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-blue-800">價值創造<br><span class="text-xs font-normal text-gray-500">(商品被需要的點)</span></td>
+                                        <td class="p-3 border">企業基於營利目標與資源條件，所開發出的產品或服務創新。會從「自己能做什麼、如何獲利」為出發點，將功能或技術投入，期望藉此吸引消費者。</td>
+                                        <td class="p-3 border">
+                                            <ul class="list-disc pl-4 space-y-1 text-xs">
+                                                <li>產品具備價格優惠。</li>
+                                                <li>產品具備外型美觀。</li>
+                                                <li>產品具備操作簡便。</li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-blue-800">價值專屬<br><span class="text-xs font-normal text-gray-500">(形成品牌偏好)</span></td>
+                                        <td class="p-3 border">當企業完成價值創造後，透過行銷策略讓這些價值與品牌綁定，形成獨特性，使消費者願意為此付費並建立長期偏好。</td>
+                                        <td class="p-3 border">
+                                            <ul class="list-disc pl-4 space-y-1 text-xs">
+                                                <li><strong>價格優惠：</strong>將價格優惠限定予特定會員，讓優惠不再是誰都拿得到。</li>
+                                                <li><strong>外型美觀：</strong>美學風格形成品牌識別，讓消費者在意「品牌的美」(如 Apple、Dyson、無印良品)。</li>
+                                                <li><strong>操作簡便：</strong>透過結合通訊軟體與電商平台功能，讓消費者只需點擊好友名稱，選好商品並付款，即可完成生日禮物的即時送達。</li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <hr class="my-8 border-gray-200">
+
+                    <!-- 1-4 -->
+                    <section id="section-4" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">3</span>1-4 企業經營思維的演進</h2>
+                        <p class="mb-4 text-lg text-gray-700">面對市場變化與消費者需求日益多元，企業逐步從強調成本效率的生產導向，轉向重視消費者關係的行銷導向。本節透過五種典型導向的比較，搭配市面常見的商業口號，幫助快速理解各導向的核心精神與應用：</p>
+                        
+                        <div class="overflow-x-auto mt-6">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-primary text-white">
+                                        <th class="p-3 border w-1/5">名稱</th>
+                                        <th class="p-3 border w-3/5">說明</th>
+                                        <th class="p-3 border w-1/5">常見商業口號</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white text-gray-700">
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 border font-bold text-gray-800">生產導向</td>
+                                        <td class="p-3 border">企業通常很重視資源分配和生產效率，追求用最低成本、大量生產的方式提供產品。企業認為，只要產品品質不差、價格便宜，就能吸引消費者，打開市場。 (例:平價家居品牌自動化生產搶市)</td>
+                                        <td class="p-3 border text-xs font-bold text-blue-600">「品質好，價格低」<br>「物美價廉」</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 border font-bold text-gray-800">銷售導向</td>
+                                        <td class="p-3 border">企業著重於銷售技巧與推廣手段，透過各種促銷或業務推進方式，將現有產品強力推銷給消費者。(常發生於產能過剩時。例:汽車經銷商季末限時減10萬促銷)</td>
+                                        <td class="p-3 border text-xs font-bold text-blue-600">「買一送一」<br>「降價只限今天」</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 border font-bold text-gray-800">行銷導向</td>
+                                        <td class="p-3 border">企業以消費者為核心，深入了解其需求與偏好，據此設計最適產品與商業活動，追求消費者滿意度與購買意願。(例:無印良品生活研究所洞察需求)</td>
+                                        <td class="p-3 border text-xs font-bold text-blue-600">「一切為你著想」<br>「你值得擁有」</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 border font-bold text-gray-800">社會行銷導向</td>
+                                        <td class="p-3 border">在滿足消費者需求的同時，兼顧社會整體福祉與環境永續，強調企業對社會責任的承擔與正向影響。(例:曉鹿鳴樓獲碳中和認證)</td>
+                                        <td class="p-3 border text-xs font-bold text-blue-600">「我們只有一個地球」</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-3 border font-bold text-gray-800">關係行銷導向</td>
+                                        <td class="p-3 border">企業強調與消費者建立長期、互惠的關係，關注消費者於不同生命階段的需求變化，以提升品牌忠誠度。(例:星巴克會員App追蹤偏好送生日禮，並在杯上寫名字創造親切感)</td>
+                                        <td class="p-3 border text-xs font-bold text-blue-600">「陪伴你一生的好夥伴」</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="tims-viewpoint p-6 rounded-r-xl my-6 shadow-sm border border-indigo-100 bg-red-50">
+                            <h4 class="font-bold text-red-700 text-lg mb-2"><i class="fa-solid fa-glasses"></i> TIMS 觀點：企業為何會得「行銷近視症」？</h4>
+                            <p class="text-gray-800 text-sm">
+                                <span class="kw text-red-600" onclick="showKw('行銷近視症')">行銷近視症 (Marketing Myopia)</span> 現象在<strong>「生產導向」</strong>與<strong>「銷售導向」</strong>的經營思維中最常出現，意指企業過度聚焦於產品本身的特性與生產效率，卻忽略了消費者真正的需求。真正成功的行銷企劃，從來不是讓產品被推出去，而是讓消費者願意選擇你。
+                            </p>
+                        </div>
+                    </section>
+
+                    <hr class="my-8 border-gray-200">
+
+                    <!-- 1-5 -->
+                    <section id="section-5" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">4</span>1-5 四大行銷學派</h2>
+                        <p class="mb-4 text-lg text-gray-700">行銷的發展歷程，反映了企業面對市場需求與科技變遷所採取的不同思維與策略。從早期關注產品配送與實體通路的效率、到深入研究消費者心理，再到策略定位與數據驅動的決策模式，逐步形成四大經典行銷學派。以下將列舉並說明：</p>
+                        
+                        <div class="overflow-x-auto mt-6">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-primary text-white">
+                                        <th class="p-3 border w-1/4">學派名稱</th>
+                                        <th class="p-3 border w-1/2">說明</th>
+                                        <th class="p-3 border w-1/4">學派應用</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white text-gray-700">
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-indigo-600">實體配送通路學派</td>
+                                        <td class="p-3 border">隨著工業革命帶來大量生產，生產地與消費地分離，此學派強調如何以最有效率的方式，將產品從工廠配送到消費者手中。</td>
+                                        <td class="p-3 border">重點聚焦於物流管理、倉儲、通路設計與供應鏈整合。</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-indigo-600">消費者行為學派</td>
+                                        <td class="p-3 border">企業意識到單靠配送與銷售無法長久驅動交易，因此開始深入研究消費者行為特性。</td>
+                                        <td class="p-3 border">探討消費者行為、影響購買決策因素等。</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-indigo-600">行銷策略學派</td>
+                                        <td class="p-3 border">面對日益激烈的市場競爭者增加，此學派著重於如何根據外部環境與內部資源，建立差異化策略定位。</td>
+                                        <td class="p-3 border">常見應用包括STP策略、產品知覺定位圖等。</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-indigo-600">行銷決策學派</td>
+                                        <td class="p-3 border">興起於資訊科技的發展與資料庫應用，強調透過消費者交易資料與行為追蹤，進行精準行銷決策與長期顧客關係管理。</td>
+                                        <td class="p-3 border">常運用統計模型、RFM、CRM系統與行銷自動化工具。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 1-6 -->
+                    <section id="section-6" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">5</span>1-6 消費者異質性與動態性</h2>
+                        <p class="mb-4 text-lg text-gray-700">理解消費者的異質性與動態性是制定策略的核心基礎，企業若能掌握這兩項特性，便能更貼切滿足市場需求與品牌長期競爭力。以下將列舉說明：</p>
+                        
+                        <div class="flex flex-col md:flex-row gap-6 mb-6">
+                            <div class="flex-1 bg-yellow-50 p-5 rounded-xl border border-yellow-200">
+                                <h3 class="font-bold text-xl text-yellow-800 mb-2">消費者異質性</h3>
+                                <p class="text-sm text-gray-700 mb-3">由於不同消費者在背景、人格特質、價值觀與生活型態上存在差異，企業往往需依據這些差異設計不同的產品或服務方案，以滿足多元需求。</p>
+                                <div class="bg-white p-2 rounded text-xs border border-yellow-100">
+                                    <strong class="text-yellow-700">商業案例：</strong>登機流程通常依艙等區分，商務艙旅客享有優先登機權，接續才輪到經濟艙旅客登機，展現了服務等級的差異化安排。
+                                </div>
+                            </div>
+                            <div class="flex-1 bg-green-50 p-5 rounded-xl border border-green-200">
+                                <h3 class="font-bold text-xl text-green-800 mb-2">消費者動態性</h3>
+                                <p class="text-sm text-gray-700 mb-3"><strong>同一位消費者</strong>在不同時間點，其需求與行為也會隨著環境、經驗與生命成長階段而改變。</p>
+                                <div class="bg-white p-2 rounded text-xs border border-green-100">
+                                    <strong class="text-green-700">商業案例：</strong>同一位消費者年輕時熱愛速食，成家後轉向購買有機蔬食。
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tims-viewpoint p-6 rounded-r-xl shadow-sm border border-indigo-100">
+                            <h4 class="font-bold text-tims text-lg mb-2">TIMS 觀點：為什麼喝水解渴，要這麼多礦泉水品牌？</h4>
+                            <p class="text-gray-700 text-sm">多數人以為「水就是水」，只是為了解渴，但實際上，礦泉水市場之所以能容納這麼多品牌，正是因為消費者並非只有一種喝水的理由。有人追求「天然無添加」，有人講究「礦物質比例」，有人在意「瓶身美學」，也有人重視「社會形象」或「品牌故事」。<br>看似相同的產品，其實對不同人來說代表不同的價值，這就是<strong>消費者異質性</strong>，每位消費者對「喝水」這件事，可能有完全不同的動機與選擇標準。</p>
+                        </div>
+                    </section>
+
+                    <hr class="my-8 border-gray-200">
+
+                    <!-- 1-7 -->
+                    <section id="section-7" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">6</span>1-7 行銷思潮之典範移轉</h2>
+                        <p class="mb-4 text-lg text-gray-700">隨著行銷環境不斷演變，企業不再只是單向地傳遞訊息，而需因應消費者、競爭者與科技的變化調整行銷思維，從早期回應需求的被動式操作，到塑造市場的主動作為，再到數據驅動的互動關係，甚至進化為跨平台協作的連鎖式行銷，這些典範進化展現出企業在不同階段的策略重心。透過理解四大行銷典範，能更有系統地判斷情境，提出因應時代的整合行銷策略。</p>
+
+                        <div class="overflow-x-auto mt-6">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-primary text-white">
+                                        <th class="p-3 border w-1/5">典範名稱</th>
+                                        <th class="p-3 border w-2/5">說明</th>
+                                        <th class="p-3 border w-2/5">商業應用</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white text-gray-700">
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-blue-600">被動式行銷</td>
+                                        <td class="p-3 border">企業以消費者需求為出發點，不會主動去創造新的需求。企業透過調查、觀察與分析，了解消費者已經存在的行為與偏好，再設計符合這些需求的行銷策略。</td>
+                                        <td class="p-3 border text-xs">超市觀察到家庭主婦對於洗碗精的使用需求量大，因此推出「家庭號大包裝」容量，滿足消費者需求。</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-blue-600">主動式行銷</td>
+                                        <td class="p-3 border">以競爭導向為核心，企業從自身資源與能力出發，積極塑造市場需求，企圖建立領先優勢並改變競爭環境。</td>
+                                        <td class="p-3 border text-xs">咖啡店不只賣咖啡，而是主動打造「第三空間」的概念，讓消費者把咖啡店場域視為介於工作與家庭之外的舒適社交場所，進而改變了人們的日常休閒與社交習慣。</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-blue-600">互動式行銷</td>
+                                        <td class="p-3 border">隨著交易資料累積，企業可即時追蹤個別消費者行為，採取一對一客製化溝通。強調長期關係經營與時間動態觀點。</td>
+                                        <td class="p-3 border text-xs">電商網站根據會員消費歷程，推出滿足個人化需求之商品推薦。</td>
+                                    </tr>
+                                    <tr class="hover:bg-blue-50">
+                                        <td class="p-3 border font-bold text-blue-600">連鎖式行銷</td>
+                                        <td class="p-3 border">企業與顧客不再是單點互動，而是網對網的即時資訊串聯。企業與供應鏈夥伴構成網絡，雙方透過資訊平台，進行即時交換與共創價值。</td>
+                                        <td class="p-3 border text-xs">顧客原本僅上平台購買書籍，但在系統串聯的推薦機制下，平台根據顧客的閱讀興趣推播相關主題的電影票券資訊，進而引導電影票購買。</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- 1-8 -->
+                    <section id="section-8" class="mb-12 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">7</span>1-8 B2B 與 B2C 行銷核心特性</h2>
+                        <p class="mb-4 text-lg text-gray-700">在行銷操作上，B2B 與 B2C 並非單純顧客對象不同，而是從決策過程、產品特性到溝通模式皆存在本質差異，了解這些差異將有助於行銷企劃人員更精準地掌握市場邏輯與策略重點。</p>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-primary text-white">
+                                        <th class="p-2 border">面向</th>
+                                        <th class="p-2 border bg-blue-600">B2C 行銷環境 (消費品)</th>
+                                        <th class="p-2 border bg-indigo-700">B2B 行銷環境 (工業品)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white text-gray-700">
+                                    <tr><td class="p-2 border font-bold bg-gray-50">顧客對象</td><td class="p-2 border">一般消費者、終端用戶</td><td class="p-2 border">組織、企業、政府、經銷商</td></tr>
+                                    <tr><td class="p-2 border font-bold bg-gray-50">決策者結構</td><td class="p-2 border">通常由個人或家庭單位完成</td><td class="p-2 border">涉及組織各部門等多位角色</td></tr>
+                                    <tr><td class="p-2 border font-bold bg-gray-50">決策過程</td><td class="p-2 border">快速、情感導向，易受價格與促銷影響</td><td class="p-2 border">長期、理性、結構化，需多次溝通與評估</td></tr>
+                                    <tr><td class="p-2 border font-bold bg-gray-50">產品特性</td><td class="p-2 border">重視外觀、包裝與感受</td><td class="p-2 border">規格明確、技術含量高</td></tr>
+                                    <tr><td class="p-2 border font-bold bg-gray-50">價格策略</td><td class="p-2 border">明確標價，易受價格變動影響</td><td class="p-2 border">議價制、專案報價</td></tr>
+                                    <tr><td class="p-2 border font-bold bg-gray-50">溝通媒介</td><td class="p-2 border">大眾傳播、廣告媒體、社群網路</td><td class="p-2 border">產業展覽、教育訓練、贊助活動</td></tr>
+                                    <tr><td class="p-2 border font-bold bg-gray-50">行銷重點</td><td class="p-2 border">品牌形象、情感連結、使用體驗、促銷吸引</td><td class="p-2 border">解決問題、效率導向、關係經營、專業信任</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p class="mt-2 text-sm text-gray-500 font-bold">小結：B2B 與 B2C 雖有本質差異，但在數位轉型與客戶價值管理趨勢下，兩者界線逐漸交融，因此行銷人員就須具備雙軌思維，以因應市場快速變化。</p>
+
+                        <div class="mt-6 bg-blue-50 border border-blue-200 p-5 rounded-xl text-sm text-gray-800 shadow-sm">
+                            <h4 class="font-bold text-primary text-lg mb-2"><i class="fa-solid fa-lightbulb text-yellow-500"></i> TIMS 觀點：B2B 行銷策略，除了效能與規格訴求，也可以使用感性訴求嗎？</h4>
+                            <p class="mb-2">B2B 感性訴求並非取代理性判斷，而是應該補足信任建立與品牌偏好認知形成。當多家供應商產品規格相近、價格差異不大時，「我願不願意跟你合作」往往取決於品牌情感、文化認同、價值觀契合等感性因素。</p>
+                            <p class="text-xs text-gray-600 border-t border-blue-200 pt-2"><strong class="text-blue-800">例：中華電信 品牌信任 關鍵決策！</strong><br>在電信設備B2B市場中，多數企業已提供類似規格產品，為了提升選擇偏好，中華電信選擇強調企業價值、可長期合作、文化契合！這種行銷策略主要是強化了情感與信任的關鍵連結。</p>
+                        </div>
+                    </section>
+
+                    <!-- 1-9 Mermaid Diagram -->
+                    <section id="section-9" class="mb-4 scroll-mt-6">
+                        <h2 class="text-2xl font-bold text-primary mb-4 flex items-center"><span class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center mr-3 text-lg">8</span>1-9 行銷企劃人員的核心任務</h2>
+                        <p class="mb-4 text-gray-700 text-lg">行銷企劃工作，其實就像是完成一張策略地圖。從一開始要先看懂市場和消費者，接著規劃策略方向，再把行銷活動內容設計出來，最後還要回頭檢視成果以利於調整。這些步驟彼此環環相扣，並與本書各章節的重點內容相呼應。以下將列舉說明：</p>
+                        
+                        <div class="bg-white p-4 rounded-xl border border-gray-200 overflow-x-auto text-center shadow-sm">
+                            <div class="mermaid">
+                                flowchart LR
+                                    A[1. 洞察市場與顧客<br><small>第2章:市場分析<br>第3章:消費者行為<br>第4章:行銷研究</small>] --> B[2. 擬定行銷策略<br><small>第5章:產品策略<br>第6章:品牌經營<br>第7章:定價策略</small>]
+                                    B --> C[3. 設計行銷活動內容<br><small>第8章:推廣策略<br>第9章:通路策略</small>]
+                                    C --> D[4. 評估績效並調整<br><small>第10章:行銷績效KPI</small>]
+                                    
+                                    style A fill:#bfdbfe,stroke:#3b82f6,color:#1e3a8a,stroke-width:2px
+                                    style B fill:#fef08a,stroke:#eab308,color:#854d0e,stroke-width:2px
+                                    style C fill:#bbf7d0,stroke:#22c55e,color:#166534,stroke-width:2px
+                                    style D fill:#fbcfe8,stroke:#ec4899,color:#831843,stroke-width:2px
+                            </div>
+                        </div>
+                        <ul class="mt-4 list-disc pl-6 text-sm text-gray-600 space-y-1">
+                            <li><strong>1. 洞察市場與顧客：</strong>收集並分析市場資料、競爭者動向與消費者行為，作為策略規劃的基礎。</li>
+                            <li><strong>2. 擬定行銷策略：</strong>根據品牌定位與目標客群設計整體行銷主軸、訊息架構與溝通方式。</li>
+                            <li><strong>3. 設計行銷活動內容：</strong>策劃活動主題、內容素材與通路策略，提升消費者接觸與參與。</li>
+                            <li><strong>4. 評估績效並調整：</strong>檢視KPI達成率，從數據中找出問題點並提出修正建議。</li>
+                        </ul>
+                    </section>
+
+                </div>
+
+                <!-- 模擬測驗系統 -->
+                <div id="quiz-section" class="bg-white rounded-2xl shadow-md border-t-8 border-secondary overflow-hidden scroll-mt-6 mt-10">
+                    <div class="p-5 md:p-6 bg-gray-50 border-b flex flex-col md:flex-row justify-between items-center gap-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fa-solid fa-pen-clip text-secondary mr-2"></i> 
+                            第一章 模擬測驗系統 
+                            <span class="text-xs ml-2 bg-gray-200 text-gray-600 px-2 py-1 rounded-full font-normal">完整 68 題庫隨機抽取</span>
+                        </h2>
+                        <div class="flex bg-white rounded-lg p-1 border shadow-sm text-sm w-full md:w-auto overflow-x-auto">
+                            <button id="tab-standard" onclick="switchTab('standard')" class="px-4 py-2 rounded-md font-bold bg-secondary text-white transition whitespace-nowrap">TIMS 理論與實務題 (70%)</button>
+                            <button id="tab-ai" onclick="switchTab('ai')" class="px-4 py-2 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-robot text-purple-500"></i> AI 延伸情境題 (30%)</button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 md:p-8">
+                        <div class="mb-6 flex justify-between items-end border-b pb-4">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1">測驗說明：</p>
+                                <p class="text-xs text-gray-400">每次測驗將從真實題庫中隨機抽取 5 題。作答完畢後點擊下方按鈕即可查看得分與詳解。</p>
+                            </div>
+                            <button onclick="generateRandomQuiz()" class="text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1.5 rounded transition flex items-center gap-1">
+                                <i class="fa-solid fa-rotate-right"></i> 重新抽題
+                            </button>
+                        </div>
+
+                        <!-- Standard Questions Container -->
+                        <div id="quiz-standard" class="space-y-6 md:space-y-8">
+                            <!-- Rendered by JS -->
+                        </div>
+
+                        <!-- AI Extended Questions Container -->
+                        <div id="quiz-ai" class="space-y-6 md:space-y-8 hidden">
+                            <div class="bg-purple-50 border border-purple-200 text-purple-800 p-4 rounded-lg mb-6 text-sm flex items-start">
+                                <i class="fa-solid fa-wand-magic-sparkles mt-1 mr-2 text-lg"></i>
+                                <div>
+                                    <strong>AI 實務生成題庫：</strong> 
+                                    系統依據 TIMS 第一章核心觀念，動態生成非死背的「活學活用情境題」。作答後，若有輸入 API Key，系統將呼叫 Gemini 進行一對一深度批改解析！
+                                </div>
+                            </div>
+                            <!-- Rendered by JS -->
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div id="score-display" class="text-lg font-bold text-primary hidden text-center sm:text-left w-full sm:w-auto">
+                                得分： <span id="score-number" class="text-3xl md:text-4xl text-red-500 transition-all">0</span> / 100
+                            </div>
+                            <button id="submit-btn" onclick="submitQuiz()" class="w-full sm:w-auto bg-primary hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center">
+                                交卷並查看解析 <i class="fa-solid fa-paper-plane ml-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // === Interactive Glossary / Keyword Data ===
+        const glossaryDict = {
+            '價值交換': { title: '價值交換', html: '行銷的核心本質。不再僅侷限於金錢買賣，更擴及商品、服務、資訊、理念、甚至是情感關係的互換。' },
+            '行銷近視症': { title: '行銷近視症 (Marketing Myopia)', html: '企業過度聚焦於自身產品的特性與生產效率，卻忽略了消費者真正的需求。這最常發生在「生產導向」與「銷售導向」的企業中。' }
+        };
+
+        function showKw(key) {
+            const data = glossaryDict[key];
+            if(data) {
+                Swal.fire({
+                    title: `<div class="text-xl font-black text-primary border-b-2 border-secondary pb-2 inline-block">${data.title}</div>`,
+                    html: `<div class="mt-4 text-gray-700 text-left">${data.html}</div>`,
+                    confirmButtonText: '我瞭解了',
+                    confirmButtonColor: '#1e3a8a',
+                    customClass: { popup: 'rounded-2xl shadow-2xl border border-slate-100' }
+                });
+            }
+        }
+
+        // === Full Question Bank (Exactly Extracted from PDF Chapter 1) ===
+        // Total: 68 Questions (29 Theory + 39 Practical)
+        const fullQuestionBank = [
+            // ================= 理論題 (29題) =================
+            { id: 1, type: 1, q: "根據台灣行銷科學學會的定義。「行銷」的核心本質是什麼？", opts: ["品牌建立", "價值交換", "產品設計", "顧客關係管理"], ans: 1, exp: "台灣行銷科學學會定義中，行銷的核心為「交換」與「交易」，即價值交換的過程。" },
+            { id: 2, type: 1, q: "以下何者最能區分現代行銷與傳統銷售的觀點？", opts: ["企業利益優先順序", "僅專注商品銷售", "價值與關係的互動", "廣告推廣方式不同"], ans: 2, exp: "現代行銷強調「價值互換」與「關係建立」，而非僅以企業獲利或單向推銷為導向。" },
+            { id: 3, type: 1, q: "下列何者不屬於行銷中可能交換的價值形式？", opts: ["商品", "理念", "資訊", "產線自動化"], ans: 3, exp: "行銷中的交換可涵蓋商品、服務、資訊、理念等。但「產線自動化」屬於內部營運管理，不是對外價值交換內容。" },
+            { id: 4, type: 1, q: "「行銷企劃」的主要目的是？", opts: ["降低產品成本", "提升內部營運效率", "傳遞價值並促進交易", "避免競爭對手模仿"], ans: 2, exp: "行銷企劃的核心在於將產品或服務的價值有效傳遞至市場，進而促進交換與交易。" },
+            { id: 5, type: 1, q: "下列哪一項最能對應「行銷企劃」的作用？", opts: ["維持短期曝光", "強化與消費者關係", "降低價格競爭風險", "限制產品開發進度"], ans: 1, exp: "行銷企劃強調品牌定位與通路策略，也包含與顧客建立長期關係，是中長期品牌經營的核心手段。" },
+            { id: 6, type: 1, q: "下列何者最能描述「價值專屬」的意涵？", opts: ["創造優惠價格", "擁有獨家技術", "讓顧客將價值與品牌連結起來", "創造產品便利性"], ans: 2, exp: "價值專屬是將創造出的價值透過行銷策略轉化為品牌辨識與差異，強化顧客認同與付費意願。" },
+            { id: 7, type: 1, q: "關於「價值創造」與「價值專屬」的敘述，下列何者正確？", opts: ["價值創造較難執行", "價值專屬需要靠定價策略", "價值專屬能提升品牌無可取代性", "價值創造即代表營收來源"], ans: 2, exp: "價值專屬的關鍵在於透過行銷設計讓顧客認知到品牌獨特性，提升轉換率與黏著度。" },
+            { id: 8, type: 1, q: "新創品牌吹風機雖然產品設計具創新功能，但若消費者仍輕易轉向其他品牌，可能的主要原因為何？", opts: ["通路曝光不足", "價值未形成品牌專屬性", "售價高於市場平均", "顧客評價數量過少"], ans: 1, exp: "若產品價值未透過策略形成品牌專屬的辨識與排他性，消費者將難以區隔而轉向競品，核心問題是缺乏價值專屬。" },
+            { id: 9, type: 1, q: "「行銷近視症 (Marketing Myopia)」指企業過度專注於自身產品或短期銷售，而忽略顧客真正的需求與長期變化。這種現象最常發生於哪兩種導向？", opts: ["生產導向與銷售導向", "社會行銷導向與關係導向", "關係行銷導向與生產導向", "生產導向與行銷導向"], ans: 0, exp: "行銷近視症強調過度聚焦產品本身，忽略顧客需求。常見於生產導向與銷售導向的企業中。" },
+            { id: 10, type: 1, q: "宇X推出宣傳標語「為X生活的你而生」這類商業標語最能對應哪一種導向？", opts: ["生產導向", "銷售導向", "行銷導向", "關係行銷導向"], ans: 2, exp: "該類標語強調顧客價值與情感訴求，體現行銷導向以顧客為中心的經營理念。" },
+            { id: 11, type: 1, q: "下列何者最能區分「社會行銷導向」與「行銷導向」的差異？", opts: ["是否以價格為主", "是否考慮顧客滿意", "是否強調顧客關係", "是否兼顧社會責任與永續發展"], ans: 3, exp: "社會行銷導向在滿足顧客需求的同時，強調環境與社會福祉，是其與一般行銷導向的最大區隔。" },
+            { id: 12, type: 1, q: "下列哪一項最不符合關係行銷導向的核心理念？", opts: ["搶購限時優惠", "終身陪伴的好夥伴", "關注顧客生命階段", "建立長期互惠關係"], ans: 0, exp: "降價與限時優惠屬於銷售導向策略，與關係導向強調的長期互動並無直接關聯。" },
+            { id: 13, type: 1, q: "某家廠商標榜「世界上最棒的捕鼠器」，強調能快速抓到老鼠，但忽略消費者真正追求的是「不想再看到老鼠的安心生活」。下列哪一個描述最能形容廠商的行為？", opts: ["行銷導向", "行銷近視症", "顧客價值創新", "關係行銷導向"], ans: 1, exp: "行銷近視症是指企業過度專注於產品本身，而忽略顧客真正需求。" },
+            { id: 14, type: 1, q: "關注如何將產品從工廠配送至消費者手中的行銷學派為何？", opts: ["消費者行為學派", "實體配送通路學派", "行銷策略學派", "行銷決策學派"], ans: 1, exp: "實體配送通路學派強調物流與通路效率，源於生產地與消費地分離的歷史背景。" },
+            { id: 15, type: 1, q: "下列何者正確配對學派與其主要應用？", opts: ["行銷決策學派—研究動機與態度", "實體配送通路學派—資料庫行銷", "消費者行為學派—生活型態分析", "行銷策略學派—物流整合"], ans: 2, exp: "消費者行為學派探討生活型態，其他配對皆為錯誤。" },
+            { id: 16, type: 1, q: "下列何者最能區分「行銷策略學派」與「行銷決策學派」的差異？", opts: ["一者關注通路效率，一者著重關係維繫", "一者建立差異化策略，一者以資料驅動決策", "一者探討生活型態，一者著重品牌經營", "一者偏向促銷技巧，一者著重企業文化"], ans: 1, exp: "行銷策略學派著重STP與定位；行銷決策學派依靠CRM、資料分析等工具進行行銷操作。" },
+            { id: 17, type: 1, q: "下列何者最符合「行銷決策學派」的工具應用？", opts: ["RFM 客戶價值模型", "STP市場定位模型", "知覺定位圖", "SWOT分析"], ans: 0, exp: "決策學派重視數據分析，RFM模型正屬於此類工具。" },
+            { id: 18, type: 1, q: "下列何者最能正確對應「消費者異質性」的意涵？", opts: ["顧客的需求與行為會隨時間改變", "每位顧客對產品價值的理解不同", "顧客會依品牌偏好選擇購買地點", "消費者常依促銷活動改變行為"], ans: 1, exp: "異質性強調的是每位顧客在背景、價值觀、行為上的差異。" },
+            { id: 19, type: 1, q: "下列何者屬於「消費者動態性」的概念？", opts: ["顧客因生命週期成長，健康意識增加，逐漸轉向低糖飲食", "不同顧客偏好不同的口味", "顧客願意為品牌形象付更高價格", "顧客對品牌的認同感增加"], ans: 0, exp: "動態性強調顧客的需求與行為會隨時間改變。" },
+            { id: 20, type: 1, q: "關於「消費者異質性」與「消費者動態性」的差異，下列敘述何者正確？", opts: ["異質性關注顧客行為隨時間變化，動態性關注顧客價值觀不同", "異質性與動態性皆只適用於B2B市場", "異質性強調不同人，動態性強調同一人行為變化", "異質性屬於時間縱向變化，動態性屬於時間橫斷面變化"], ans: 2, exp: "「異質性」是橫向比較不同顧客，「動態性」是縱向追蹤單一顧客的行為變化。" },
+            { id: 21, type: 1, q: "下列何者最能代表「互動式行銷」的核心精神？", opts: ["利用問卷回饋設計產品", "強調企業形象一致性", "一對一溝通與關係經營", "建立供應商網路共享資料"], ans: 2, exp: "互動式行銷重視利用資料庫與個別顧客進行客製化溝通。" },
+            { id: 22, type: 1, q: "下列何者配對錯誤？", opts: ["被動式行銷—問卷分析市場需求", "主動式行銷—創造新消費場景", "互動式行銷—建立同業聯盟", "連鎖式行銷—資訊平台共創價值"], ans: 2, exp: "建立同業聯盟並非互動式行銷核心，該概念屬連鎖式行銷。" },
+            { id: 23, type: 1, q: "哪一種行銷典範最強調從內部資源出發，主動引導市場？", opts: ["被動式行銷", "主動式行銷", "互動式行銷", "連鎖式行銷"], ans: 1, exp: "主動式行銷核心在於企業領先預測並塑造需求與環境。" },
+            { id: 24, type: 1, q: "首重資訊即時回應並提供個人化商品，這最符合哪一種行銷典範？", opts: ["主動式行銷", "互動式行銷", "連鎖式行銷", "銷售導向策略"], ans: 1, exp: "互動式行銷強調個別顧客資料的即時追蹤與回應。" },
+            { id: 25, type: 1, q: "關於 B2B 與 B2C 行銷差異，何者正確？", opts: ["B2B通常由個人快速決定", "B2C通常價格不透明需議價", "B2B決策為理性、結構化導向", "B2C產品多為高技術規格導向"], ans: 2, exp: "B2B決策為理性、長期且結構化，重視解決問題與效率。" },
+            { id: 26, type: 1, q: "B2B與B2C行銷特性配對何者正確？", opts: ["B2C—多位決策者", "B2B—品牌形象與促銷吸引", "B2B—技術含量高，關係經營", "B2C—展覽、教育訓練為主"], ans: 2, exp: "B2B強調技術規格、解決方案與關係信任經營。" },
+            { id: 27, type: 1, q: "下列哪一項特性主要存在於 B2C 行銷中？", opts: ["明確標價與促銷影響大", "專案報價與多次會議", "長期理性決策", "各部門共同採購"], ans: 0, exp: "B2C決策快速，情感導向，價格與促銷因素影響大。" },
+            { id: 28, type: 1, q: "行銷企劃人員在擬定策略前，應先完成下列哪項任務？", opts: ["選擇行銷通路", "設計廣告主題", "洞察市場與顧客", "訂定KPI指標"], ans: 2, exp: "擬定策略前需掌握市場脈動與消費者行為，才能制訂有效方向。" },
+            { id: 29, type: 1, q: "下列哪一項任務最適合對應「設計行銷活動內容」？", opts: ["收集競爭者資料", "規劃活動主題與素材", "制定定價策略", "設計KPI表單"], ans: 1, exp: "活動內容設計包括主題發想、內容素材與通路整合，屬於執行中期的任務。" },
+
+            // ================= 實務題 (39題) =================
+            { id: 30, type: 2, q: "消費者選擇購買 Patagonia 戶外服飾，不僅因為產品耐用，更因為品牌引導「環境永續」與「修補代替丟棄」的價值。這種行為最符合哪一種「行銷價值交換」概念？", opts: ["理念交換", "金錢交換", "信任交換", "資訊交換"], ans: 0, exp: "理念交換強調品牌與消費者在價值觀上的共鳴。消費者購買是因為認同其「環境永續」理念，而非單純金錢或信任。" },
+            { id: 31, type: 2, q: "西堤牛排透過顧客填寫滿意度問卷後，提供小點心作為回饋，這種行銷設計屬於哪種價值交換類型？", opts: ["服務交換", "理念交換", "金錢交換", "資訊交換"], ans: 3, exp: "提供實體產品(小點心)以獲取顧客資訊(問卷內容)，是一種「資訊對商品」的互換行為。" },
+            { id: 32, type: 2, q: "信用卡公司欲強化與顧客的情感與信任關係，下列何者最能有效達成此目標？", opts: ["降低卡片年費，讓顧客感受企業「實惠」", "提供快速辦卡服務，展現「顧客便利」價值", "贊助大型公益活動並邀請持卡人參與", "舉辦新卡產品發表會"], ans: 2, exp: "降低年費、快速辦卡僅屬於功能或價格誘因，新卡發表會為產品推廣；唯有公益活動能讓顧客參與並與品牌價值產生共鳴，深化情感與信任。" },
+            { id: 33, type: 2, q: "一家新創咖啡品牌希望分析並提升現有顧客的價值，以下哪項策略最能直接強化與顧客之間的長期關係？", opts: ["推出季節限定新品咖啡", "建立會員制度並提供點數回饋", "進行限時折扣活動", "擴大門市空間"], ans: 1, exp: "建立會員與回饋制度可形成持續互動與關係管理，影響顧客留存率。" },
+            { id: 34, type: 2, q: "Google 推出功能優於同業的智慧型手機，但消費者普遍認為與其他品牌差異不大，導致銷售不佳，最可能的行銷企劃問題是？", opts: ["產品定價偏高", "品牌知名度不足", "價值未觸及目標客群", "通路佈局過度集中"], ans: 2, exp: "若產品具備競爭功能卻仍銷售不佳，往往是行銷企劃未精準定位與傳遞價值，導致未有效觸及目標客群。" },
+            { id: 35, type: 2, q: "博客來針對年度會員推出購書回饋活動，此策略最主要在於創造哪一種行銷價值？", opts: ["價值創造", "風險管理", "價值專屬", "顧客分群策略"], ans: 2, exp: "「僅限年度會員」表示將價值設計為有限對象專屬，屬於價值專屬的概念，有助於強化會員認同與忠誠。" },
+            { id: 36, type: 2, q: "LINE推出「LINE禮物」功能，讓使用者可直接透過好友清單選商品並即時送禮，此設計最符合哪種行銷企劃概念？", opts: ["價值創造", "價值專屬", "風險管理", "顧客分群策略"], ans: 1, exp: "教材中提到的價值專屬例子之一即為「結合通訊軟體與電商平台即時送禮」的策略，是品牌差異化的具體展現。" },
+            { id: 37, type: 2, q: "統一超商推行「愛心零錢捐」活動，鼓勵顧客捐出零錢幫助弱勢。此策略屬於哪一種導向？", opts: ["社會行銷導向", "銷售導向", "生產導向", "關係導向"], ans: 0, exp: "該行動讓顧客參與社會關懷，正是社會行銷導向關注社會福祉與企業責任的實現。" },
+            { id: 38, type: 2, q: "日本無印良品透過「生活研究所」觀察顧客使用情境並開發產品，最符合下列哪一導向？", opts: ["生產導向", "銷售導向", "行銷導向", "社會行銷導向"], ans: 2, exp: "以顧客需求為產品開發依據，從生活情境中洞察消費行為，是行銷導向的具體展現。" },
+            { id: 39, type: 2, q: "飲料代工廠與品牌商建立供應鏈管理，大幅降低製造成本，以低價格快速供應產品，吸引注重價格的消費者。該品牌屬何種導向？", opts: ["生產導向", "銷售導向", "行銷導向", "關係行銷導向"], ans: 0, exp: "生產導向重視以最低成本與高效率進行大量生產，並提供價格低且易取得的產品。" },
+            { id: 40, type: 2, q: "在永續發展潮流的推動下，綠色餐飲已成為不可避免的趨勢。曉鹿鳴樓作為首家獲得 PAS 2060 碳中和認證的餐廳，最能體現「社會行銷導向」的措施是下列何者？", opts: ["使用進口高檔食材提高品牌形象", "延長營業時間以增加產銷", "降低餐點價格吸引更多顧客", "建立低碳廚房，減少廚房活動產生碳排放"], ans: 3, exp: "社會行銷導向強調「同時兼顧企業獲利、顧客需求與社會/環境利益」，建立低碳廚房降低環境衝擊才符合核心精神。" },
+            { id: 41, type: 2, q: "汽車經銷商在季度末推出「限時三天，現金購車立減10萬」的活動，並安排業務員積極致電潛在客戶，強調優惠即將截止以促成交易。這最可能為何種導向？", opts: ["生產導向", "銷售導向", "社會行銷導向", "關係行銷導向"], ans: 1, exp: "銷售導向強調運用促銷與銷售技巧，積極推動現有產品的銷售，而非從顧客需求出發設計產品。" },
+            { id: 42, type: 2, q: "下列何者不是「社會行銷導向」的代表性行動？", opts: ["推出低碳包裝設計", "企業定期參與淨灘活動", "提升產品功能生產效率", "強調產品對社會的正面影響"], ans: 2, exp: "「功能與生產效率」屬於生產導向的範疇，與社會福祉無直接連結。" },
+            { id: 43, type: 2, q: "企業過度依賴短期促銷手段，可能導致哪項問題？", opts: ["維持忠誠度偏低", "營運成本過高", "客單價過高", "顧客選擇過多"], ans: 0, exp: "銷售導向若缺乏顧客關係經營與價值管理，將導致忠誠度與終身價值低落。" },
+            { id: 44, type: 2, q: "下列哪個企業實務最符合「行銷策略學派」的應用？", opts: ["物流即時追蹤系統建置", "根據市場區隔設計不同產品線", "建立倉儲與配送中心", "設計會員忠誠制度與回饋系統"], ans: 1, exp: "行銷策略學派關鍵在於STP與差異化策略設計，根據市場區隔設計產品線最為貼切。" },
+            { id: 45, type: 2, q: "下列哪項實務策略最對應「實體配送通路學派」？", opts: ["建立CRM系統管理顧客關係", "推出品牌形象廣告", "增設倉儲據點與物流優化", "以心理測驗分析目標客群"], ans: 2, exp: "實體配送通路學派關注物流、配送與通路效率，與倉儲運作密切。" },
+            { id: 46, type: 2, q: "Momo購物根據使用者點擊、購買與回購紀錄，分析其消費偏好並推播個人化優惠。此行銷作法最符合下列哪一學派？", opts: ["消費者行為學派", "行銷策略學派", "實體配送通路學派", "行銷決策學派"], ans: 3, exp: "利用資料庫進行精準行銷決策與個人化推播，是行銷決策學派的典型特徵。" },
+            { id: 47, type: 2, q: "台灣大哥大針對企業用戶、中小企業與個人客戶分別設計差異化資費與服務內容。最符合下列哪一行銷學派？", opts: ["行銷策略學派", "行銷決策學派", "消費者行為學派", "實體配送通路學派"], ans: 0, exp: "進行市場區隔(STP)並針對不同客群設計方案，是行銷策略學派的範疇。" },
+            { id: 48, type: 2, q: "康健有機超市觀察到許多原本購買速食的年輕客群，隨年紀增長開始轉向蔬食餐盒，這現象最符合下列哪一概念？", opts: ["品牌定位", "顧客忠誠度", "消費者異質性", "消費者動態性"], ans: 3, exp: "同一個人的需求偏好隨生活階段轉變，屬於「動態性」。" },
+            { id: 49, type: 2, q: "長榮航空針對頭等艙旅客提供專屬登機門與接駁車服務。這項安排主要是回應下列哪種消費者特性？", opts: ["消費者動態性", "消費者異質性", "消費者價格敏感度", "顧客終身價值"], ans: 1, exp: "針對不同族群提供差異化服務，正是為滿足不同類型消費者的需求，屬於異質性。" },
+            { id: 50, type: 2, q: "下列哪個品牌行為最能體現「消費者異質性」的實務應用？", opts: ["星巴克推出咖啡買一送一活動", "Lululemon 針對瑜伽族群開設女性專屬門市", "UberEats 推動滿額免運活動", "麥當勞推出早餐限定新商品"], ans: 1, exp: "針對特定次群體(瑜伽族群)的生活型態與偏好進行設計，正體現異質性行銷的實務應用。" },
+            { id: 51, type: 2, q: "某高階健身房發現，部分長期會員在最初加入時每週上課三次，但隨著時間推移逐漸轉為偶爾參加，這最適合歸類為哪種消費者行為特徵？", opts: ["消費者異質性", "涉入程度", "價格敏感度", "消費者動態性"], ans: 3, exp: "消費者的需求與行為會隨時間、環境改變，會員出席率改變反映了「消費者行為的動態性」。" },
+            { id: 52, type: 2, q: "服飾品牌追蹤會員資料發現，顧客在單身時偏好購買時尚女裝，結婚生子後改為購買舒適耐用的家庭休閒服，這種行為改變最適合歸類為哪一種特徵？", opts: ["消費者動態性", "消費者異質性", "顧客忠誠度", "涉入程度"], ans: 0, exp: "消費者動態性說明同一位消費者在不同生命階段下需求會改變。" },
+            { id: 53, type: 2, q: "星巴克不僅銷售咖啡，更致力於打造「第三空間」的概念，讓消費者將其視為工作與家庭之外的舒適社交場所，這屬於何種行銷典範？", opts: ["被動式行銷", "主動式行銷", "互動式行銷", "連鎖式行銷"], ans: 1, exp: "主動式行銷強調企業主動定義市場文化與消費場景方向。" },
+            { id: 54, type: 2, q: "電商平台依據顧客行為記錄推薦商品，並進行個別化溝通，這種模式最符合？", opts: ["主動式行銷", "被動式行銷", "互動式行銷", "連鎖式行銷"], ans: 2, exp: "強調一對一推薦與關係經營，符合互動式行銷。" },
+            { id: 55, type: 2, q: "下列情境與行銷典範配對，何者正確？", opts: ["創造新的需求動機—被動式行銷", "瀏覽書籍後，同時被推播電影票券—連鎖式行銷", "客服收集滿意度後調整服務流程—被動式行銷", "廠商依市場報告設計產品—連鎖式行銷"], ans: 1, exp: "連鎖式行銷強調跨平台、跨品類的即時資訊串聯推薦。" },
+            { id: 56, type: 2, q: "Foodpanda 整合銷售平台與供應商系統，當顧客瀏覽商品時聯動推薦互補商品，這是何種行銷典範？", opts: ["被動式行銷", "主動式行銷", "連鎖式行銷", "互動式行銷"], ans: 2, exp: "連鎖式行銷核心為多方即時串聯、跨網絡共創價值。" },
+            { id: 57, type: 2, q: "甜點店根據顧客意見卡的反饋，將蛋糕甜度調整為「微甜」版本，以符合現有顧客口味偏好，這屬於哪一種行銷典範？", opts: ["主動式行銷", "被動式行銷", "互動式行銷", "連鎖式行銷"], ans: 1, exp: "被動式行銷是以顧客需求為導向，針對現有行為模式做回應與調整。" },
+            { id: 58, type: 2, q: "運動品牌發起「長跑挑戰」，結合社群與名人影響力，鼓勵消費者建立晨間跑步習慣，並推出專為晨跑設計的系列鞋款，這屬於哪一種行銷典範？", opts: ["主動式行銷", "被動式行銷", "互動式行銷", "連鎖式行銷"], ans: 0, exp: "主動式行銷會主動塑造需求與行為，藉此建立市場領先優勢。" },
+            { id: 59, type: 2, q: "美妝品牌的APP根據會員過去的購買紀錄與膚質分析，推送專屬的保養品組合優惠。這屬於哪一種行銷典範？", opts: ["主動式行銷", "被動式行銷", "互動式行銷", "連鎖式行銷"], ans: 2, exp: "互動式行銷是依據顧客行為與資料，進行一對一的即時個人化推薦。" },
+            { id: 60, type: 2, q: "旅遊平台與餐廳、租車公司等多家合作串接系統，當顧客訂飯店時，會自動收到附近景點門票與交通車票的即時推薦。這屬於哪一種行銷典範？", opts: ["主動式行銷", "被動式行銷", "互動式行銷", "連鎖式行銷"], ans: 3, exp: "連鎖式行銷透過企業與合作夥伴的即時資訊串聯，共同為顧客創造跨領域價值。" },
+            { id: 61, type: 2, q: "在電影《華爾街之狼》中，有句經典台詞：「要把一支筆賣給客戶，首先必須創造需求，讓客戶意識到自己需要它。」此情境最能反映下列哪一種行銷典範？", opts: ["被動式行銷", "主動式行銷", "互動式行銷", "連鎖式行銷"], ans: 1, exp: "主動式行銷著重於預測或塑造市場需求，主動引導消費者意識並產生購買意願。" },
+            { id: 62, type: 2, q: "速食餐飲早期在廣告中呈現小孩開心地用手拿薯條與雞塊直接食用，並以「童趣」、「快樂」的氛圍傳遞品牌形象。這樣的操作最符合哪一種行銷典範？", opts: ["連鎖式行銷", "互動式行銷", "主動式行銷", "被動式行銷"], ans: 2, exp: "主動式行銷強調企業主動創造消費者的接觸與情境，引導其行為與情感反應。" },
+            { id: 63, type: 2, q: "國泰產險為企業客戶設計「一站式風險評估服務」，並派專人說明保單選項，此屬哪種行銷模式？", opts: ["B2C，以促銷吸引客戶", "B2B，以專業信任建立合作", "B2C，以品牌情感為主", "B2B，以社群轉換為主"], ans: 1, exp: "B2B以解決問題為主軸，建構專業信任是核心策略。" },
+            { id: 64, type: 2, q: "重威 JONNESWAY 企業選擇參加工具/五金產業展覽，並展示產品技術規格與案例解決方案，此行為主要對應哪種行銷模式？", opts: ["B2C行銷，強調品牌故事", "B2B行銷，強調技術與案例展示", "B2C行銷，著重消費體驗", "B2B行銷，情感導向行銷為主"], ans: 1, exp: "產業展覽為B2B溝通管道，重點在技術解決與專業信任。" },
+            { id: 65, type: 2, q: "以下哪種 B2B 行銷方式最能輔助品牌情感與信任建立？", opts: ["降價促銷策略", "強調技術規格", "客戶培訓與贊助活動", "街頭廣告曝光"], ans: 2, exp: "教育訓練與贊助活動能深化信任與品牌好感。" },
+            { id: 66, type: 2, q: "在電信設備市場中，多數企業已提供類似規格產品，為了提升選擇偏好，中華電信選擇強調企業價值、可長期合作、文化契合，這種策略強化哪項 B2B 關鍵？", opts: ["產品技術差異化", "價格差異化", "當規格與價格差異小時，品牌信任與文化認同成為關鍵決策點", "市佔率宣傳"], ans: 2, exp: "當硬體條件相近時，品牌信任與文化認同成為最終 B2B 決策的感性關鍵。" },
+            { id: 67, type: 2, q: "企劃人員依據市場分析規劃品牌的行銷主軸與溝通內容，該行為符合下列哪一項任務？", opts: ["洞察市場與顧客", "擬定行銷策略", "設計行銷活動內容", "評估績效並調整"], ans: 1, exp: "依據品牌定位與受眾設計行銷方向與訊息，屬擬定策略工作。" },
+            { id: 68, type: 2, q: "某公司在推出新款智慧手機後，根據使用者回饋與銷售數據，微調產品功能與促銷內容，這最符合哪一項行銷企劃任務？", opts: ["洞察市場與顧客", "擬定行銷策略", "設計行銷活動內容", "評估績效並調整"], ans: 3, exp: "根據KPI或回饋提出修正，屬於評估績效並調整階段的任務。" }
+        ];
+
+        // AI specific mock questions
+        const aiMockBank = [
+            {
+                q: "【實務情境】某老牌洗髮精品牌為了衝刺業績，在季末狂打「買一送一」且要求門市員工強力推銷。這種做法如果長期執行，最容易陷入哪一種經營思維的盲點？",
+                opts: ["生產導向，忽略成本控管。","銷售導向，產生行銷近視症。","關係行銷導向，過度討好顧客。","社會行銷導向，損害企業利潤。"],
+                ans: 1,
+                exp: "TIMS 觀點(1-4)：強打促銷與業務推廣屬於「銷售導向」。若長期忽略消費者真實需求，只專注把產品推出去，極易罹患「行銷近視症 (Marketing Myopia)」。"
+            },
+            {
+                q: "【實務情境】知名電商平台不僅記住你買過什麼，當你下單「露營帳篷」後，系統立刻自動推播「該帳篷適用的周邊露營區門票優惠」給你。這最符合哪一種行銷思潮典範？",
+                opts: ["被動式行銷","主動式行銷","互動式行銷","連鎖式行銷"],
+                ans: 3,
+                exp: "課本 1-7：這已超越單純的互動，而是串聯了不同產業(電商實體商品與旅遊服務系統)，形成網狀共創價值的「連鎖式行銷」。"
+            },
+            {
+                q: "【實務情境】一家專做企業軟體(B2B)的公司，除了強調軟體的運算速度外，還主打「成為您企業轉型最可靠的安心夥伴」。依據 TIMS 觀點，這種感性訴求在 B2B 市場中有用嗎？",
+                opts: ["沒用，B2B 客戶只看價格。","沒用，B2B 採購中心完全理性。","有用，感性訴求能補足信任建立與品牌偏好。","有用，因為 B2B 決策者都是單一個人。"],
+                ans: 2,
+                exp: "TIMS 觀點(1-8)：當多家供應商產品規格與價格相近時，「我願不願意跟你合作」往往取決於品牌情感、文化認同等感性因素，能補足專業信任。"
+            }
+        ];
+
+        let currentTab = 'standard';
+        let isSubmitted = false;
+        let selectedQuestions = []; 
+        let selectedAiQuestions = []; 
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateRandomQuiz() {
+            if(isSubmitted) {
+                isSubmitted = false;
+                document.getElementById('score-display').classList.add('hidden');
+                
+                const btn = document.getElementById('submit-btn');
+                btn.innerHTML = '交卷並查看解析 <i class="fa-solid fa-paper-plane ml-2"></i>';
+                btn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.add('bg-primary', 'hover:bg-blue-800');
+            }
+
+            // Pick 5 random questions from the full bank (theory + practical)
+            const shuffledBank = shuffleArray([...fullQuestionBank]);
+            selectedQuestions = shuffledBank.slice(0, 5);
+            renderQuiz('quiz-standard', selectedQuestions, 'std');
+
+            // Pick 3 AI questions
+            const shuffledAi = shuffleArray([...aiMockBank]);
+            selectedAiQuestions = shuffledAi.slice(0, 3);
+            renderQuiz('quiz-ai', selectedAiQuestions, 'ai');
+
+            setTimeout(() => {
+                document.getElementById('quiz-section').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function renderQuiz(containerId, data, prefix) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = data.map((item, index) => `
+                <div class="quiz-item border border-gray-200 rounded-2xl p-6 md:p-8 bg-white shadow-sm hover:border-blue-200 transition" data-correct="${item.ans}" data-prefix="${prefix}" data-idx="${index}">
+                    <div class="flex items-start gap-3 mb-5">
+                        <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-black shadow-inner shrink-0 mt-0.5">Q${index + 1}</span>
+                        <h3 class="font-bold text-lg md:text-xl text-gray-800 leading-relaxed">${item.q}</h3>
+                    </div>
+                    <div class="space-y-3 pl-0 md:pl-14">
+                        ${item.opts.map((opt, oIdx) => `
+                            <label class="quiz-option flex items-start p-4 rounded-xl border border-gray-200 cursor-pointer hover:bg-blue-50 transition" id="opt_${prefix}_${index}_${oIdx}">
+                                <div class="relative flex items-center justify-center mr-4 shrink-0 mt-0.5">
+                                    <input type="radio" name="q_${prefix}_${index}" value="${oIdx}" class="peer appearance-none w-5 h-5 border-2 border-gray-300 rounded-full checked:border-blue-600 checked:bg-blue-600 transition cursor-pointer">
+                                </div>
+                                <span class="text-gray-700 text-base leading-tight">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="explanation mt-6 md:ml-14 p-5 bg-gradient-to-r from-blue-50 to-white border-l-4 border-secondary rounded-r-xl text-sm text-gray-700 shadow-inner" id="exp_${prefix}_${index}">
+                        <div class="font-bold text-primary mb-2 flex items-center text-base"><i class="fa-solid fa-book-open mr-2"></i> 官方詳解：</div> 
+                        <div class="leading-relaxed ai-content">${marked.parse(item.exp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('quiz-standard').classList.toggle('hidden', tab !== 'standard');
+            document.getElementById('quiz-ai').classList.toggle('hidden', tab !== 'ai');
+            
+            const btnStd = document.getElementById('tab-standard');
+            const btnAi = document.getElementById('tab-ai');
+
+            if(tab === 'standard') {
+                btnStd.className = "px-5 py-2.5 rounded-md font-bold bg-secondary text-white transition whitespace-nowrap shadow-sm";
+                btnAi.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-2 whitespace-nowrap";
+            } else {
+                btnAi.className = "px-5 py-2.5 rounded-md font-bold bg-purple-600 text-white transition flex items-center gap-2 whitespace-nowrap shadow-sm";
+                btnStd.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition whitespace-nowrap";
+            }
+        }
+
+        async function submitQuiz() {
+            if (isSubmitted) {
+                Swal.fire({
+                    title: '已經交卷囉！',
+                    text: '若想挑戰不同題目，請點擊右上角「重新抽題」。',
+                    icon: 'info',
+                    confirmButtonColor: '#1e3a8a'
+                });
+                return;
+            }
+
+            const prefix = currentTab === 'standard' ? 'std' : 'ai';
+            const data = currentTab === 'standard' ? selectedQuestions : selectedAiQuestions;
+            let score = 0;
+            let answeredCount = 0;
+            const scorePerQ = 100 / data.length;
+            
+            const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('tims_gemini_api_key');
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-3"></i> 系統批改中...';
+            btn.classList.remove('hover:-translate-y-1');
+
+            data.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q_${prefix}_${index}"]:checked`);
+                const correctAns = item.ans;
+                
+                if (selected) {
+                    answeredCount++;
+                    const userAns = parseInt(selected.value);
+                    
+                    if (userAns === correctAns) {
+                        score += scorePerQ;
+                        document.getElementById(`opt_${prefix}_${index}_${userAns}`).classList.add('correct');
+                    } else {
+                        document.getElementById(`opt_${prefix}_${index}_${userAns}`).classList.add('wrong');
+                        document.getElementById(`opt_${prefix}_${index}_${correctAns}`).classList.add('correct');
+                    }
+                } else {
+                    document.getElementById(`opt_${prefix}_${index}_${correctAns}`).classList.add('correct');
+                }
+
+                document.getElementById(`exp_${prefix}_${index}`).classList.add('show');
+                const inputs = document.querySelectorAll(`input[name="q_${prefix}_${index}"]`);
+                inputs.forEach(input => input.disabled = true);
+            });
+
+            if (currentTab === 'ai' && apiKey && answeredCount > 0) {
+                await generateAiExplanations(data, apiKey);
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> 批改完成';
+            btn.classList.remove('bg-primary', 'hover:bg-blue-800');
+            btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+
+            if(answeredCount < data.length) {
+                Swal.fire({
+                    icon: 'warning', 
+                    title: '有題目未作答', 
+                    text: '系統已自動為您標示正確解答並顯示解析。',
+                    confirmButtonColor: '#1e3a8a'
+                });
+            }
+
+            const scoreDisplay = document.getElementById('score-display');
+            const scoreNumber = document.getElementById('score-number');
+            scoreDisplay.classList.remove('hidden');
+            
+            let currentScore = 0;
+            const targetScore = Math.round(score);
+            const timer = setInterval(() => {
+                currentScore++;
+                if (currentScore >= targetScore) {
+                    clearInterval(timer);
+                    scoreNumber.innerText = targetScore;
+                    if(targetScore >= 80) scoreNumber.className = "text-4xl md:text-5xl text-green-500 transition-all font-black";
+                    else if (targetScore >= 60) scoreNumber.className = "text-4xl md:text-5xl text-yellow-500 transition-all font-black";
+                    else scoreNumber.className = "text-4xl md:text-5xl text-red-500 transition-all font-black";
+                } else {
+                    scoreNumber.innerText = currentScore;
+                }
+            }, 10);
+
+            isSubmitted = true;
+        }
+
+        async function generateAiExplanations(questions, key) {
+            for (let i = 0; i < questions.length; i++) {
+                const item = questions[i];
+                const selected = document.querySelector(`input[name="q_ai_${i}"]:checked`);
+                if (!selected) continue;
+
+                const userOptIndex = parseInt(selected.value);
+                const userOptText = item.opts[userOptIndex];
+                const isCorrect = userOptIndex === item.ans;
+
+                const expDiv = document.getElementById(`exp_ai_${i}`);
+                expDiv.innerHTML += `<div class="mt-4 pt-4 border-t border-purple-200 text-purple-700 font-bold flex items-center"><i class="fa-solid fa-spinner fa-spin mr-3 text-xl"></i> 正在呼叫 Gemini 分析您的作答盲點...</div>`;
+
+                const prompt = `
+                    你是一位資深的行銷學教授。學生剛完成了一題行銷企劃證照考題：
+                    題目：「${item.q}」
+                    學生的選項：「${userOptText}」
+                    這是${isCorrect ? '正確' : '錯誤'}的。正確答案是：「${item.opts[item.ans]}」。
+                    請用繁體中文，針對該學生的選擇，給予一段簡短(約50-80字)的一對一指導解析。語氣要像導師一樣溫暖專業。
+                `;
+
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                            generationConfig: { maxOutputTokens: 256, temperature: 0.7 }
+                        })
+                    });
+                    
+                    if(!response.ok) throw new Error('API Error');
+                    const data = await response.json();
+                    const aiFeedback = data.candidates[0].content.parts[0].text;
+                    
+                    expDiv.innerHTML = expDiv.innerHTML.replace(/<div class="mt-4.*<\/div>/, `<div class="mt-4 pt-4 border-t border-purple-200 bg-purple-50 p-4 rounded-xl text-purple-900 ai-content shadow-inner"><strong><i class="fa-solid fa-robot mr-2 text-lg"></i> AI 專屬指導：</strong><br><div class="mt-2 text-base">${marked.parse(aiFeedback)}</div></div>`);
+
+                } catch (e) {
+                    console.error("AI Generation failed", e);
+                    expDiv.innerHTML = expDiv.innerHTML.replace(/<div class="mt-4.*<\/div>/, `<div class="mt-4 pt-4 border-t border-red-200 text-red-500 text-sm font-bold"><i class="fa-solid fa-triangle-exclamation mr-2"></i> AI 專屬解析載入失敗，請檢查 API Key 狀態。</div>`);
+                }
+            }
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('apiKeyInput').value.trim();
+            if(input) {
+                localStorage.setItem('tims_gemini_api_key', input);
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: '儲存成功', 
+                    text: 'API Key 已暫存，後續作答 AI 情境題將啟用專屬智能批改。', 
+                    timer: 2000, 
+                    showConfirmButton: false,
+                    confirmButtonColor: '#1e3a8a'
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('tims_gemini_api_key');
+            if(savedKey) document.getElementById('apiKeyInput').value = savedKey;
+            
+            generateRandomQuiz();
+        });
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 TIMS 互動式數位教材 - 第六章 品牌經營</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 for keyword modals -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Mermaid.js for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        secondary: '#f59e0b',
+                        accent: '#10b981',
+                        tims: '#4f46e5',
+                        surface: '#f8fafc'
+                    }
+                }
+            }
+        }
+        
+        // Initialize Mermaid with custom theme
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#eff6ff',
+                primaryTextColor: '#1e3a8a',
+                primaryBorderColor: '#93c5fd',
+                lineColor: '#3b82f6',
+                secondaryColor: '#fef3c7',
+                tertiaryColor: '#fffbeb'
+            }
+        });
+    </script>
+    <style>
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        body { scroll-behavior: smooth; }
+        
+        /* Interactive Keyword Style */
+        .kw { 
+            color: #2563eb; 
+            font-weight: 700; 
+            cursor: pointer; 
+            border-bottom: 2px dashed #93c5fd; 
+            transition: all 0.2s;
+            padding: 0 2px;
+        }
+        .kw:hover { background-color: #dbeafe; border-bottom: 2px solid #2563eb; border-radius: 2px; }
+
+        /* Accordion transition */
+        .accordion-content {
+            transition: max-height 0.3s ease-in-out, padding 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .accordion-content.open {
+            max-height: 500px; /* Arbitrary large number */
+        }
+
+        /* Matrix Hover Effects */
+        .matrix-cell { transition: transform 0.2s, box-shadow 0.2s; }
+        .matrix-cell:hover { transform: translateY(-2px) scale(1.02); z-index: 10; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+
+        .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; }
+        .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; }
+        .explanation { display: none; animation: fadeIn 0.5s; }
+        .explanation.show { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-100 text-gray-800 h-screen flex flex-col font-sans overflow-hidden">
+
+    <header class="bg-white shadow z-20 shrink-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center justify-center w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition" title="返回學習大廳">
+                    <i class="fa-solid fa-house text-lg"></i>
+                </a>
+                
+                <div class="hidden sm:flex w-10 h-10 bg-primary text-white rounded-lg items-center justify-center shadow-inner">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg md:text-xl font-black text-gray-800 tracking-tight">TIMS 互動式教材 <span class="text-primary">第六章</span></h1>
+                    <p class="text-xs text-gray-500 font-medium">點擊藍色虛線底線的 <span class="kw text-xs" onclick="showKw('關鍵字')">關鍵字</span> 可展開解析</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200 hidden md:flex">
+                <i class="fa-solid fa-robot text-purple-500 ml-2"></i>
+                <input type="password" id="apiKeyInput" placeholder="輸入 Gemini API Key..." class="text-xs px-2 py-1.5 border rounded focus:outline-none focus:ring-1 focus:ring-purple-400 w-48 bg-white">
+                <button onclick="saveApiKey()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded transition shadow-sm font-bold">儲存金鑰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Layout -->
+    <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-white border-r border-slate-200 shadow-sm flex flex-col hidden lg:flex shrink-0 my-4 ml-4 rounded-xl overflow-hidden z-10">
+            <div class="p-5 bg-gradient-to-br from-primary to-blue-800 text-white shadow-inner">
+                <div class="text-xs text-blue-200 mb-1 font-bold tracking-widest">CHAPTER 06</div>
+                <div class="font-black text-xl">品牌經營</div>
+            </div>
+            <nav class="overflow-y-auto flex-1 p-4 space-y-1" id="toc-nav">
+                <!-- Nav items generated via JS for active state management -->
+                <a href="#section-1" class="toc-link block px-3 py-2 rounded-lg text-sm font-bold text-primary bg-blue-50 transition"><i class="fa-solid fa-hashtag w-5 text-blue-400"></i> 品牌意義與功能</a>
+                <a href="#section-2" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 品牌的命名</a>
+                <a href="#section-3" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 品牌建構流程</a>
+                <a href="#section-4" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 品牌定位種類</a>
+                <a href="#section-5" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 品牌成長策略</a>
+                <a href="#section-6" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 品牌策略</a>
+                <div class="my-4 border-t border-slate-100"></div>
+                <a href="#quiz-section" class="block px-3 py-2 rounded-lg text-sm font-black text-orange-600 bg-orange-50 hover:bg-orange-100 transition shadow-sm"><i class="fa-solid fa-pen-clip w-5"></i> 模擬測驗 (61題庫)</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col overflow-hidden relative my-0 lg:my-4 rounded-none lg:rounded-xl bg-surface">
+            <div class="flex-1 overflow-y-auto px-4 md:px-8 pb-24 scroll-smooth" id="scroll-area">
+                
+                <!-- Title Header -->
+                <div class="py-8 border-b border-slate-200">
+                    <h2 class="text-slate-500 font-bold tracking-widest text-sm mb-2">行銷是手段，品牌才是最終目的</h2>
+                    <h1 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">品牌經營 <span class="text-primary font-light">Brand Management</span></h1>
+                </div>
+
+                <!-- 6-1 品牌意義與功能 -->
+                <section id="section-1" class="py-10 border-b border-slate-200 scroll-mt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">6-1</div>
+                        <h2 class="text-2xl font-bold text-gray-800">品牌意義與功能</h2>
+                    </div>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">
+                        「品牌」不僅是名稱或標誌，它更能協助顧客在眾多產品中快速 <span class="kw" onclick="showKw('辨識')">辨識</span> 與選擇，同時也是品質的象徵。最重要的是，品牌能與顧客建立 <span class="kw" onclick="showKw('情感聯結')">情感聯結</span>，達成市場溝通。<br>
+                        👉 <span class="text-sm text-gray-500 font-bold">點擊下方卡片展開各功能詳細解說與範例：</span>
+                    </p>
+
+                    <div class="space-y-3">
+                        <!-- Accordion Item 1 -->
+                        <div class="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                            <button onclick="toggleAccordion('acc-1-1')" class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-slate-50 flex justify-between items-center transition">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-eye text-blue-500 w-5"></i> 1. 辨識功能</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300" id="icon-acc-1-1"></i>
+                            </button>
+                            <div id="acc-1-1" class="accordion-content bg-slate-50 border-t border-slate-100">
+                                <div class="p-6 text-gray-700 leading-relaxed">
+                                    <p class="mb-3">幫助顧客在眾多產品中快速辨認與選擇。這是品牌最基礎的作用。</p>
+                                    <div class="bg-white p-4 rounded-lg border border-red-100 border-l-4 border-l-red-500 shadow-sm">
+                                        <p class="text-sm font-bold text-red-700"><i class="fa-solid fa-crosshairs"></i> 考試重點：</p>
+                                        <p class="text-sm">最直接影響顧客在產品比較時的<strong class="text-gray-900">決策速度</strong>！</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Item 2 -->
+                        <div class="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                            <button onclick="toggleAccordion('acc-1-2')" class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-slate-50 flex justify-between items-center transition">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-shield-halved text-green-500 w-5"></i> 2. 品質保證</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300" id="icon-acc-1-2"></i>
+                            </button>
+                            <div id="acc-1-2" class="accordion-content bg-slate-50 border-t border-slate-100">
+                                <div class="p-6 text-gray-700 leading-relaxed">
+                                    <p class="mb-3">品牌是品質與信譽的象徵，消費者相信品牌不會輕易砸自己招牌，因此可大幅<strong class="text-green-700">降低購買風險(知覺風險)</strong>。</p>
+                                    <div class="bg-white p-3 rounded-lg border border-slate-200 flex gap-3 items-start">
+                                        <div class="bg-yellow-100 text-yellow-700 p-2 rounded-md shrink-0"><i class="fa-solid fa-spoon"></i></div>
+                                        <div>
+                                            <span class="font-bold text-gray-800 text-sm">課本實例：統一布丁</span>
+                                            <p class="text-xs text-gray-600 mt-1">統一企業以「統一布丁」維持數十年不變的口感與品質，讓消費者放心購買。由於長期穩定的品質降低了消費不確定性，這正是品質保證功能。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Item 3 -->
+                        <div class="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                            <button onclick="toggleAccordion('acc-1-3')" class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-slate-50 flex justify-between items-center transition">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-heart text-red-500 w-5"></i> 3. 情感聯結</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300" id="icon-acc-1-3"></i>
+                            </button>
+                            <div id="acc-1-3" class="accordion-content bg-slate-50 border-t border-slate-100">
+                                <div class="p-6 text-gray-700 leading-relaxed">
+                                    <p class="mb-3">建立品牌與顧客之間的心理連結與價值共鳴。這讓產品脫離了純粹的物理功能，昇華為情感的寄託。</p>
+                                    <div class="bg-white p-3 rounded-lg border border-slate-200 flex gap-3 items-start">
+                                        <div class="bg-orange-100 text-orange-700 p-2 rounded-md shrink-0"><i class="fa-solid fa-bottle-droplet"></i></div>
+                                        <div>
+                                            <span class="font-bold text-gray-800 text-sm">課本實例：黑松沙士</span>
+                                            <p class="text-xs text-gray-600 mt-1">透過「年輕世代的台味記憶」廣告，勾起消費者的情感共鳴與文化認同。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Accordion Item 4 -->
+                        <div class="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                            <button onclick="toggleAccordion('acc-1-4')" class="w-full text-left px-6 py-4 font-bold text-gray-800 hover:bg-slate-50 flex justify-between items-center transition">
+                                <span class="flex items-center gap-3"><i class="fa-solid fa-bullhorn text-yellow-500 w-5"></i> 4. 市場溝通</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 transition-transform duration-300" id="icon-acc-1-4"></i>
+                            </button>
+                            <div id="acc-1-4" class="accordion-content bg-slate-50 border-t border-slate-100">
+                                <div class="p-6 text-gray-700 leading-relaxed">
+                                    <p class="mb-3">傳遞產品與品牌價值，有助推動整體的行銷與促銷活動，讓市場一目了然你的優勢。</p>
+                                    <div class="bg-white p-3 rounded-lg border border-slate-200 flex gap-3 items-start">
+                                        <div class="bg-green-100 text-green-700 p-2 rounded-md shrink-0"><i class="fa-solid fa-apple-whole"></i></div>
+                                        <div>
+                                            <span class="font-bold text-gray-800 text-sm">課本實例：平價水果品牌</span>
+                                            <p class="text-xs text-gray-600 mt-1">以「就是便宜」為廣告標語，並透過卡通吉祥物加深顧客印象，成功突顯價格優勢並塑造品牌價值。</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6-2 品牌的命名 -->
+                <section id="section-2" class="py-10 border-b border-slate-200 scroll-mt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">6-2</div>
+                        <h2 class="text-2xl font-bold text-gray-800">品牌的命名 (四大特質)</h2>
+                    </div>
+                    
+                    <!-- Interactive Tabs for Naming -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-2 mb-6">
+                        <div class="flex overflow-x-auto gap-2 border-b border-slate-100 pb-2 mb-4" id="naming-tabs">
+                            <button onclick="showNamingTab('mem')" id="btn-mem" class="shrink-0 px-4 py-2 rounded-lg font-bold text-sm bg-blue-100 text-blue-700 transition">可記憶性</button>
+                            <button onclick="showNamingTab('id')" id="btn-id" class="shrink-0 px-4 py-2 rounded-lg font-bold text-sm text-gray-500 hover:bg-slate-50 transition">可識別性</button>
+                            <button onclick="showNamingTab('asso')" id="btn-asso" class="shrink-0 px-4 py-2 rounded-lg font-bold text-sm text-gray-500 hover:bg-slate-50 transition">可聯想性</button>
+                            <button onclick="showNamingTab('ext')" id="btn-ext" class="shrink-0 px-4 py-2 rounded-lg font-bold text-sm text-gray-500 hover:bg-slate-50 transition">可延伸性</button>
+                        </div>
+                        
+                        <div class="p-4 min-h-[160px]">
+                            <!-- Tab Content: Memory -->
+                            <div id="tab-mem" class="naming-content animate-[fadeIn_0.3s]">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">可記憶性 (Memorability)</h3>
+                                <p class="text-gray-600 mb-4">名稱應該簡潔、容易記住、好唸，降低消費者的記憶負擔。</p>
+                                <div class="bg-green-50 border border-green-200 p-3 rounded-lg flex items-start gap-3">
+                                    <i class="fa-solid fa-check-circle text-green-500 mt-1"></i>
+                                    <div><strong class="text-green-800">成功案例：CoCo 都可</strong><br><span class="text-sm text-gray-600">品牌名稱字數簡潔，音節重複，容易讓消費者快速記住。</span></div>
+                                </div>
+                            </div>
+                            <!-- Tab Content: ID -->
+                            <div id="tab-id" class="naming-content hidden animate-[fadeIn_0.3s]">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">可識別性 (Identifiability)</h3>
+                                <p class="text-gray-600 mb-4">有別於競爭者，不易混淆。在市場上具有獨特性。</p>
+                                <div class="bg-red-50 border border-red-200 p-3 rounded-lg flex items-start gap-3">
+                                    <i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i>
+                                    <div><strong class="text-red-800">失敗反例：Honda 與 Hyundai</strong><br><span class="text-sm text-gray-600">在字音與字形上高度相似，常讓消費者一時難以分辨，導致市場辨識度不足。</span></div>
+                                </div>
+                            </div>
+                            <!-- Tab Content: Asso -->
+                            <div id="tab-asso" class="naming-content hidden animate-[fadeIn_0.3s]">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">可聯想性 (Associability)</h3>
+                                <p class="text-gray-600 mb-4">能直接或間接連結到品牌的核心價值、產品特色或形象。</p>
+                                <div class="space-y-2">
+                                    <div class="bg-green-50 border border-green-200 p-2 rounded-lg flex items-start gap-3">
+                                        <i class="fa-solid fa-check-circle text-green-500 mt-1"></i>
+                                        <div><strong class="text-green-800 text-sm">Volvo：</strong><span class="text-sm text-gray-600">幾乎成了「汽車安全」的代名詞。</span></div>
+                                    </div>
+                                    <div class="bg-green-50 border border-green-200 p-2 rounded-lg flex items-start gap-3">
+                                        <i class="fa-solid fa-check-circle text-green-500 mt-1"></i>
+                                        <div><strong class="text-green-800 text-sm">滷霸：</strong><span class="text-sm text-gray-600">諧音「魯霸(老大)」，讓顧客一看就想到「滷味專家、第一把交椅」。</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Tab Content: Ext -->
+                            <div id="tab-ext" class="naming-content hidden animate-[fadeIn_0.3s]">
+                                <h3 class="text-lg font-bold text-gray-800 mb-2">可延伸性 (Extendability)</h3>
+                                <p class="text-gray-600 mb-4">不應過度侷限於單一產品類別，須考量未來市場發展與跨足新產業的可能性。</p>
+                                <div class="bg-red-50 border border-red-200 p-3 rounded-lg flex items-start gap-3">
+                                    <i class="fa-solid fa-xmark-circle text-red-500 mt-1"></i>
+                                    <div><strong class="text-red-800">失敗反例：直接命名為「小米酒」</strong><br><span class="text-sm text-gray-600">地方酒廠若將產品名稱「小米酒」直接作為品牌名稱，日後想發展咖啡、糕點或其他飲品時，容易受限於名稱框架，無法靈活擴張。</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TIMS Viewpoint -->
+                    <div class="tims-viewpoint p-6 rounded-r-xl shadow-sm bg-white border border-slate-200">
+                        <div class="flex items-start gap-4">
+                            <div class="w-12 h-12 rounded-full bg-tims text-white flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-lightbulb"></i></div>
+                            <div>
+                                <h4 class="font-black text-gray-800 text-lg mb-1">TIMS 核心觀點：當品牌名稱只是「產品說明」時？</h4>
+                                <p class="text-gray-600 text-sm mb-3">許多企業常將「產品類別名稱」直接當成品牌命名（例：<span class="kw" onclick="showKw('產品名當品牌')">逆滲透濾水器</span>、<span class="kw" onclick="showKw('產品名當品牌')">膠原蛋白粉</span>）。看似直白，卻忽略了差異化，會產生致命缺點：</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                                    <div class="bg-slate-50 p-3 rounded border border-slate-100 text-sm"><strong class="text-red-600">記憶薄弱：</strong>只記得產品，不記得你。</div>
+                                    <div class="bg-slate-50 p-3 rounded border border-slate-100 text-sm"><strong class="text-red-600">難累積權益：</strong>廣告都在為「品類」打工。</div>
+                                    <div class="bg-slate-50 p-3 rounded border border-slate-100 text-sm"><strong class="text-red-600">無法延伸：</strong>想推新品名字被鎖死。</div>
+                                    <div class="bg-slate-50 p-3 rounded border border-slate-100 text-sm"><strong class="text-red-600">易被仿冒：</strong>對手複製名稱就能混淆。</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6-3 品牌建構流程 (Mermaid Diagram) -->
+                <section id="section-3" class="py-10 border-b border-slate-200 scroll-mt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">6-3</div>
+                        <h2 class="text-2xl font-bold text-gray-800">品牌建構流程</h2>
+                    </div>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">品牌的建立並非一蹴可幾，而是透過長期經營以逐步形塑顧客對品牌的認知。此流程具有嚴格的先後順序：</p>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 mb-6 overflow-hidden">
+                        <!-- Interactive Mermaid Chart -->
+                        <div class="mermaid text-center">
+                            graph LR
+                                A(["1. 品牌知名度<br><small>是否認識並辨識</small>"]) ==> B(["2. 品牌形象<br><small>聯想與記憶</small>"])
+                                B ==> C(["3. 品牌忠誠<br><small>偏好與重複購買</small>"])
+                                C ==> D{{"4. 品牌權益<br><small>無形資產與影響力</small>"}}
+                                
+                                style A fill:#dbeafe,stroke:#3b82f6,stroke-width:2px,color:#1e3a8a
+                                style B fill:#bfdbfe,stroke:#2563eb,stroke-width:2px,color:#1e3a8a
+                                style C fill:#93c5fd,stroke:#1d4ed8,stroke-width:2px,color:#1e40af
+                                style D fill:#1e3a8a,stroke:#1e3a8a,stroke-width:4px,color:#ffffff
+                        </div>
+                    </div>
+
+                    <!-- Interactive Example Box -->
+                    <div class="bg-slate-800 text-white rounded-xl p-6 shadow-lg">
+                        <h4 class="font-bold text-yellow-400 mb-4 text-lg"><i class="fa-solid fa-magnifying-glass-chart mr-2"></i> 真實品牌健診室 (點擊查看)</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <button onclick="showKw('可口可樂案例')" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg text-left transition border border-white/10">
+                                <i class="fa-solid fa-bottle-water text-red-400 text-2xl mb-2"></i>
+                                <h5 class="font-bold">可口可樂</h5>
+                                <p class="text-xs text-slate-300 mt-1">完美走完 4 階段的教科書級案例</p>
+                            </button>
+                            <button onclick="showKw('Apple案例')" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg text-left transition border border-white/10">
+                                <i class="fa-brands fa-apple text-gray-300 text-2xl mb-2"></i>
+                                <h5 class="font-bold">Apple vs HTC</h5>
+                                <p class="text-xs text-slate-300 mt-1">「品牌形象」階段的強烈對比</p>
+                            </button>
+                            <button onclick="showKw('王品案例')" class="bg-white/10 hover:bg-white/20 p-4 rounded-lg text-left transition border border-white/10">
+                                <i class="fa-solid fa-utensils text-orange-400 text-2xl mb-2"></i>
+                                <h5 class="font-bold">王品集團</h5>
+                                <p class="text-xs text-slate-300 mt-1">如何用問卷衡量「品牌忠誠」？</p>
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6-4 品牌定位種類 (Clickable Cards) -->
+                <section id="section-4" class="py-10 border-b border-slate-200 scroll-mt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">6-4</div>
+                        <h2 class="text-2xl font-bold text-gray-800">品牌定位種類 (7大常見策略)</h2>
+                    </div>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">品牌定位是企業針對目標顧客在市場上的<strong class="text-red-600">獨特位置與意義</strong>。點擊下方卡片深入了解每種定位與經典範例：</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Card 1 -->
+                        <div onclick="showKw('功能利益定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-gear"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">1. 功能利益定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">產品能做什麼？</p>
+                        </div>
+                        <!-- Card 2 -->
+                        <div onclick="showKw('品牌個性定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-face-smile"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">2. 品牌個性定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">品牌像什麼樣的人？</p>
+                        </div>
+                        <!-- Card 3 -->
+                        <div onclick="showKw('使用者定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-users"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">3. 使用者定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">這專屬哪一群人？</p>
+                        </div>
+                        <!-- Card 4 -->
+                        <div onclick="showKw('情境定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-clock"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">4. 情境定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">什麼場合最適合？</p>
+                        </div>
+                        <!-- Card 5 -->
+                        <div onclick="showKw('競爭者定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-trophy"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">5. 競爭者定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">我和對手差在哪？</p>
+                        </div>
+                        <!-- Card 6 -->
+                        <div onclick="showKw('經濟定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-wallet"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">6. 經濟定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">高CP值/划算嗎？</p>
+                        </div>
+                        <!-- Card 7 -->
+                        <div onclick="showKw('道德定位')" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm hover:border-primary hover:shadow-md cursor-pointer transition text-center group">
+                            <div class="w-12 h-12 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3 group-hover:bg-primary group-hover:text-white transition"><i class="fa-solid fa-leaf"></i></div>
+                            <h3 class="font-bold text-sm text-gray-800">7. 道德定位</h3>
+                            <p class="text-[10px] text-gray-500 mt-1">社會責任與永續</p>
+                        </div>
+                        <!-- Combo Example -->
+                        <div class="bg-gradient-to-br from-yellow-50 to-orange-50 p-4 rounded-xl border border-orange-200 shadow-sm text-center col-span-2 md:col-span-3 lg:col-span-1 flex flex-col justify-center items-center">
+                            <span class="text-xs font-bold text-orange-600 mb-1">進階知識</span>
+                            <h3 class="font-bold text-sm text-gray-800">定位可以混搭嗎？</h3>
+                            <p class="text-[10px] text-gray-600 mt-1 px-2">如 G2000 同時採用「機能+場合」</p>
+                            <button onclick="showKw('定位混搭')" class="mt-2 text-xs bg-white border border-orange-300 px-3 py-1 rounded shadow-sm hover:bg-orange-100 transition">查看解答</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6-5 安索夫成長矩陣 (Interactive CSS Grid) -->
+                <section id="section-5" class="py-10 border-b border-slate-200 scroll-mt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">6-5</div>
+                        <h2 class="text-2xl font-bold text-gray-800">品牌成長策略：安索夫成長矩陣</h2>
+                    </div>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">這是一個說明企業如何透過<strong class="text-blue-600">「產品」與「市場」</strong>的組合來尋求成長的工具。請將滑鼠移至 (或點擊) 矩陣的四個象限，查看詳細策略與真實案例：</p>
+                    
+                    <!-- CSS Grid Matrix -->
+                    <div class="max-w-3xl mx-auto bg-white p-2 rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
+                        <div class="grid grid-cols-[100px_1fr_1fr] md:grid-cols-[120px_1fr_1fr] grid-rows-[60px_200px_200px] gap-2 min-w-[500px]">
+                            <!-- Top Left Empty -->
+                            <div class="relative bg-slate-100 rounded-lg overflow-hidden border border-slate-200">
+                                <svg class="absolute inset-0 w-full h-full text-slate-300" preserveAspectRatio="none" viewBox="0 0 100 100">
+                                    <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" stroke-width="1"></line>
+                                </svg>
+                                <span class="absolute top-2 right-3 font-black text-slate-500 text-sm">產品</span>
+                                <span class="absolute bottom-2 left-3 font-black text-slate-500 text-sm">市場</span>
+                            </div>
+                            
+                            <!-- X Axis Labels -->
+                            <div class="bg-blue-50 rounded-lg flex items-center justify-center font-black text-lg text-blue-800 border border-blue-100">現有產品</div>
+                            <div class="bg-green-50 rounded-lg flex items-center justify-center font-black text-lg text-green-800 border border-green-100">新產品</div>
+                            
+                            <!-- Y Axis Existing Market -->
+                            <div class="bg-blue-50 rounded-lg flex items-center justify-center font-black text-lg text-blue-800 border border-blue-100 writing-vertical-lr text-center" style="writing-mode: vertical-rl;">現有市場</div>
+                            
+                            <!-- Quadrant 1: Market Penetration -->
+                            <div onclick="showKw('市場滲透')" class="matrix-cell cursor-pointer bg-white border-2 border-blue-200 rounded-xl p-5 flex flex-col justify-center items-center text-center group">
+                                <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-arrow-down-wide-short"></i></div>
+                                <h3 class="font-black text-xl text-gray-800 mb-2 group-hover:text-blue-600 transition">1. 市場滲透</h3>
+                                <p class="text-xs text-gray-500">點擊查看：買一送一、集點促銷等實例</p>
+                            </div>
+                            
+                            <!-- Quadrant 3: Product Development -->
+                            <div onclick="showKw('產品發展')" class="matrix-cell cursor-pointer bg-white border-2 border-green-200 rounded-xl p-5 flex flex-col justify-center items-center text-center group">
+                                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-box-open"></i></div>
+                                <h3 class="font-black text-xl text-gray-800 mb-2 group-hover:text-green-600 transition">3. 產品發展</h3>
+                                <p class="text-xs text-gray-500">點擊查看：義美推燕麥奶等實例</p>
+                            </div>
+
+                            <!-- Y Axis New Market -->
+                            <div class="bg-green-50 rounded-lg flex items-center justify-center font-black text-lg text-green-800 border border-green-100 writing-vertical-lr text-center" style="writing-mode: vertical-rl;">新市場</div>
+                            
+                            <!-- Quadrant 2: Market Development -->
+                            <div onclick="showKw('市場開發')" class="matrix-cell cursor-pointer bg-white border-2 border-orange-200 rounded-xl p-5 flex flex-col justify-center items-center text-center group">
+                                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-earth-americas"></i></div>
+                                <h3 class="font-black text-xl text-gray-800 mb-2 group-hover:text-orange-600 transition">2. 市場開發</h3>
+                                <p class="text-xs text-gray-500">點擊查看：路易莎出海、早餐賣午餐</p>
+                            </div>
+                            
+                            <!-- Quadrant 4: Diversification -->
+                            <div onclick="showKw('多角化')" class="matrix-cell cursor-pointer bg-white border-2 border-purple-200 rounded-xl p-5 flex flex-col justify-center items-center text-center group relative overflow-hidden">
+                                <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">高風險高報酬</div>
+                                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-xl mb-3"><i class="fa-solid fa-shuffle"></i></div>
+                                <h3 class="font-black text-xl text-gray-800 mb-2 group-hover:text-purple-600 transition">4. 多角化</h3>
+                                <p class="text-xs text-gray-500">點擊查看：中華電信做智慧家庭</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6-6 品牌策略 (Mermaid Mindmap & Interactivity) -->
+                <section id="section-6" class="py-10 mb-8 scroll-mt-4">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">6-6</div>
+                        <h2 class="text-2xl font-bold text-gray-800">品牌策略架構</h2>
+                    </div>
+                    
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">當企業經營多項產品時，如何安排品牌架構，將影響識別度與資源整合效率。以下為 5 種常見策略：</p>
+
+                    <!-- Mermaid Mindmap -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 overflow-x-auto mb-6">
+                        <div class="mermaid">
+                            mindmap
+                              root((品牌<br>策略))
+                                家族品牌
+                                  ::icon(fa fa-sitemap)
+                                  (共享知名度)
+                                個別品牌
+                                  ::icon(fa fa-cubes)
+                                  (獨立不干擾)
+                                混合品牌
+                                  ::icon(fa fa-handshake)
+                                  (母子雙贏)
+                                聯名品牌
+                                  ::icon(fa fa-link)
+                                  (強強聯手)
+                                中間商品牌
+                                  ::icon(fa fa-store)
+                                  (通路自有)
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-8">
+                        <button onclick="showKw('品牌策略總覽')" class="bg-primary hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-full shadow-md transition transform hover:-translate-y-1">
+                            <i class="fa-solid fa-list-ul mr-2"></i> 點此展開 5 種策略詳細解釋與範例
+                        </button>
+                    </div>
+
+                    <!-- TIMS Viewpoint Co-branding -->
+                    <div class="tims-viewpoint p-6 rounded-xl shadow-sm bg-gradient-to-br from-red-50 to-white border border-red-100">
+                        <h4 class="font-black text-red-700 text-xl mb-4 flex items-center"><i class="fa-solid fa-bolt mr-2"></i> TIMS 觀點：品牌聯名，是親家，還是冤家？</h4>
+                        <p class="text-gray-800 text-sm mb-4 font-medium">品牌聯名看似雙贏，實則充滿風險！若聯名對象調性不符，可能讓形象受損，甚至產生 <span class="kw" onclick="showKw('品牌稀釋')">品牌稀釋</span> 效果。</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-xl border border-green-200 shadow-sm">
+                                <h5 class="font-bold text-green-700 mb-3 flex items-center text-lg"><i class="fa-solid fa-circle-check mr-2"></i> 聯名加分情境</h5>
+                                <ul class="text-sm text-gray-700 list-none space-y-2">
+                                    <li class="flex items-start"><i class="fa-solid fa-plus text-green-500 mt-1 mr-2 text-xs"></i> 品牌調性相近或互補（如：運動品牌 × 健康食品）。</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-plus text-green-500 mt-1 mr-2 text-xs"></i> 各自品牌價值被放大，共同強化定位。</li>
+                                </ul>
+                            </div>
+                            <div class="bg-white p-5 rounded-xl border border-red-200 shadow-sm">
+                                <h5 class="font-bold text-red-700 mb-3 flex items-center text-lg"><i class="fa-solid fa-circle-xmark mr-2"></i> 聯名扣分風險</h5>
+                                <ul class="text-sm text-gray-700 list-none space-y-2">
+                                    <li class="flex items-start"><i class="fa-solid fa-minus text-red-500 mt-1 mr-2 text-xs"></i> 品牌等級落差太大 (主品牌拉低身段、副品牌撐不起來)。</li>
+                                    <li class="flex items-start"><i class="fa-solid fa-minus text-red-500 mt-1 mr-2 text-xs"></i> 若聯名對象有爭議紀錄，將對主品牌產生信任危機。</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 模擬測驗系統 -->
+                <div id="quiz-section" class="bg-white rounded-2xl shadow-lg border-t-8 border-orange-500 overflow-hidden scroll-mt-6 mt-12">
+                    <div class="p-5 md:p-6 bg-orange-50 border-b border-orange-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <h2 class="text-xl md:text-2xl font-black text-gray-800 flex items-center">
+                            <i class="fa-solid fa-pen-to-square text-orange-600 mr-3"></i> 
+                            第六章 模擬測驗 
+                            <span class="text-xs ml-3 bg-white text-orange-600 border border-orange-200 px-3 py-1 rounded-full font-bold shadow-sm">共 61 題庫隨機抽取</span>
+                        </h2>
+                        <div class="flex bg-white rounded-lg p-1 border border-orange-200 shadow-sm text-sm w-full md:w-auto overflow-x-auto">
+                            <button id="tab-standard" onclick="switchTab('standard')" class="px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition whitespace-nowrap shadow-sm">基礎必考題 (70%)</button>
+                            <button id="tab-ai" onclick="switchTab('ai')" class="px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-robot text-purple-500"></i> AI 活學活用題 (30%)</button>
+                        </div>
+                    </div>
+
+                    <div class="p-4 md:p-8">
+                        <div class="mb-6 flex justify-between items-end border-b pb-4">
+                            <div>
+                                <p class="text-sm text-gray-500 mb-1 font-bold">測驗說明：</p>
+                                <p class="text-xs text-gray-500">每次測驗將從 61 題真實題庫中隨機抽取 5 題。作答完畢後點擊下方按鈕即可查看得分與詳解。</p>
+                            </div>
+                            <button onclick="generateRandomQuiz()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition flex items-center gap-2 font-bold shadow-sm border border-slate-200">
+                                <i class="fa-solid fa-rotate-right"></i> 重新抽題
+                            </button>
+                        </div>
+
+                        <!-- Standard Questions -->
+                        <div id="quiz-standard" class="space-y-6"></div>
+
+                        <!-- AI Extended Questions -->
+                        <div id="quiz-ai" class="space-y-6 hidden">
+                            <div class="bg-gradient-to-r from-purple-50 to-white border border-purple-200 text-purple-900 p-5 rounded-xl mb-6 text-sm flex items-start shadow-sm">
+                                <div class="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center shrink-0 mr-4 mt-1"><i class="fa-solid fa-wand-magic-sparkles text-purple-600 text-lg"></i></div>
+                                <div>
+                                    <strong class="text-base">AI 實務生成題庫：</strong><br>
+                                    系統依據 TIMS 第六章核心觀念，動態生成非死背的「活學活用情境題」。作答後，若有輸入 API Key，系統將呼叫 Gemini 進行一對一深度指導解析！
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 p-6 rounded-xl">
+                            <div id="score-display" class="text-lg font-bold text-gray-700 hidden text-center sm:text-left w-full sm:w-auto">
+                                本次得分： <span id="score-number" class="text-4xl md:text-5xl text-red-500 transition-all font-black ml-2">0</span> <span class="text-sm text-gray-500">/ 100</span>
+                            </div>
+                            <button id="submit-btn" onclick="submitQuiz()" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center text-lg">
+                                交卷並查看解析 <i class="fa-solid fa-paper-plane ml-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // === Interactive Glossary / Keyword Data ===
+        const glossaryDict = {
+            '辨識': { title: '辨識功能', html: '幫助顧客在眾多產品中快速辨認與選擇。這是品牌最基礎的作用。最直接影響顧客在產品比較時的<strong class="text-red-600">決策速度</strong>。' },
+            '情感聯結': { title: '情感聯結', html: '建立品牌與顧客之間的心理連結與價值共鳴。例如：黑松沙士透過「台味記憶」廣告，勾起年輕世代的情感共鳴。' },
+            '產品名當品牌': { title: 'TIMS 觀點：產品名當品牌', html: '例如「逆滲透濾水器」、「蒟蒻果凍」。缺點是：<br>1. 品牌記憶薄弱。<br>2. 無法累積品牌權益。<br>3. 無法擴展延伸。<br>4. 容易被對手取代仿冒。' },
+            
+            // 6-3 Examples
+            '可口可樂案例': { title: '可口可樂品牌建構分析', html: '<ul class="list-disc pl-5 space-y-2 text-sm text-left"><li><strong>知名度：</strong>紅色瓶身與 Logo 已成全球辨識度最高品牌。</li><li><strong>形象：</strong>聯想包括青春、快樂、美式文化、夏天。</li><li><strong>忠誠：</strong>即使沒特價，消費者仍願購買甚至推薦他人。</li><li><strong>權益：</strong>品牌價值遠高於同類飲料，競爭品打折，消費者依然選可口可樂。</li></ul>' },
+            'Apple案例': { title: 'Apple vs HTC 品牌形象對比', html: '<p class="text-sm text-left">消費者對 <strong>Apple</strong> 能輕易描述出「創新、設計感、潮流、科技領導」等多元且強烈的正面形象。<br><br>反觀過去的 <strong>HTC</strong>，其品牌聯想相對模糊或有限，這凸顯了兩者在「品牌形象」階段經營深度的巨大落差。</p>' },
+            '王品案例': { title: '王品集團如何衡量忠誠度', html: '<p class="text-sm text-left">王品在餐後問卷中設計問題：<strong>「您是否會推薦親友到本餐廳用餐？」</strong><br><br>這項調查(NPS, 淨推薦值)被視為衡量顧客滿意度與未來行為意向的關鍵指標，精準反映了建構流程中的「品牌忠誠」。</p>' },
+            
+            // 6-4 Types
+            '功能利益定位': { title: '功能利益定位', html: '<p class="text-sm text-left">訴求產品本身的特徵或能帶來的具體使用價值，強調<strong>「產品能做什麼」</strong>。<br>例如服飾主打「採用高彈性纖維布料、幫助你動作更自在」。</p>' },
+            '品牌個性定位': { title: '品牌個性定位', html: '<p class="text-sm text-left">現代行銷傾向以<strong>「可靠、貼心、叛逆、自由」</strong>等擬人化形容詞來強化消費者感受，取代純粹的「物美價廉」。例如 Harley-Davidson = 叛逆自由。</p>' },
+            '使用者定位': { title: '使用者定位', html: '<p class="text-sm text-left">訴求塑造品牌的典型使用者形象，讓消費者能藉此展現自我認同。例如 Logitech G 強調是<strong>「專屬電競愛好者/職業選手」</strong>的選擇。</p>' },
+            '情境定位': { title: '情境定位', html: '<p class="text-sm text-left">訴求產品適用的特定時機或使用場景。例如朋友聚會覺得<strong>「必勝客比麥當勞更適合聚餐氛圍」</strong>而選擇必勝客。</p>' },
+            '競爭者定位': { title: '競爭者定位', html: '<p class="text-sm text-left">透過與競爭品牌對照來強化獨特性。例如<strong>特斯拉(Tesla)</strong>不談省油大空間，而是定位「高科技未來感」區隔傳統燃油車。</p>' },
+            '經濟定位': { title: '經濟定位', html: '<p class="text-sm text-left">訴求價格、成本效益或物超所值。例如 <strong>lativ(米格國際)</strong> 主打「一件不到50元」，以平價高CP值入市。</p>' },
+            '道德定位': { title: '道德定位', html: '<p class="text-sm text-left">訴求社會責任與永續精神。例如手搖飲店逐步<strong>淘汰塑膠吸管</strong>，展現環境友善。</p>' },
+            '定位混搭': { title: '品牌定位可以混搭嗎？', html: '<p class="text-sm text-left">可以！<br>例如 <strong>G2000</strong> 推出「免熨防潑水機能服」(<strong>功能利益定位</strong>)，讓消費者在不同場合保持專業與休閒(<strong>情境定位</strong>)。這是一套組合拳。</p>' },
+
+            // 6-5 Ansoff
+            '市場滲透': { title: '1. 市場滲透 (現有產品 + 現有市場)', html: '<p class="text-sm text-left">強化現有市場的消費者關係與購買頻率。<br><strong>實例：</strong>連鎖早餐店推出「買漢堡送咖啡」；飲料店「買一送一」限時活動。</p>' },
+            '市場開發': { title: '2. 市場開發 (現有產品 + 新市場)', html: '<p class="text-sm text-left">將現有產品推向新的地理區域或顧客族群。<br><strong>實例：</strong>路易莎咖啡(Louisa)拓展海外市場；傳統早餐店延長營業到下午，吸引午餐客群。</p>' },
+            '產品發展': { title: '3. 產品發展/開發 (新產品 + 現有市場)', html: '<p class="text-sm text-left">對現有市場(熟客)推出新產品。<br><strong>實例：</strong>義美門市推「燕麥奶系列」以滿足健康趨勢；飲料店推冬季限定熱飲。</p>' },
+            '多角化': { title: '4. 多角化 (新產品 + 新市場)', html: '<p class="text-sm text-left">同時跨出新市場與新產品，風險最高但可能帶來超額利潤。<br><strong>實例：</strong>中華電信跨足智慧家庭與資安；台灣高鐵推「高鐵便當」與「購物平台」。</p>' },
+
+            // 6-6 Strategies
+            '品牌策略總覽': { title: '5 大品牌策略解析', html: '<ul class="text-sm text-left space-y-3 pl-0 list-none"><li><strong class="text-primary bg-blue-50 px-1">1. 家族品牌：</strong>多產品共用一名稱(台糖、味丹)。</li><li><strong class="text-primary bg-blue-50 px-1">2. 個別品牌：</strong>子品牌獨立經營不提母公司(P&G 潘婷、聯合利華 多芬)。</li><li><strong class="text-primary bg-blue-50 px-1">3. 混合品牌：</strong>母子並用，母背書子獨立(ASUS ROG、SONY BRAVIA)。</li><li><strong class="text-primary bg-blue-50 px-1">4. 聯名品牌：</strong>雙方合作曝光(Intel Inside、Apple x Nike)。</li><li><strong class="text-primary bg-blue-50 px-1">5. 中間商品牌：</strong>通路商自有品牌，高毛利(Costco Kirkland、全家 FMC)。</li></ul>' },
+            '品牌稀釋': { title: '品牌稀釋風險', html: '<p class="text-sm text-left">當高端品牌(如 LV)與等級落差太大的平價品牌(如 夜市牛排)聯名時，會破壞原本苦心建立的「品牌權益與形象」，導致 VIP 客戶流失，這就是品牌稀釋(Brand Dilution)。</p>' }
+        };
+
+        function showKw(key) {
+            const data = glossaryDict[key];
+            if(data) {
+                Swal.fire({
+                    title: `<div class="text-xl font-black text-primary border-b-2 border-secondary pb-2 inline-block">${data.title}</div>`,
+                    html: `<div class="mt-4 text-gray-700">${data.html}</div>`,
+                    confirmButtonText: '我瞭解了',
+                    confirmButtonColor: '#1e3a8a',
+                    customClass: { popup: 'rounded-2xl shadow-2xl border border-slate-100' }
+                });
+            } else {
+                Swal.fire('提示', '暫無該關鍵字詳細說明', 'info');
+            }
+        }
+
+        // Accordion Logic
+        function toggleAccordion(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById('icon-' + id);
+            
+            if(content.classList.contains('open')) {
+                content.classList.remove('open');
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Close others in section 1
+                document.querySelectorAll('#section-1 .accordion-content').forEach(el => {
+                    el.classList.remove('open');
+                    document.getElementById('icon-' + el.id).style.transform = 'rotate(0deg)';
+                });
+                content.classList.add('open');
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Naming Tabs Logic
+        function showNamingTab(tabId) {
+            const tabs = ['mem', 'id', 'asso', 'ext'];
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`btn-${t}`);
+                btn.className = "shrink-0 px-4 py-2 rounded-lg font-bold text-sm text-gray-500 hover:bg-slate-50 transition";
+            });
+            
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).className = "shrink-0 px-4 py-2 rounded-lg font-bold text-sm bg-blue-100 text-blue-700 transition";
+        }
+
+        // TOC active state logic
+        const scrollArea = document.getElementById('scroll-area');
+        const tocLinks = document.querySelectorAll('.toc-link');
+        
+        scrollArea.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section, #quiz-section');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollArea.scrollTop >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            tocLinks.forEach(link => {
+                link.classList.remove('text-primary', 'bg-blue-50', 'font-bold');
+                link.classList.add('text-gray-600', 'font-medium');
+                link.querySelector('i').classList.remove('text-blue-400');
+                link.querySelector('i').classList.add('text-gray-300');
+                
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('text-primary', 'bg-blue-50', 'font-bold');
+                    link.classList.remove('text-gray-600', 'font-medium');
+                    link.querySelector('i').classList.add('text-blue-400');
+                    link.querySelector('i').classList.remove('text-gray-300');
+                }
+            });
+        });
+
+        // === 61 Question Bank from PDF ===
+        const fullQuestionBank = [
+            // 理論題 1-30
+            { id: 1, type: 1, q: "當品牌能降低消費者對於產品選擇的不確定性，最主要展現的是品牌的哪一種功能？", opts: ["促銷功能", "品質保證", "情感聯結", "市場溝通"], ans: 1, exp: "品牌代表企業品質與信譽，能降低購買風險，屬於「品質保證」。" },
+            { id: 2, type: 1, q: "若品牌僅停留在標誌或名稱層面，而未能有效與消費者心智產生共鳴，則主要缺乏哪一項品牌功能？", opts: ["品牌命名", "辨識功能", "品質保證", "情感聯結"], ans: 3, exp: "品牌若無法與消費者建立心理價值連結，即缺少「情感聯結」。" },
+            { id: 3, type: 1, q: "在品牌四大功能中，哪一項最直接影響顧客在產品比較時的決策速度？", opts: ["辨識功能", "市場溝通", "促銷功能", "情感聯結"], ans: 0, exp: "「辨識功能」使顧客能快速從眾多產品中做出選擇，最直接影響決策效率。" },
+            { id: 4, type: 1, q: "若品牌名稱過於冗長或拗口，最直接違反品牌命名的哪一項特質？", opts: ["可延伸性", "可識別性", "可記憶性", "可聯想性"], ans: 2, exp: "冗長難記會降低記憶效率，違反「可記憶性」。" },
+            { id: 5, type: 1, q: "當兩個品牌名稱在字形或發音上過於相似，最可能造成哪一項品牌命名特質失效？", opts: ["可識別性", "可聯想性", "可延伸性", "可記憶性"], ans: 0, exp: "相似名稱會造成混淆，最直接影響「可識別性」。" },
+            { id: 6, type: 1, q: "若一品牌名稱過度侷限於特定產品，如「手工茶葉專賣」，在未來跨足新產業時最可能缺乏哪一項特質？", opts: ["可識別性", "可記憶性", "可延伸性", "可聯想性"], ans: 2, exp: "過度侷限特定產品將限制品牌延伸發展，違反「可延伸性」。" },
+            { id: 7, type: 1, q: "下列哪一項最能區分「可聯想性」與「可延伸性」的差異？", opts: ["前者著重名稱與核心價值的連結，後者關注未來市場擴張的彈性", "前者強調名稱的簡短好記，後者重視品牌與競品的差異", "前者專注避免混淆，後者強調與顧客情感連結", "前者聚焦品牌信任，後者著重產品品質保證"], ans: 0, exp: "「可聯想性」與品牌價值有關；「可延伸性」則是面對未來市場擴張的彈性，兩者核心不同。" },
+            { id: 8, type: 1, q: "品牌建構流程的第一步，強調顧客能否認識與辨識品牌，稱為？", opts: ["品牌定位", "品牌知名度", "品牌形象", "品牌權益"], ans: 1, exp: "「品牌知名度」是流程起點，關注顧客是否知道品牌存在。" },
+            { id: 9, type: 1, q: "消費者一看到某科技品牌Logo，就能與「創新、專業」等關鍵字產生聯結，這屬於品牌建構流程中的哪一階段？", opts: ["品牌知名度", "品牌命名", "品牌形象", "品牌忠誠"], ans: 2, exp: "這是「品牌形象」的核心：顧客心中的聯想、印象。" },
+            { id: 10, type: 1, q: "品牌建構流程中，哪一階段主要體現消費者是否願意持續購買，並展現較低價格敏感度？", opts: ["品牌忠誠", "品牌知名度", "品牌形象", "品牌命名"], ans: 0, exp: "忠誠是消費者重複選擇、推薦與不輕易轉換的行為。" },
+            { id: 11, type: 1, q: "品牌權益之所以被視為品牌建構的最終成果，是因為它整合了以下哪三個前期階段？", opts: ["品牌知名度、品牌形象、品牌忠誠", "品牌形象、品牌命名、品牌體驗", "品牌認同、品牌認知、品牌命名", "品牌識別、品牌延伸、品牌聯想"], ans: 0, exp: "品牌權益建立於「知曉→形象→忠誠」累積之上，才能形成無形資產與市場影響力。" },
+            { id: 12, type: 1, q: "下列敘述何者最能正確區分「品牌形象」與「品牌忠誠」？", opts: ["前者強調顧客的認知與印象，後者則關注行為上的重複選擇", "前者關注顧客是否知道品牌存在，後者關注顧客對品牌的情感認同", "前者著重於品牌價值的累積，後者則是品牌最終的市場影響力", "前者是廣告訊息的傳遞，後者則是品牌知名度的建立"], ans: 0, exp: "「品牌形象」屬於心理認知；「品牌忠誠」屬於行為表現。兩者差異在於「想法」與「行動」。" },
+            { id: 13, type: 1, q: "許多企業在撰寫市場報告時，往往會以「產品類別」來衡量市占率，但若從「品牌定位」角度出發，較可能真實呈現市場競爭態勢。此現象最能說明下列哪一項品牌定位特徵？", opts: ["品牌定位可能突破單一產品類別，形成跨品類的競爭態勢", "品牌定位僅限於同類型產品之間的比較", "品牌定位主要反映價格與成本效益", "品牌定位與競爭者差異無關"], ans: 0, exp: "品牌定位的核心在於消費者心智中的「意義與角色」，這會打破傳統產品線界線，出現跨品類競爭。" },
+            { id: 14, type: 1, q: "當品牌溝通內容強調「產品本身的特徵或能帶來的具體使用價值」，此種定位方式稱為？", opts: ["使用者定位", "經濟定位", "功能利益定位", "品牌個性定位"], ans: 2, exp: "功能利益定位的核心在於「產品本身的特徵或能帶來的具體使用價值」。" },
+            { id: 15, type: 1, q: "下列何者最能正確區分「使用者定位」與「情境定位」的差異？", opts: ["前者聚焦於產品的典型消費者形象，後者聚焦於特定場合或使用時機", "前者聚焦於產品功能，後者聚焦於產品價格", "前者強調與競爭者差異，後者強調品牌價值", "前者在於行銷訴求，後者在於顧客認同"], ans: 0, exp: "使用者定位 =「人」；情境定位 =「場合」，兩者聚焦不同。" },
+            { id: 16, type: 1, q: "當品牌標榜「比其他品牌更耐用、更輕便」，此種訴求最能歸類於哪一種定位？", opts: ["品牌個性定位", "競爭者定位", "情境定位", "經濟定位"], ans: 1, exp: "透過與競品比較突顯差異，即為「競爭者定位」。" },
+            { id: 17, type: 1, q: "消費者的自我概念包含「真實自我」與「理想自我」，他們常透過購買商品來展現自我形象，並尋找與自身認同一致的品牌，此作法最能體現哪一種行銷定位？", opts: ["功能利益定位", "經濟定位", "品牌個性定位", "情境定位"], ans: 2, exp: "題目強調自我概念與理想自我，品牌若以「勇敢、自由」形象來定位，即是品牌個性定位。" },
+            { id: 18, type: 1, q: "當品牌廣告強調「產品具備獨家專利技術，可提升使用效率解決實際問題」，此訴求最符合哪一種品牌定位方式？", opts: ["功能利益定位", "經濟定位", "使用者定位", "情境定位"], ans: 0, exp: "強調產品本身的特徵或能帶來的具體使用價值，屬於「功能利益定位」。" },
+            { id: 19, type: 1, q: "道德定位最主要的品牌訴求核心是什麼？", opts: ["強調產品在特定情境下的應用", "以價格便宜作為主要吸引力", "展現品牌的社會責任與永續承諾", "塑造典型使用者形象"], ans: 2, exp: "道德定位是以企業倫理、社會責任、環保永續等價值為核心。" },
+            { id: 20, type: 1, q: "企業採用「使用者定位」的核心概念是什麼？", opts: ["強調產品的功能與效益", "塑造出品牌典型消費者形象", "以低價格吸引大眾市場", "情境與產品之間的連結性"], ans: 1, exp: "使用者定位是塑造出典型或理想的使用者群體，讓消費者產生認同。" },
+            { id: 21, type: 1, q: "在安索夫成長矩陣中，企業透過促銷活動與優惠來提高現有顧客的消費頻率，屬於哪一種策略？", opts: ["產品發展", "市場滲透", "多角化", "市場開發"], ans: 1, exp: "在現有市場中強化滲透率(增加頻率)，屬於「市場滲透」。" },
+            { id: 22, type: 1, q: "安索夫矩陣中，將現有產品推向新的地理區域或新的顧客族群，屬於哪一種策略？", opts: ["多角化", "市場滲透", "市場開發", "產品開發"], ans: 2, exp: "把現有產品導入新市場或新族群，屬於「市場開發」。" },
+            { id: 23, type: 1, q: "若企業對現有顧客推出全新產品，以提升同一市場的消費額，這屬於安索夫矩陣中的哪一種策略？", opts: ["多角化", "市場開發", "產品開發", "市場滲透"], ans: 2, exp: "在現有市場上推出新產品，屬於「產品開發」。" },
+            { id: 24, type: 1, q: "在安索夫成長矩陣中，哪一種策略風險最高但也可能帶來超額利潤？", opts: ["市場滲透", "市場開發", "產品開發", "多角化"], ans: 3, exp: "「多角化」需要同時面對新產品與新市場，風險最高，但成功後報酬也高。" },
+            { id: 25, type: 1, q: "當企業多個產品共用同一品牌名稱，以建立整體知名度與信任感，此策略稱為？", opts: ["家族品牌策略", "個別品牌策略", "混合品牌策略", "聯名品牌策略"], ans: 0, exp: "家族品牌策略即同一品牌延伸至多個產品線，共享知名度。" },
+            { id: 26, type: 1, q: "下列哪一種品牌策略會使子品牌需獨立建立知名度，與母品牌之間的連結度最低？", opts: ["個別品牌策略", "混合品牌策略", "家族品牌策略", "中間商品牌策略"], ans: 0, exp: "個別品牌策略讓各子品牌獨立運作，與母品牌分離度最高。" },
+            { id: 27, type: 1, q: "相對於家族品牌策略，以下何者是採用個別品牌策略的優點？", opts: ["品牌經營的成本較低", "有利於發展不同的市場區隔", "適合做品牌延伸", "有利於提升機構品牌知名度"], ans: 1, exp: "在同一類產品中擁有兩個或更多的品牌(個別品牌)，則有利於發展不同的市場區隔。" },
+            { id: 28, type: 1, q: "企業若同時使用母品牌與子品牌名稱，藉由母品牌背書降低子品牌推廣難度，這屬於哪一種品牌策略？", opts: ["聯名品牌策略", "混合品牌策略", "個別品牌策略", "中間商品牌策略"], ans: 1, exp: "混合品牌策略結合母品牌信任感與子品牌專屬定位。" },
+            { id: 29, type: 1, q: "由零售商自行推出的自有品牌，通常價格具競爭力，此屬於哪一種品牌策略？", opts: ["家族品牌策略", "聯名品牌策略", "中間商品牌策略", "個別品牌策略"], ans: 2, exp: "中間商品牌由零售商主導，透過低價與規模提升毛利。" },
+            { id: 30, type: 1, q: "在市場上，聯名品牌策略常被視為創造話題與拓展客群的有效方式。然而，並不是所有聯名都能成功。根據品牌策略，下列何者不是品牌聯名能成功的條件？", opts: ["品牌調性相近或互補", "兩品牌必須屬於相同產業", "兩品牌價值不能差太大", "兩品牌彼此不能有負面新聞"], ans: 1, exp: "聯名成功的關鍵在調性契合與價值加分，「必須屬於相同產業」並非必要條件(如運動品牌x健康食品)。" },
+            
+            // 實務題 31-61
+            { id: 31, type: 2, q: "統一企業以「統一布丁」維持數十年不變的口感與品質，讓消費者放心購買，這最能展現哪一項品牌功能？", opts: ["辨識功能", "品質保證", "情感聯結", "市場溝通"], ans: 1, exp: "長期穩定的品管降低了消費風險，這正是品牌的「品質保證」功能。" },
+            { id: 32, type: 2, q: "水果品牌以「就是便宜」為廣告標語，並透過卡通吉祥物加深顧客印象，成功突顯價格優勢並塑造品牌價值。此案例展現了多項品牌功能，但以下何者並非其主要體現的功能？", opts: ["品質保證", "市場溝通", "情感聯結", "辨識功能"], ans: 0, exp: "此案例強調透過標語進行市場溝通，利用吉祥物增強辨識與情感聯結，並未提及產品品質，不涉及品質保證。" },
+            { id: 33, type: 2, q: "黑松沙士透過「年輕世代的台味記憶」廣告，勾起消費者的情感共鳴，這屬於品牌的哪一項功能？", opts: ["辨識功能", "情感聯結", "品質保證", "促銷功能"], ans: 1, exp: "黑松透過文化記憶連結消費者，建立情感歸屬感，屬於「情感聯結」。" },
+            { id: 34, type: 2, q: "「CoCo」都可飲料品牌名稱字數簡潔，容易讓消費者快速記住，此案例最能展現品牌命名的哪一項特質？", opts: ["可記憶性", "可識別性", "可延伸性", "可聯想性"], ans: 0, exp: "名稱簡潔、好記，降低記憶負擔，屬於「可記憶性」。" },
+            { id: 35, type: 2, q: "汽車品牌 Honda 與 Hyundai 在字音與字形上高度相似，常讓消費者一時難以分辨。此案例最主要突顯品牌命名缺乏哪一項特質？", opts: ["可聯想性", "可延伸性", "可記憶性", "可識別性"], ans: 3, exp: "Honda 與 Hyundai 在名稱上的相似度過高，導致市場辨識度不足，缺乏「可識別性」。" },
+            { id: 36, type: 2, q: "若一家地方酒廠將產品名稱「小米酒」直接作為品牌名稱，雖能強調文化特色，但在日後想發展咖啡、糕點時容易受限。此命名最主要缺乏哪一項品牌特質？", opts: ["可識別性", "可聯想性", "可延伸性", "可記憶性"], ans: 2, exp: "「小米酒」過於鎖定單一產品品類，當品牌想跨足其他市場時，名稱會形成侷限，缺乏可延伸性。" },
+            { id: 37, type: 2, q: "台灣滷味攤名稱為「滷霸」(諧音「魯霸」=老大)，讓顧客一看就想到「滷味專家」形象。此命名方式最能展現品牌命名的哪一項特質？", opts: ["可記憶性", "可聯想性", "可延伸性", "可識別性"], ans: 1, exp: "「滷霸」利用台灣消費者熟悉的語音，喚起「滷味第一」的聯想，屬於「可聯想性」。" },
+            { id: 38, type: 2, q: "味丹將某飲品直接命名為「青草茶」，雖然容易理解，但消費者往往只記得「喝過青草茶」卻說不出哪一家。此案例最主要缺乏哪一項特質？", opts: ["可記憶性", "可識別性", "可延伸性", "可聯想性"], ans: 1, exp: "使用產品通用名稱當品牌，導致與其他同質品牌難以區分，缺乏「可識別性」。" },
+            { id: 39, type: 2, q: "在碳酸飲料市場的研究中，消費者雖然在盲測中常偏好百事口味，但實際購買時卻願意為可口可樂支付較高價格。此現象最能說明可口可樂在品牌建構流程的哪一階段成果？", opts: ["品牌知名度", "品牌形象", "品牌延伸", "品牌權益"], ans: 3, exp: "雖然口味不佔優勢，但消費者願意支付額外溢價購買，這正是「品牌權益」累積帶來的市場影響力。" },
+            { id: 40, type: 2, q: "許多消費者能對 Apple 品牌描述出「創新、設計感、潮流」等多元形象，但對於 HTC 的聯想卻相對有限。此現象最能體現品牌建構的哪一階段優勢？", opts: ["品牌知名度", "品牌形象", "品牌忠誠", "品牌命名"], ans: 1, exp: "Apple 長期透過設計讓消費者聯想到其核心價值與形象，這突顯了 Apple 在「品牌形象」上的優勢。" },
+            { id: 41, type: 2, q: "根據調查，有95%的消費者聽過「7-Eleven」，有80%聽過「OK超商」。這數據顯示了 7-Eleven 在建構流程中哪一項的優勢？", opts: ["品牌知名度", "品牌形象", "品牌忠誠", "品牌權益"], ans: 0, exp: "消費者是否聽過並能辨識品牌，屬於「品牌知名度」階段。" },
+            { id: 42, type: 2, q: "王品集團在餐後問卷中設計問題：「您是否會推薦親友到本餐廳用餐？」這項調查被視為衡量滿意度與未來行為意向的指標。此作法最能反映哪一項功能？", opts: ["品牌知名度", "品牌形象", "品牌忠誠", "品牌權益"], ans: 2, exp: "「是否推薦親友」是衡量顧客忠誠度的常見指標，屬於「品牌忠誠」階段。" },
+            { id: 43, type: 2, q: "某餐廳在顧客問卷中設計了「您近期是否有來本餐廳消費？」及「未來是否仍會光臨？」等題目，此作法最能反映品牌建構的哪一項功能？", opts: ["品牌知名度", "品牌形象", "品牌忠誠", "品牌權益"], ans: 2, exp: "透過追蹤近期消費與未來購買意願，判斷顧客是否持續偏好，屬於「品牌忠誠」的衡量。" },
+            { id: 44, type: 2, q: "白蘭氏雞精廣告訴求「幫助提神，提升專注力」，此案例最符合哪一種品牌定位？", opts: ["品牌個性定位", "情境定位", "功能利益定位", "競爭者定位"], ans: 2, exp: "強調產品本身的特徵或能帶來的具體使用價值，屬於「功能利益定位」。" },
+            { id: 45, type: 2, q: "Harley-Davidson(哈雷)重機被消費者普遍聯想為「叛逆、自由」的象徵，這反映出品牌採用哪一種定位策略？", opts: ["使用者定位", "品牌個性定位", "經濟定位", "功能利益定位"], ans: 1, exp: "透過人格化塑造品牌風格(叛逆/自由)，屬於「品牌個性定位」。" },
+            { id: 46, type: 2, q: "豪華遊艇品牌 Azimut Yachts 常強調「與大海共生的休閒體驗」，廣告呈現名流舉辦派對，鎖定富裕階層並強調義大利工藝。下列何者最不可能是其定位方向？", opts: ["情境定位", "使用者定位", "功能利益定位", "經濟定位"], ans: 3, exp: "包含了情境(派對)、使用者(名流)、功能(工藝)，但「經濟定位」強調平價划算，這最不可能。" },
+            { id: 47, type: 2, q: "lativ(米格國際)以平價服飾切入市場，強調以合理價格提供良好品質，此作法最能反映哪一種品牌定位？", opts: ["競爭者定位", "道德定位", "經濟定位", "品牌形象定位"], ans: 2, exp: "lativ 主打高CP值與平價性，屬於「經濟定位」。" },
+            { id: 48, type: 2, q: "台灣某遊樂園廣告強調：「不必出國，也能享受媲美美國主題樂園的設施與氛圍！」此宣傳方式最不可能包含哪一種品牌定位？", opts: ["功能利益定位", "情境定位", "經濟定位", "競爭者定位"], ans: 3, exp: "包含省錢(經濟)、設施(功能)、氛圍(情境)。只是借用美國樂園做標竿，並未與國內競品直接比較，最不可能是競爭者定位。" },
+            { id: 49, type: 2, q: "一般零售店的氣泡水約40元，但在高級餐廳同樣一瓶可能售價高達90元。這最能體現哪種品牌定位？", opts: ["情境定位", "道德定位", "品牌個性定位", "經濟定位"], ans: 0, exp: "消費者在餐廳願意花高價，是為了當下用餐的「情境」與氛圍買單。" },
+            { id: 50, type: 2, q: "Logitech G 強調是專屬於電競愛好者的選擇，並請職業選手代言。此案例最能體現哪一種定位？", opts: ["情境定位", "使用者定位", "品牌個性定位", "經濟定位"], ans: 1, exp: "將品牌塑造成典型使用者(電競愛好者)，讓消費者產生認同，是使用者定位。" },
+            { id: 51, type: 2, q: "朋友聚會原本在麥當勞與必勝客間猶豫，最後因為覺得「必勝客披薩更適合聚餐氛圍」而選擇必勝客。這反映必勝客在哪一項定位的勝出？", opts: ["功能利益定位", "使用者定位", "情境定位", "競爭者定位"], ans: 2, exp: "必勝客成功把品牌與「聚餐、分享」情境綁定，在情境定位上勝出。" },
+            { id: 52, type: 2, q: "G2000將「科技感」作定位，推出免熨防潑水機能服，讓消費者在不同場合保持專業與時尚。這最適合哪一種組合？", opts: ["功能利益定位+情境定位", "品牌個性定位+使用者定位", "功能利益定位+品牌個性定位", "使用者定位+情境定位"], ans: 0, exp: "機能(免熨/防污)屬功能利益；不同場合(上班/社交)屬情境定位。" },
+            { id: 53, type: 2, q: "在品牌定位中，與其使用「物美價廉」等功能表述，現代行銷更傾向以「可靠、貼心」等形容詞來強化感受。這最能歸屬哪一類型？", opts: ["經濟定位", "功能利益定位", "品牌個性定位", "競爭者定位"], ans: 2, exp: "「可靠、貼心」賦予品牌擬人化特質，建立情感連結，是品牌個性定位的典型展現。" },
+            { id: 54, type: 2, q: "遊戲廠商推出與知名動漫角色聯名合作，設計專屬角色與場景。這主要是為了補足遊戲的哪一種品牌定位？", opts: ["使用者定位", "功能利益定位", "情境定位", "品牌個性定位"], ans: 2, exp: "聯名動漫角色能讓遊戲與「特定情境(動漫世界觀)」緊密連結，創造沉浸體驗，屬於情境定位。" },
+            { id: 55, type: 2, q: "手搖飲料店宣布逐步淘汰塑膠吸管，改用再生材質包裝，傳達「環境友善」承諾。此行動最能代表哪一種品牌定位？", opts: ["情境定位", "道德定位", "品牌個性定位", "競爭者定位"], ans: 1, exp: "突顯企業社會責任與永續精神，正是道德定位的展現。" },
+            { id: 56, type: 2, q: "連鎖早餐店推出「早餐買漢堡送咖啡」活動，鼓勵顧客增加消費頻率。此作法符合安索夫矩陣的哪一種策略？", opts: ["市場開發", "產品開發", "市場滲透", "多角化"], ans: 2, exp: "在既有市場透過促銷提高銷售率，屬於市場滲透。" },
+            { id: 57, type: 2, q: "Louisa Coffee(路易莎)原本以台灣為主，近期拓展至海外市場。此作法在安索夫矩陣屬於哪一種策略？", opts: ["市場開發", "市場滲透", "產品開發", "多角化"], ans: 0, exp: "把現有產品(咖啡)推向新地區市場，屬於市場開發。" },
+            { id: 58, type: 2, q: "義美食品現有門市，推出「燕麥奶系列」新品進入植物奶市場。此作法最符合哪一種策略？", opts: ["市場滲透", "產品開發", "多角化", "市場開發"], ans: 1, exp: "在既有市場中提供新產品(燕麥奶)，屬於產品開發。" },
+            { id: 59, type: 2, q: "中華電信除電信服務外，積極跨入智慧家庭與資安服務領域，拓展全新市場。最符合安索夫矩陣的哪種策略？", opts: ["市場開發", "多角化", "市場滲透", "產品開發"], ans: 1, exp: "同時涉及新產品與新市場，屬於多角化。" },
+            { id: 60, type: 2, q: "台灣高鐵除了運輸服務，近年也發展「高鐵便當」、「車站購物平台」與旅遊套票，跨足食品與電商領域。這符合哪一種策略？", opts: ["市場開發", "多角化", "市場滲透", "產品開發"], ans: 1, exp: "進入與核心事業不同的新市場並推出新產品(購物平台/便當)，屬於多角化。" },
+            { id: 61, type: 2, q: "傳統早餐店營業到11點，為了服務更多客群，將營業時間延長至下午2點，菜單不變以吸引午餐客群。屬於哪種策略？", opts: ["市場滲透", "多角化", "產品開發", "市場開發"], ans: 3, exp: "傳統早餐店並未改變原有產品，而是將原產品帶入新的「午餐市場」，這是典型的市場開發策略。" }
+        ];
+
+        // AI specific mock questions
+        const aiMockBank = [
+            {
+                q: "【實務情境】某在地農創將品牌命名為「大樹鄉純釀鳳梨醬」，近期收購咖啡莊園打算用原品牌推「精品手沖咖啡豆」，卻發現接受度極低。依據 TIMS 觀點，這是犯了什麼大忌？",
+                opts: ["缺乏可記憶性，字數太長無法辨識。","將產品品項轉成品牌名，定位被「鳳梨醬」綁死，缺乏可延伸性。","使用個別品牌策略導致資源分散。","缺乏道德定位。"],
+                ans: 1,
+                exp: "TIMS 觀點(6-2)：直接用產品類別當品牌名，推新產品時顧客期待會落空(過度延伸)，因為名稱本身沒有可延伸的彈性。"
+            },
+            {
+                q: "【實務情境】頂級精品「LV」若與平價夜市連鎖牛排館推出「聯名包裝醬汁」，結果遭 VIP 客群抗議退會。根據 TIMS 觀點，這印證了聯名的什麼風險？",
+                opts: ["品牌等級落差太大，主品牌拉低身段，導致品牌稀釋與信任危機。","這是市場滲透失敗，沒提供折扣。","違反中間商品牌策略。","從功能利益轉向情境定位失敗。"],
+                ans: 0,
+                exp: "TIMS 觀點(6-6)：聯名對象等級落差過大(精品x夜市)，會破壞高端品牌原本苦心建立的品牌形象，造成品牌價值稀釋。"
+            },
+            {
+                q: "【實務情境】特斯拉剛進市場時，傳統車廠主打「省油大空間」。特斯拉卻強調「科技宅的未來生活、超越跑車的加速」，成功突圍。這主要使用了哪一種定位策略？",
+                opts: ["經濟定位","道德定位","競爭者定位","家族品牌策略"],
+                ans: 2,
+                exp: "課本 6-4：透過訴求相較於傳統燃油車的差異(未來感/高科技)，而非傳統省油訴求來強化獨特性，是典型的競爭者定位。"
+            }
+        ];
+
+        let currentTab = 'standard';
+        let isSubmitted = false;
+        let selectedQuestions = []; 
+        let selectedAiQuestions = []; 
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateRandomQuiz() {
+            if(isSubmitted) {
+                isSubmitted = false;
+                document.getElementById('score-display').classList.add('hidden');
+                
+                const btn = document.getElementById('submit-btn');
+                btn.innerHTML = '交卷並查看解析 <i class="fa-solid fa-paper-plane ml-3"></i>';
+                btn.classList.remove('bg-slate-400', 'cursor-not-allowed', 'shadow-none');
+                btn.classList.add('bg-orange-500', 'hover:bg-orange-600', 'shadow-lg');
+            }
+
+            // Pick 5 random questions from the full 61 question bank
+            const shuffledBank = shuffleArray([...fullQuestionBank]);
+            selectedQuestions = shuffledBank.slice(0, 5);
+            renderQuiz('quiz-standard', selectedQuestions, 'std');
+
+            // Pick 3 AI questions
+            const shuffledAi = shuffleArray([...aiMockBank]);
+            selectedAiQuestions = shuffledAi.slice(0, 3);
+            renderQuiz('quiz-ai', selectedAiQuestions, 'ai');
+
+            // Smooth scroll
+            setTimeout(() => {
+                document.getElementById('quiz-section').scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+
+        function renderQuiz(containerId, data, prefix) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = data.map((item, index) => `
+                <div class="quiz-item border border-slate-200 rounded-2xl p-6 md:p-8 bg-white shadow-sm hover:shadow-md transition" data-correct="${item.ans}" data-prefix="${prefix}" data-idx="${index}">
+                    <div class="flex items-start gap-3 mb-5">
+                        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-sm font-black shadow-inner shrink-0 mt-0.5">Q${index + 1}</span>
+                        <h3 class="font-bold text-lg md:text-xl text-gray-800 leading-relaxed">${item.q}</h3>
+                    </div>
+                    <div class="space-y-3 pl-0 md:pl-14">
+                        ${item.opts.map((opt, oIdx) => `
+                            <label class="quiz-option flex items-center p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-orange-50 hover:border-orange-200 transition group" id="opt_${prefix}_${index}_${oIdx}">
+                                <div class="relative flex items-center justify-center mr-4 shrink-0">
+                                    <input type="radio" name="q_${prefix}_${index}" value="${oIdx}" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-full checked:border-orange-500 checked:bg-orange-500 transition cursor-pointer">
+                                    <div class="absolute inset-0 m-auto w-2 h-2 rounded-full bg-white scale-0 peer-checked:scale-100 transition duration-200 pointer-events-none"></div>
+                                </div>
+                                <span class="text-gray-700 text-base leading-tight group-hover:text-orange-900 transition">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <div class="explanation mt-6 md:ml-14 p-5 bg-gradient-to-r from-orange-50 to-white border-l-4 border-orange-400 rounded-r-xl text-sm text-gray-700 shadow-inner" id="exp_${prefix}_${index}">
+                        <div class="font-bold text-orange-600 mb-2 flex items-center text-base"><i class="fa-solid fa-book-open mr-2"></i> 官方詳解：</div> 
+                        <div class="leading-relaxed ai-content font-medium">${marked.parse(item.exp)}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('quiz-standard').classList.toggle('hidden', tab !== 'standard');
+            document.getElementById('quiz-ai').classList.toggle('hidden', tab !== 'ai');
+            
+            const btnStd = document.getElementById('tab-standard');
+            const btnAi = document.getElementById('tab-ai');
+
+            if(tab === 'standard') {
+                btnStd.className = "px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition whitespace-nowrap shadow-sm";
+                btnAi.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition flex items-center gap-2 whitespace-nowrap";
+            } else {
+                btnAi.className = "px-5 py-2.5 rounded-md font-bold bg-purple-600 text-white transition flex items-center gap-2 whitespace-nowrap shadow-sm";
+                btnStd.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition whitespace-nowrap";
+            }
+        }
+
+        async function submitQuiz() {
+            if (isSubmitted) {
+                Swal.fire({
+                    title: '已經交卷囉！',
+                    text: '若想挑戰不同題目，請點擊右上角「重新抽題」。',
+                    icon: 'info',
+                    confirmButtonColor: '#f97316'
+                });
+                return;
+            }
+
+            const prefix = currentTab === 'standard' ? 'std' : 'ai';
+            const data = currentTab === 'standard' ? selectedQuestions : selectedAiQuestions;
+            let score = 0;
+            let answeredCount = 0;
+            const scorePerQ = 100 / data.length;
+            
+            const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('tims_gemini_api_key');
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-3"></i> 系統批改中...';
+            btn.classList.remove('hover:-translate-y-1', 'bg-orange-500', 'hover:bg-orange-600', 'shadow-lg');
+            btn.classList.add('bg-slate-500', 'shadow-none', 'cursor-wait');
+
+            data.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q_${prefix}_${index}"]:checked`);
+                const correctAns = item.ans;
+                
+                if (selected) {
+                    answeredCount++;
+                    const userAns = parseInt(selected.value);
+                    
+                    if (userAns === correctAns) {
+                        score += scorePerQ;
+                        document.getElementById(`opt_${prefix}_${index}_${userAns}`).classList.add('correct');
+                    } else {
+                        document.getElementById(`opt_${prefix}_${index}_${userAns}`).classList.add('wrong');
+                        document.getElementById(`opt_${prefix}_${index}_${correctAns}`).classList.add('correct');
+                    }
+                } else {
+                    document.getElementById(`opt_${prefix}_${index}_${correctAns}`).classList.add('correct');
+                }
+
+                document.getElementById(`exp_${prefix}_${index}`).classList.add('show');
+                const inputs = document.querySelectorAll(`input[name="q_${prefix}_${index}"]`);
+                inputs.forEach(input => input.disabled = true);
+            });
+
+            // Demo AI call if in AI tab
+            if (currentTab === 'ai' && apiKey && answeredCount > 0) {
+                await generateAiExplanations(data, apiKey);
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> 批改完成';
+            btn.classList.remove('bg-slate-500', 'cursor-wait');
+            btn.classList.add('bg-slate-400', 'cursor-not-allowed');
+
+            if(answeredCount < data.length) {
+                Swal.fire({
+                    icon: 'warning', 
+                    title: '有題目未作答', 
+                    text: '系統已自動為您標示正確解答並顯示解析。',
+                    confirmButtonColor: '#f97316'
+                });
+            }
+
+            const scoreDisplay = document.getElementById('score-display');
+            const scoreNumber = document.getElementById('score-number');
+            scoreDisplay.classList.remove('hidden');
+            
+            let currentScore = 0;
+            const targetScore = Math.round(score);
+            const timer = setInterval(() => {
+                currentScore++;
+                if (currentScore >= targetScore) {
+                    clearInterval(timer);
+                    scoreNumber.innerText = targetScore;
+                    if(targetScore >= 80) scoreNumber.className = "text-4xl md:text-5xl text-green-500 transition-all font-black ml-2";
+                    else if (targetScore >= 60) scoreNumber.className = "text-4xl md:text-5xl text-yellow-500 transition-all font-black ml-2";
+                    else scoreNumber.className = "text-4xl md:text-5xl text-red-500 transition-all font-black ml-2";
+                } else {
+                    scoreNumber.innerText = currentScore;
+                }
+            }, 10);
+
+            isSubmitted = true;
+        }
+
+        async function generateAiExplanations(questions, key) {
+            for (let i = 0; i < questions.length; i++) {
+                const item = questions[i];
+                const selected = document.querySelector(`input[name="q_ai_${i}"]:checked`);
+                if (!selected) continue;
+
+                const userOptIndex = parseInt(selected.value);
+                const userOptText = item.opts[userOptIndex];
+                const isCorrect = userOptIndex === item.ans;
+
+                const expDiv = document.getElementById(`exp_ai_${i}`);
+                expDiv.innerHTML += `<div class="mt-4 pt-4 border-t border-purple-200 text-purple-700 font-bold flex items-center"><i class="fa-solid fa-spinner fa-spin mr-3 text-xl"></i> 正在呼叫 Gemini 分析您的作答盲點...</div>`;
+
+                const prompt = `
+                    你是一位資深的行銷學教授。學生剛完成了一題行銷企劃證照考題：
+                    題目：「${item.q}」
+                    學生的選項：「${userOptText}」
+                    這是${isCorrect ? '正確' : '錯誤'}的。正確答案是：「${item.opts[item.ans]}」。
+                    請用繁體中文，針對該學生的選擇，給予一段簡短(約50-80字)的一對一指導解析。語氣要像導師一樣溫暖專業。
+                `;
+
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ role: "user", parts: [{ text: prompt }] }],
+                            generationConfig: { maxOutputTokens: 256, temperature: 0.7 }
+                        })
+                    });
+                    
+                    if(!response.ok) throw new Error('API Error');
+                    const data = await response.json();
+                    const aiFeedback = data.candidates[0].content.parts[0].text;
+                    
+                    expDiv.innerHTML = expDiv.innerHTML.replace(/<div class="mt-4.*<\/div>/, `<div class="mt-4 pt-4 border-t border-purple-200 bg-purple-50 p-4 rounded-xl text-purple-900 ai-content shadow-inner"><strong><i class="fa-solid fa-robot mr-2 text-lg"></i> AI 專屬指導：</strong><br><div class="mt-2 text-base">${marked.parse(aiFeedback)}</div></div>`);
+
+                } catch (e) {
+                    console.error("AI Generation failed", e);
+                    expDiv.innerHTML = expDiv.innerHTML.replace(/<div class="mt-4.*<\/div>/, `<div class="mt-4 pt-4 border-t border-red-200 text-red-500 text-sm font-bold"><i class="fa-solid fa-triangle-exclamation mr-2"></i> AI 專屬解析載入失敗，請檢查 API Key 狀態。</div>`);
+                }
+            }
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('apiKeyInput').value.trim();
+            if(input) {
+                localStorage.setItem('tims_gemini_api_key', input);
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: '儲存成功', 
+                    text: 'API Key 已暫存，後續作答 AI 情境題將啟用專屬智能批改。', 
+                    timer: 2000, 
+                    showConfirmButton: false,
+                    confirmButtonColor: '#1e3a8a'
+                });
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('tims_gemini_api_key');
+            if(savedKey) document.getElementById('apiKeyInput').value = savedKey;
+            
+            generateRandomQuiz();
+        });
+
+    </script>
+</body>
+</html>

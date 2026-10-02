@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 TIMS 行銷企劃證照 - 學習大廳</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#1e3a8a',
+                        secondary: '#f59e0b',
+                        accent: '#10b981',
+                        surface: '#f8fafc'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f1f5f9; }
+        .chapter-card { transition: all 0.3s ease; }
+        .chapter-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); }
+        .locked { filter: grayscale(100%); opacity: 0.7; cursor: not-allowed; }
+        .locked:hover { transform: none; box-shadow: none; }
+    </style>
+</head>
+<body class="text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- 頂部導航列 -->
+    <header class="bg-white shadow-md z-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-gradient-to-br from-primary to-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black text-gray-800 tracking-tight">TIMS 學習大廳</h1>
+                    <p class="text-xs text-gray-500 font-medium tracking-widest">CERTIFICATION DASHBOARD</p>
+                </div>
+            </div>
+            
+            <!-- 未來 Firebase 登入區塊預留位 -->
+            <div class="flex items-center gap-4">
+                <button class="text-sm font-bold text-gray-500 hover:text-primary transition flex items-center gap-2" onclick="showFirebaseInfo()">
+                    <i class="fa-solid fa-cloud"></i> 雲端同步 (未登入)
+                </button>
+                <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 overflow-hidden border-2 border-transparent hover:border-primary cursor-pointer transition" onclick="showFirebaseInfo()">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主體內容區 -->
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- 歡迎面板與全域設定 (API Key) -->
+        <div class="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden mb-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3">
+                
+                <!-- 左側：歡迎與進度 -->
+                <div class="lg:col-span-2 p-8 lg:p-10 bg-gradient-to-br from-primary to-blue-900 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 text-[15rem] -mt-10 -mr-10"><i class="fa-solid fa-chart-line"></i></div>
+                    <div class="relative z-10">
+                        <h2 class="text-3xl font-black mb-2">準備好迎戰 2026 TIMS 證照了嗎？</h2>
+                        <p class="text-blue-200 mb-8 text-lg">系統已記錄您的學習軌跡，目前進度良好，繼續保持！</p>
+                        
+                        <div class="bg-white/10 backdrop-blur-md rounded-2xl p-5 border border-white/20">
+                            <div class="flex justify-between items-end mb-2">
+                                <div>
+                                    <p class="text-xs text-blue-200 font-bold tracking-widest uppercase">總體學習進度</p>
+                                    <p class="text-2xl font-black">10% <span class="text-sm font-normal text-blue-200">(隨各章節完成度更新)</span></p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xs text-blue-200 font-bold tracking-widest uppercase">模擬考平均</p>
+                                    <p class="text-2xl font-black text-secondary">-- 分</p>
+                                </div>
+                            </div>
+                            <div class="w-full bg-blue-950/50 rounded-full h-3 mt-2 overflow-hidden border border-white/10">
+                                <div class="bg-gradient-to-r from-secondary to-yellow-300 h-3 rounded-full" style="width: 10%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右側：全域設定 (API Key 存在 LocalStorage 供全站使用) -->
+                <div class="p-8 lg:p-10 flex flex-col justify-center bg-white relative">
+                    <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-100 to-transparent hidden lg:block"></div>
+                    <h3 class="font-bold text-gray-800 text-lg mb-1 flex items-center"><i class="fa-solid fa-gear text-gray-400 mr-2"></i> 系統共用設定</h3>
+                    <p class="text-xs text-gray-500 mb-5">請在此輸入您的 Gemini API Key。儲存後，進入各章節的 AI 測驗解析功能將自動啟用。</p>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Gemini API Key</label>
+                            <div class="relative">
+                                <i class="fa-solid fa-key absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                <input type="password" id="globalApiKey" placeholder="AIzaSy..." class="w-full pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition">
+                            </div>
+                        </div>
+                        <button onclick="saveGlobalApiKey()" class="w-full bg-gray-800 hover:bg-gray-900 text-white font-bold py-2.5 rounded-xl transition shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> 儲存設定至瀏覽器
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- 課程章節列表 -->
+        <div class="mb-6 flex justify-between items-end">
+            <div>
+                <h2 class="text-2xl font-black text-gray-800">教材目錄</h2>
+                <p class="text-sm text-gray-500">點擊章節卡片進入互動學習與模擬測驗。未來只要放入對應的 HTML 檔案即可直接連結。</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            
+            <!-- Chapter 1 -->
+            <a href="Ch1.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">01</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">行銷源典</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">行銷的定義、行銷企劃的意涵、價值創造與專屬、企業經營思維演進。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 2 -->
+            <a href="Ch2.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">02</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">市場分析</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">市場區隔、SWOT分析、BCG矩陣與 STP 策略。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 3 -->
+            <a href="Ch3.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">03</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">消費者行為</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">涉入程度、購買決策過程與群體決策影響因素。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 4 -->
+            <a href="Ch4.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">04</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">行銷研究</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">行銷研究的意涵與七個重要階段設計。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 5 -->
+            <a href="Ch5.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">05</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">產品策略</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">產品分類、生命週期、擴散理論與服務品質。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 6 (Active styling) -->
+            <a href="Ch6.html" class="chapter-card bg-white rounded-2xl p-6 border border-blue-200 shadow-md relative overflow-hidden block ring-2 ring-primary ring-offset-2 hover:-translate-y-2 cursor-pointer transition">
+                <div class="absolute top-0 right-0 bg-secondary text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg z-10 shadow-sm">重點示範</div>
+                <div class="w-12 h-12 bg-blue-100 text-primary rounded-full flex items-center justify-center text-xl font-bold mb-4 border border-blue-200">06</div>
+                <h3 class="font-black text-primary text-xl mb-2">品牌經營</h3>
+                <p class="text-xs text-gray-600 mb-4 line-clamp-2">品牌意義、命名四大特質、建構流程、安索夫矩陣與品牌策略分析。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-white bg-primary px-2 py-1 rounded w-full text-center shadow-sm">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 7 -->
+            <a href="Ch7.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">07</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">定價策略</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">定價目標、心理定價與新產品價格策略。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 8 -->
+            <a href="Ch8.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">08</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">推廣策略</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">IMC整合行銷與 AISAS 消費者模式。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 9 -->
+            <a href="Ch9.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">09</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">通路策略</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">通路階層、涵蓋策略與衝突型態處理。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+
+            <!-- Chapter 10 -->
+            <a href="Ch10.html" class="chapter-card bg-white rounded-2xl p-6 border border-gray-200 shadow-sm relative overflow-hidden block hover:-translate-y-2 hover:shadow-lg transition cursor-pointer">
+                <div class="w-12 h-12 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xl font-bold mb-4">10</div>
+                <h3 class="font-bold text-gray-800 text-lg mb-2">行銷績效KPI</h3>
+                <p class="text-xs text-gray-500 mb-4 line-clamp-2">SMART原則與各項行銷效益衡量指標。</p>
+                <div class="flex justify-between items-center text-xs mt-auto">
+                    <span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded w-full text-center hover:bg-blue-100 transition">進入學習 <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                </div>
+            </a>
+            
+        </div>
+    </main>
+
+    <script>
+        // 頁面載入時，檢查瀏覽器是否有存過 API Key
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('tims_gemini_api_key');
+            if(savedKey) {
+                document.getElementById('globalApiKey').value = savedKey;
+            }
+        });
+
+        // 儲存 API Key 的函數
+        function saveGlobalApiKey() {
+            const input = document.getElementById('globalApiKey').value.trim();
+            if(input) {
+                // 將輸入的值存入瀏覽器的 localStorage，命名為 'tims_gemini_api_key'
+                // 這樣一來，Ch6.html 裡面的程式碼就可以透過同一個名字抓到它！
+                localStorage.setItem('tims_gemini_api_key', input);
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: '共用設定已儲存', 
+                    text: '您的 API Key 已安全儲存於本地瀏覽器中。現在進入任一章節都可直接使用 AI 測驗解析！', 
+                    confirmButtonColor: '#1e3a8a'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '請輸入金鑰',
+                    text: '欄位不得為空。',
+                    confirmButtonColor: '#1e3a8a'
+                });
+            }
+        }
+
+        // 預留給 Firebase 的提示
+        function showFirebaseInfo() {
+            Swal.fire({
+                title: '雲端同步功能 (即將推出)',
+                html: `
+                    <div class="text-left text-sm text-gray-600 mt-2">
+                        <p class="mb-2">我們已為本系統預留了 <strong>Firebase 架構</strong>。未來只需加入 Firebase SDK，即可實現：</p>
+                        <ul class="list-disc pl-5 space-y-1 text-primary font-medium">
+                            <li>Google / Email 帳號登入 (Firebase Auth)</li>
+                            <li>跨裝置儲存學習進度 (Firestore)</li>
+                            <li>測驗成績雲端排行榜 (Realtime DB)</li>
+                        </ul>
+                    </div>
+                `,
+                icon: 'cloud',
+                confirmButtonColor: '#1e3a8a',
+                confirmButtonText: '期待上線！'
+            });
+        }
+    </script>
+</body>
+</html>
