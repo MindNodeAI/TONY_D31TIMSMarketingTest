@@ -1185,6 +1185,37 @@
             toggleTextSize.addEventListener('click', () => {
                 chatWindow.classList.toggle('text-size-large');
             });
+
+            // --- Chatbot 拖曳調整大小邏輯 ---
+            const resizeHandle = document.getElementById('resize-handle');
+            let isResizing = false;
+            let startX, startY, startWidth, startHeight;
+
+            resizeHandle.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                // 取得當前的寬高
+                startWidth = parseInt(document.defaultView.getComputedStyle(chatWindow).width, 10);
+                startHeight = parseInt(document.defaultView.getComputedStyle(chatWindow).height, 10);
+                e.preventDefault(); // 防止拖曳時反白文字
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                // 因為視窗錨點在右下角，所以游標往左上移動 (負值) 時，寬高要增加
+                const newWidth = startWidth - (e.clientX - startX);
+                const newHeight = startHeight - (e.clientY - startY);
+                
+                // 設定最小寬高限制
+                if (newWidth >= 280) chatWindow.style.width = newWidth + 'px';
+                if (newHeight >= 350) chatWindow.style.height = newHeight + 'px';
+            });
+
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+            });
+            // ----------------------------
         }
         
         const appendMessage = (sender, text, isMarkdown = false) => {
