@@ -67,7 +67,7 @@
             overflow: hidden;
         }
         .accordion-content.open {
-            max-height: 1000px; /* 足夠大的高度以容納內容 */
+            max-height: 1000px;
         }
 
         .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; }
@@ -78,6 +78,11 @@
         
         .hover-card { transition: all 0.3s ease; }
         .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        
+        .teacher-avatar {
+            box-shadow: 0 4px 14px 0 rgba(0,0,0,0.15);
+            border: 3px solid white;
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-gray-800 h-screen flex flex-col font-sans overflow-hidden">
@@ -120,7 +125,7 @@
                 <a href="#section-4" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 量化研究設計與抽樣</a>
                 <a href="#section-5" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 資料研究與策略建議</a>
                 <div class="my-4 border-t border-slate-100"></div>
-                <a href="#quiz-section" class="block px-3 py-2 rounded-lg text-sm font-black text-orange-600 bg-orange-50 hover:bg-orange-100 transition shadow-sm"><i class="fa-solid fa-pen-clip w-5"></i> 模擬測驗 (完整 68 題)</a>
+                <a href="#quiz-section" class="block px-3 py-2 rounded-lg text-sm font-black text-orange-600 bg-orange-50 hover:bg-orange-100 transition shadow-sm"><i class="fa-solid fa-pen-clip w-5"></i> 模擬測驗 (68題庫)</a>
             </nav>
         </aside>
 
@@ -164,13 +169,22 @@
                         </div>
                     </div>
                     
-                    <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-xl">
-                        <h4 class="font-bold text-indigo-800 text-sm mb-2"><i class="fa-solid fa-lightbulb"></i> TIMS 觀點：為什麼企業都想建置自己的交易資料庫？</h4>
+                    <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-xl mb-6">
+                        <h4 class="font-bold text-indigo-800 text-sm mb-2"><i class="fa-solid fa-database mr-2"></i> TIMS 觀點：為什麼企業都想建置自己的交易資料庫？</h4>
                         <p class="text-sm text-gray-700 mb-2">在數位時代，越來越多企業積極建置自有的「交易資料庫」（即我們常聽到的「廣積糧」）。相較於傳統「問卷調查」或「實地訪談」僅能捕捉顧客特定時間點的橫斷面資料，交易資料庫能提供更強大的決策支援：</p>
                         <ul class="text-sm text-gray-700 space-y-1 list-disc pl-5">
                             <li><strong class="text-indigo-700">長期追蹤：</strong> 能長期、持續地觀察顧客實際行為，反映真實消費軌跡與偏好變化。</li>
                             <li><strong class="text-indigo-700">精準行銷：</strong> 資料具備專屬性、即時性與高度決策價值，能建構完整輪廓並預測終生價值。</li>
                         </ul>
+                    </div>
+
+                    <!-- TONY Teacher Reminder -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
+                        <div>
+                            <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
+                            <p class="text-sm text-gray-800 font-medium">同學請注意！行銷研究的核心是<strong class="text-red-600">「降低決策風險」</strong>，而不是「保證一定會成功」。另外，現在大數據時代，企業自己的「交易資料庫」比外面的問卷更有價值，這種長期累積資料的作法就叫做「廣積糧」，這個觀念非常愛考！</p>
+                        </div>
                     </div>
                 </section>
 
@@ -186,27 +200,27 @@
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
                         <div class="bg-white p-3 rounded-xl border border-gray-200 text-center hover-card cursor-pointer" onclick="showKw('經營異常')">
                             <i class="fa-solid fa-arrow-trend-down text-red-500 text-2xl mb-2"></i>
-                            <h4 class="font-bold text-xs text-gray-800">經營異常</h4>
+                            <h4 class="font-bold text-xs text-gray-800 mt-2">經營異常</h4>
                             <p class="text-[10px] text-gray-500 mt-1">銷售/來客數下滑</p>
                         </div>
                         <div class="bg-white p-3 rounded-xl border border-gray-200 text-center hover-card cursor-pointer" onclick="showKw('市場反應')">
                             <i class="fa-solid fa-face-frown-open text-orange-500 text-2xl mb-2"></i>
-                            <h4 class="font-bold text-xs text-gray-800">市場反應不如預期</h4>
+                            <h4 class="font-bold text-xs text-gray-800 mt-2">市場反應不如預期</h4>
                             <p class="text-[10px] text-gray-500 mt-1">新品冷淡/廣告無效</p>
                         </div>
                         <div class="bg-white p-3 rounded-xl border border-gray-200 text-center hover-card cursor-pointer" onclick="showKw('競爭行為')">
                             <i class="fa-solid fa-bolt text-yellow-500 text-2xl mb-2"></i>
-                            <h4 class="font-bold text-xs text-gray-800">競爭行為改變</h4>
+                            <h4 class="font-bold text-xs text-gray-800 mt-2">競爭行為改變</h4>
                             <p class="text-[10px] text-gray-500 mt-1">競品出新招/新口味</p>
                         </div>
                         <div class="bg-white p-3 rounded-xl border border-gray-200 text-center hover-card cursor-pointer" onclick="showKw('內部觀察')">
                             <i class="fa-solid fa-eye text-green-500 text-2xl mb-2"></i>
-                            <h4 class="font-bold text-xs text-gray-800">內部觀察/經驗</h4>
+                            <h4 class="font-bold text-xs text-gray-800 mt-2">內部觀察/經驗</h4>
                             <p class="text-[10px] text-gray-500 mt-1">第一線店員的回饋</p>
                         </div>
                         <div class="bg-white p-3 rounded-xl border border-gray-200 text-center hover-card cursor-pointer" onclick="showKw('外部趨勢')">
                             <i class="fa-solid fa-earth-asia text-blue-500 text-2xl mb-2"></i>
-                            <h4 class="font-bold text-xs text-gray-800">外部趨勢觀察</h4>
+                            <h4 class="font-bold text-xs text-gray-800 mt-2">外部趨勢觀察</h4>
                             <p class="text-[10px] text-gray-500 mt-1">法規變/社群討論</p>
                         </div>
                     </div>
@@ -214,7 +228,7 @@
                     <h3 class="font-bold text-lg text-primary mb-3">2. 探索性研究</h3>
                     <p class="text-sm text-gray-700 mb-4">當企業對問題的情境仍不清楚或對本質尚未掌握時，需先進行探索性研究，協助<strong class="text-blue-600">釐清問題方向</strong>。</p>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="bg-white p-4 rounded-xl border-t-4 border-blue-500 shadow-sm">
                             <h4 class="font-bold text-gray-800 mb-2">次級資料蒐集</h4>
                             <p class="text-xs text-gray-600">利用既有資料初步探索(非為本研究而蒐集)，省時省錢。包含：政府統計、產業報告、企業內部資料、網路媒體。</p>
@@ -228,6 +242,15 @@
                             <p class="text-xs text-gray-600">質性訪談專家或目標顧客(約10-12人)，在引導下進行小規模座談，獲得深層理解與多元觀點。</p>
                         </div>
                     </div>
+
+                    <!-- TONY Teacher Reminder -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
+                        <div>
+                            <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
+                            <p class="text-sm text-gray-800 font-medium">問題情境最常考「內部觀察」與「外部趨勢」的分辨。另外，當你對市場完全沒概念時，第一步絕對是成本最低的<strong class="text-red-600">「探索性研究（如先查次級資料或文獻）」</strong>，千萬別一上來就砸大錢發問卷，這在實務情境題很容易被騙到喔！</p>
+                        </div>
+                    </div>
                 </section>
 
                 <section id="section-3" class="py-10 border-b border-slate-200 scroll-mt-4">
@@ -235,9 +258,9 @@
                         <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">STEP 3</div>
                         <h2 class="text-2xl font-bold text-gray-800">研究問題的定義</h2>
                     </div>
-                    <p class="text-lg text-gray-700 leading-relaxed mb-4">精準的問題定義決定了整份研究的焦點與價值。根據研究目的，常見有 6 大類型：</p>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-4">精準的問題定義決定了整份研究的焦點與價值。根據研究目的，常見有 7 大類型：</p>
                     
-                    <div class="space-y-3">
+                    <div class="space-y-3 mb-6">
                         <!-- Type 1 -->
                         <div class="border border-slate-200 rounded-xl bg-white shadow-sm overflow-hidden">
                             <button onclick="toggleAccordion('acc-q-1')" class="w-full text-left px-5 py-4 font-bold text-gray-800 hover:bg-slate-50 flex justify-between items-center">
@@ -294,7 +317,7 @@
                                     </div>
                                     <div>
                                         <strong>【價格研究】</strong> 評估定價策略影響(自我/交叉價格敏感度)。<br>
-                                        <span class="text-xs text-gray-500">例：測量植物奶拿鐵的「太便宜、划算、有點貴、太貴」區間，找出最佳定價 150元。</span>
+                                        <span class="text-xs text-gray-500">例：測量植物奶拿鐵的接受區間，找出最佳定價 150元。</span>
                                     </div>
                                 </div>
                             </div>
@@ -318,6 +341,15 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- TONY Teacher Reminder -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
+                        <div>
+                            <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
+                            <p class="text-sm text-gray-800 font-medium">考試常出情境題要你判斷研究類型！記住口訣：看到「滿意度、體驗、動線設計」，就是「產品與服務研究」；看到「尋找新客群、評估市場潛力」，就是「市場機會研究」。考題通常會給你一段很長的情境，抓準關鍵字就對了！</p>
                         </div>
                     </div>
                 </section>
@@ -350,7 +382,7 @@
 
                     <h3 class="font-bold text-lg text-primary mb-3">5. 抽樣及樣本建置</h3>
                     <p class="text-sm text-gray-700 mb-4">無法調查母體全貌時，選取代表性樣本的過程。好的抽樣能確保結果具推論力。</p>
-                    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 border-b border-gray-200">
                                 <tr>
@@ -372,6 +404,15 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- TONY Teacher Reminder -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
+                        <div>
+                            <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
+                            <p class="text-sm text-gray-800 font-medium">敘述性研究是「描繪現象（不找原因）」，因果性研究是「找原因（A導致B）」。另外抽樣必考：只要能保證每個人被抽中機率一樣就是「隨機抽樣」；為了方便路上隨便找人填問卷叫「便利抽樣（非隨機）」，最大的致命傷是<strong class="text-red-600">「無法推論母體」</strong>，這個考點千萬別失分！</p>
+                        </div>
                     </div>
                 </section>
 
@@ -395,7 +436,7 @@
                         </div>
                         <div class="bg-white p-3 border border-gray-200 rounded-lg hover-card">
                             <strong class="text-gray-800 block mb-1">迴歸分析</strong>
-                            <p class="text-xs text-gray-500">判斷多變數間的關聯方向與程度。</p>
+                            <p class="text-xs text-gray-500">判斷多變數間的關聯方向與程度(因果)。</p>
                         </div>
                         <div class="bg-white p-3 border border-gray-200 rounded-lg hover-card">
                             <strong class="text-gray-800 block mb-1">集群分析</strong>
@@ -403,7 +444,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-orange-50 border border-orange-200 p-5 rounded-xl mb-8">
+                    <div class="bg-orange-50 border border-orange-200 p-5 rounded-xl mb-6">
                         <h4 class="font-bold text-orange-800 text-lg mb-2"><i class="fa-solid fa-beer-mug-empty mr-2"></i> TIMS 經典案例：尿布與啤酒的「關聯分析」</h4>
                         <p class="text-sm text-gray-700 mb-3">Walmart 透過資料分析發現，晚上買尿布的男性常會順便買啤酒。那麼，這兩樣商品該放一起嗎？答案是：<strong>沒有標準答案，需配合動線驗證。</strong></p>
                         <ul class="text-xs text-gray-700 space-y-2 list-disc pl-4">
@@ -413,19 +454,28 @@
                     </div>
 
                     <h3 class="font-bold text-lg text-primary mb-3">7. 策略建議</h3>
-                    <p class="text-sm text-gray-700">完成分析後，最終目的是將洞察轉化為實際的 4P 策略 (產品設計、品牌定位、定價調整、推廣與通路佈局)。例如：發現新鮮人重視「績效升遷」，壽險公司即推出「我的未來由我決定」之雇主品牌標語。</p>
+                    <p class="text-sm text-gray-700 mb-6">完成分析後，最終目的是將洞察轉化為實際的 4P 策略 (產品設計、品牌定位、定價調整、推廣與通路佈局)。例如：發現新鮮人重視「績效升遷」，壽險公司即推出「我的未來由我決定」之雇主品牌標語。</p>
+
+                    <!-- TONY Teacher Reminder -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl shadow-sm flex items-start gap-4">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
+                        <div>
+                            <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
+                            <p class="text-sm text-gray-800 font-medium">分析方法常考配對：想把人分群用「集群分析」，想看A會不會影響B用「迴歸分析」，想看啤酒跟尿布有沒有一起買用「關聯分析」。最後，研究做完一定要給出具體的 4P 策略建議，不然你的行銷研究就只是交差了事！</p>
+                        </div>
+                    </div>
                 </section>
 
-                <div id="quiz-section" class="bg-white rounded-2xl shadow-lg border-t-8 border-orange-500 overflow-hidden scroll-mt-6 mt-12">
-                    <div class="p-5 md:p-6 bg-orange-50 border-b border-orange-100 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <h2 class="text-xl md:text-2xl font-black text-gray-800 flex items-center">
-                            <i class="fa-solid fa-pen-to-square text-orange-600 mr-3"></i> 
-                            第四章 模擬測驗 
-                            <span class="text-xs ml-3 bg-white text-orange-600 border border-orange-200 px-3 py-1 rounded-full font-bold shadow-sm">共 68 題庫隨機抽取</span>
+                <div id="quiz-section" class="bg-white rounded-2xl shadow-lg border-t-8 border-secondary overflow-hidden scroll-mt-6 mt-12">
+                    <div class="p-5 md:p-6 bg-gray-50 border-b flex flex-col md:flex-row justify-between items-center gap-4">
+                        <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center">
+                            <i class="fa-solid fa-pen-clip text-secondary mr-3"></i> 
+                            第四章 雙軌模擬測驗 
+                            <span class="text-xs ml-3 bg-white text-gray-600 border border-gray-200 px-3 py-1 rounded-full font-bold shadow-sm">全題庫 68 題</span>
                         </h2>
-                        <div class="flex bg-white rounded-lg p-1 border border-orange-200 shadow-sm text-sm w-full md:w-auto overflow-x-auto">
-                            <button id="tab-standard" onclick="switchTab('standard')" class="px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition whitespace-nowrap shadow-sm">基礎必考題 (70%)</button>
-                            <button id="tab-ai" onclick="switchTab('ai')" class="px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-robot text-purple-500"></i> AI 活學活用題 (30%)</button>
+                        <div class="flex bg-white rounded-lg p-1 border shadow-sm text-sm w-full md:w-auto overflow-x-auto">
+                            <button id="tab-theory" onclick="switchTab('theory')" class="px-5 py-2.5 rounded-md font-bold bg-blue-600 text-white transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-book-open mr-1"></i> 理論觀念題 (42%)</button>
+                            <button id="tab-practical" onclick="switchTab('practical')" class="px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-2 whitespace-nowrap"><i class="fa-solid fa-lightbulb text-orange-500 mr-1"></i> 實務情境題 (58%)</button>
                         </div>
                     </div>
 
@@ -433,31 +483,22 @@
                         <div class="mb-6 flex justify-between items-end border-b pb-4">
                             <div>
                                 <p class="text-sm text-gray-500 mb-1 font-bold">測驗說明：</p>
-                                <p class="text-xs text-gray-500">每次測驗將從完整 68 題庫中隨機抽取 5 題。作答完畢後點擊下方按鈕即可查看得分與詳解。</p>
+                                <p class="text-xs text-gray-500">系統會為兩個頁籤各隨機抽取 5 題。作答完當前頁籤後點擊交卷，若有錯題可呼叫 AI 老師進行專屬解析！</p>
                             </div>
                             <button onclick="generateRandomQuiz()" class="text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition flex items-center gap-2 font-bold shadow-sm border border-slate-200">
                                 <i class="fa-solid fa-rotate-right"></i> 重新抽題
                             </button>
                         </div>
 
-                        <div id="quiz-standard" class="space-y-6"></div>
-
-                        <div id="quiz-ai" class="space-y-6 hidden">
-                            <div class="bg-gradient-to-r from-purple-50 to-white border border-purple-200 text-purple-900 p-5 rounded-xl mb-6 text-sm flex items-start shadow-sm">
-                                <div class="bg-purple-100 w-10 h-10 rounded-full flex items-center justify-center shrink-0 mr-4 mt-1"><i class="fa-solid fa-wand-magic-sparkles text-purple-600 text-lg"></i></div>
-                                <div>
-                                    <strong class="text-base">AI 實務生成題庫：</strong><br>
-                                    系統依據 TIMS 第四章核心觀念，動態生成非死背的「活學活用情境題」。作答後，若有輸入 API Key，系統將呼叫 Gemini 進行一對一深度指導解析！
-                                </div>
-                            </div>
-                        </div>
+                        <div id="quiz-theory" class="space-y-6"></div>
+                        <div id="quiz-practical" class="space-y-6 hidden"></div>
 
                         <div class="mt-10 pt-6 border-t border-slate-200 flex flex-col sm:flex-row justify-between items-center gap-4 bg-slate-50 p-6 rounded-xl">
                             <div id="score-display" class="text-lg font-bold text-gray-700 hidden text-center sm:text-left w-full sm:w-auto">
-                                本次得分： <span id="score-number" class="text-4xl md:text-5xl text-red-500 transition-all font-black ml-2">0</span> <span class="text-sm text-gray-500">/ 100</span>
+                                本頁得分： <span id="score-number" class="text-4xl md:text-5xl text-red-500 transition-all font-black ml-2">0</span> <span class="text-sm text-gray-500">/ 100</span>
                             </div>
-                            <button id="submit-btn" onclick="submitQuiz()" class="w-full sm:w-auto bg-orange-500 hover:bg-orange-600 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center text-lg">
-                                交卷並查看解析 <i class="fa-solid fa-paper-plane ml-3"></i>
+                            <button id="submit-btn" onclick="submitQuiz()" class="w-full sm:w-auto bg-primary hover:bg-blue-800 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center text-lg">
+                                批改本頁試卷 <i class="fa-solid fa-paper-plane ml-3"></i>
                             </button>
                         </div>
                     </div>
@@ -473,7 +514,8 @@
             '市場反應': { title: '問題情境：市場反應不如預期', html: '企業主動發起活動但未達預期，例如新產品上市反應冷淡、投入大量廣告卻無轉換率。' },
             '競爭行為': { title: '問題情境：競爭行為改變', html: '對手採取重大動作威脅到自身，例如競品推出低價促銷、推出革命性新功能或服務。' },
             '內部觀察': { title: '問題情境：內部觀察/經驗', html: '來自第一線人員的敏銳回饋。例如門市店員發現顧客對某項促銷活動感到困惑或不知情。' },
-            '外部趨勢': { title: '問題情境：外部趨勢觀察', html: '大環境的變動，如網路社群開始熱議「減糖」或「永續」，或是政府法規改變。' }
+            '外部趨勢': { title: '問題情境：外部趨勢觀察', html: '大環境的變動，如網路社群開始熱議「減糖」或「永續」，或是政府法規改變。' },
+            '關鍵字': { title: '互動關鍵字', html: '點擊教材中有虛線底線的字詞，即可查看專屬解析。' }
         };
 
         function showKw(key) {
@@ -497,7 +539,6 @@
                 content.classList.remove('open');
                 icon.style.transform = 'rotate(0deg)';
             } else {
-                // Close others in section 3
                 document.querySelectorAll('#section-3 .accordion-content').forEach(el => {
                     el.classList.remove('open');
                     document.getElementById('icon-' + el.id).style.transform = 'rotate(0deg)';
@@ -507,9 +548,9 @@
             }
         }
 
-        // Full 68 Question Bank from Ch4 PDF
+        // Full 68 Question Bank from Ch4 PDF (Re-balanced slightly to ensure enough types)
         const fullQuestionBank = [
-            // 理論題 1-21
+            // ================= 理論題 (25題) Type 1 =================
             { id: 1, type: 1, q: "行銷研究的主要目的為何？", opts: ["找出唯一正確的市場方案", "降低決策不確定性與風險", "增加廣告投放次數", "降低產品成本"], ans: 1, exp: "行銷研究並非尋求絕對正確的答案，而是透過系統化資訊分析，協助降低決策風險。" },
             { id: 2, type: 1, q: "下列哪個情境最貼近「行銷研究」的核心精神？", opts: ["老闆靠直覺決定新品上市時間", "在團隊群組投票決定廣告文案", "透過問卷與市場數據分析，找出消費者最愛的冰淇淋", "直接模仿競爭對手的策略"], ans: 2, exp: "行銷研究強調以科學、客觀的數據與分析作為決策基礎，而非個人直覺。" },
             { id: 3, type: 1, q: "行銷研究流程，在問題情境產生之後的第一個階段是什麼？", opts: ["抽樣及樣本建置", "量化研究設計", "探索性研究", "研究問題的定義"], ans: 2, exp: "問題情境產生之後的第一個階段是探索性研究，協助釐清模糊的方向，之後才是定義研究問題。" },
@@ -531,46 +572,46 @@
             { id: 19, type: 1, q: "關於隨機抽樣與非隨機抽樣的比較，下列何者正確？", opts: ["非隨機抽樣可準確推論母體特徵", "隨機抽樣較能避免樣本偏誤", "隨機抽樣完全不需樣本建置", "非隨機抽樣不受研究人員主觀影響"], ans: 1, exp: "隨機抽樣透過機率抽取降低人為偏誤，較能避免主觀條件影響。" },
             { id: 20, type: 1, q: "在抽樣設計中，若希望每一個母體成員都有相同機會被選中，應使用哪一種方式？", opts: ["隨機抽樣", "便利抽樣", "非隨機抽樣", "滾雪球抽樣"], ans: 0, exp: "隨機抽樣確保每位母體成員有已知且相等的機率被抽中，是最具代表性的方式。" },
             { id: 21, type: 1, q: "非隨機抽樣最大的限制是什麼？", opts: ["無法進行統計推論", "樣本一定比母體小", "必須使用昂貴的抽樣工具", "只能用於電話訪問"], ans: 0, exp: "非隨機抽樣因樣本未經機率分配選取，無法推論至整體母體，是其主要限制。" },
+            { id: 22, type: 1, q: "在資料分析方法中，哪一種方法主要用來掌握樣本的整體分布情形？", opts: ["交叉分析", "描述統計", "集群分析", "關聯分析"], ans: 1, exp: "描述統計用於呈現數據的整體分布，如平均數、標準差等。" },
+            { id: 23, type: 1, q: "關於集群分析與迴歸分析的差異，下列何者正確？", opts: ["集群分析用於將顧客分群，迴歸分析用於預測或解釋變數間關係", "迴歸分析用於將顧客分群，集群分析用於驗證因果關係", "兩者都專注於分析因果關係", "皆無法用於行銷研究"], ans: 0, exp: "集群分析將特徵相似顧客分群；迴歸分析判斷/預測變數間的關聯程度與方向。" },
+            { id: 24, type: 1, q: "研究人員想分析「性別」與「喜好飲料類型」之間的關係，最適合使用哪一種方法？", opts: ["集群分析", "迴歸分析", "交叉分析", "時間序列分析"], ans: 2, exp: "交叉分析適用於比較兩個類別變數之間的關係(例如：性別 × 口味)。" },
+            { id: 25, type: 1, q: "將開放式文字答案轉化為可分析的量化或類別變數，這屬於資料處理哪一階段？", opts: ["資料清理", "編碼與分類", "資料輸入與整理", "描述統計"], ans: 1, exp: "編碼與分類是將非結構化資料轉化為可統計數據的必要過程。" },
 
-            // 實務題 22-68 (47題)
-            { id: 22, type: 2, q: "行銷人員計畫針對「包裝咖啡消費行為偏好」的問卷調查，定義抽樣的母體(Population)最適合為？", opts: ["全國所有人", "不喝包裝咖啡的人", "曾經購買過包裝咖啡的人", "喜歡喝咖啡的人"], ans: 2, exp: "母體指的是研究者欲探討的整體對象。焦點是「包裝咖啡消費行為」，母體應指定曾經消費過包裝咖啡的人。" },
-            { id: 23, type: 2, q: "在資料分析方法中，哪一種方法主要用來掌握樣本的整體分布情形？", opts: ["交叉分析", "描述統計", "集群分析", "關聯分析"], ans: 1, exp: "描述統計用於呈現數據的整體分布，如平均數、標準差等。" },
-            { id: 24, type: 2, q: "研究人員想分析「性別」與「喜好飲料類型」之間的關係，最適合使用哪一種方法？", opts: ["集群分析", "迴歸分析", "交叉分析", "時間序列分析"], ans: 2, exp: "交叉分析適用於比較兩個變數之間的關係(例如：性別 × 口味)。" },
-            { id: 25, type: 2, q: "關於集群分析與迴歸分析的差異，下列何者正確？", opts: ["集群分析用於將顧客分群，迴歸分析用於預測或解釋變數間關係", "迴歸分析用於將顧客分群，集群分析用於驗證因果關係", "兩者都專注於分析因果關係", "皆無法用於行銷研究"], ans: 0, exp: "集群分析將特徵相似顧客分群；迴歸分析判斷/預測變數間的關聯程度與方向。" },
-            { id: 26, type: 2, q: "新創咖啡品牌進入市場前，委託調查消費者飲用習慣與定價接受度，並據此決定定位，這屬於行銷研究的哪項核心功能？", opts: ["蒐集、整理、分析市場資訊以輔助決策", "提高社群媒體曝光率", "增加銷售人員數量", "提高生產速度"], ans: 0, exp: "透過系統化資訊蒐集與分析來支持決策，正是行銷研究的典型應用。" },
-            { id: 27, type: 2, q: "行李箱品牌欲推出新飲品，老闆說：「我們先調查顧客喜好，確定市場機會再上市。」這屬於什麼活動？", opts: ["廣告設計", "行銷研究", "產品生產", "促銷活動"], ans: 1, exp: "這是一個蒐集市場與競爭者資訊，降低決策風險的過程，屬於行銷研究。" },
-            { id: 28, type: 2, q: "遊戲公司在研發新手遊前，先分析趨勢與對手，整理成報告給決策團隊，其主要目的為何？", opts: ["讓決策完全正確", "減少決策的不確定性", "確保遊戲開發費用", "降低行銷成本"], ans: 1, exp: "行銷研究的核心是減少決策的不確定性與風險，而非保證絕對成功。" },
-            { id: 29, type: 2, q: "某超市欲了解顧客對新開幕分店滿意度，先對常客進行初步訪談收集意見，這屬於哪個研究階段？", opts: ["探索性研究", "量化研究設計", "抽樣及樣本建置", "資料研究"], ans: 0, exp: "探索性研究(如訪談)用於初步蒐集資訊與釐清問題方向。" },
-            { id: 30, type: 2, q: "一家手機品牌鎖定大專生族群，採分層抽樣，從不同學校/年級抽一定比例樣本，這屬於哪個階段？", opts: ["研究問題的定義", "抽樣及樣本建置", "問題情境的產生", "探索性研究"], ans: 1, exp: "選定母體特徵並設定抽取比例，屬於抽樣及樣本建置階段。" },
-            { id: 31, type: 2, q: "保健食品公司分析問卷發現顧客更重視「成分透明度」而非「價格優惠」，因此推出產地追溯標籤。此為何階段成果應用？", opts: ["研究問題的定義", "抽樣及樣本建置", "資料研究", "策略建議"], ans: 3, exp: "將分析結果轉化為具體行動方案(推出標籤)，屬於策略建議階段。" },
-            { id: 32, type: 2, q: "信義房屋人資部想知道求職者最在意哪些品牌價值，但尚未確定方向。此時應啟動哪一階段行銷研究？", opts: ["探索性研究", "敘述性研究", "因果性研究", "時間序列研究"], ans: 0, exp: "當不確定「有哪些價值構面」時，應先進行探索性研究以釐清方向。" },
-            { id: 33, type: 2, q: "當企業出現「門市來客數下滑、會員續約率下降」等情況，最適合歸類為哪種問題來源？", opts: ["經營異常", "市場反應不如預期", "競爭行為改變", "外部趨勢觀察"], ans: 0, exp: "來客數與續約率等營運指標惡化，屬於典型的「經營異常」。" },
-            { id: 34, type: 2, q: "下列行銷研究問題情境，何者「不屬於」競爭行為改變？", opts: ["競品推出低價方案", "競品推出24小時客服", "競品導入AI功能", "自家新品上市後銷售不佳"], ans: 3, exp: "「自家新品銷售不佳」屬於「市場反應不如預期」，與對手行為無關。" },
-            { id: 35, type: 2, q: "門市店員察覺顧客結帳時對優惠內容感到疑惑導致效率慢，這最適合歸類為哪種問題來源？", opts: ["外部趨勢觀察", "內部觀察/經驗", "競爭行為改變", "市場反應不如預期"], ans: 1, exp: "第一線員工觀察到的顧客行為細節，屬於「內部觀察/經驗」。" },
-            { id: 36, type: 2, q: "因 ESG 議題發酵，越來越多消費者選擇「碳足跡標示」產品。這反映了哪一種問題來源？", opts: ["內部觀察", "市場反應不如預期", "外部趨勢觀察", "競爭行為改變"], ans: 2, exp: "社會價值觀轉變引發的消費偏好改變，是典型的「外部趨勢觀察」。" },
-            { id: 37, type: 2, q: "連鎖書店觀察到週末到店人數大幅減少，屬於哪一種問題情境？", opts: ["外部趨勢觀察", "經營異常", "市場反應不如預期", "競爭行為改變"], ans: 1, exp: "到店人數減少屬於經營指標性惡化(經營異常)。" },
-            { id: 38, type: 2, q: "手搖飲品牌在社群發現「減糖生活」話題升溫，顧客偏好低糖飲品，這屬於？", opts: ["內部觀察", "市場反應不如預期", "外部趨勢觀察", "競爭行為改變"], ans: 2, exp: "社群討論屬於外部環境趨勢，反映價值觀與消費習慣變化。" },
-            { id: 39, type: 2, q: "手搖飲欲了解新口味接受度，正式推出前訪談 10 位忠實顧客，這屬於？", opts: ["焦點團體訪談", "次級資料蒐集", "實地觀察", "文獻回顧"], ans: 0, exp: "小規模深度討論屬於焦點團體，用於獲得消費者深層意見。" },
-            { id: 40, type: 2, q: "旅遊平台想分析近五年觀光趨勢，直接下載觀光局統計資料來分析，這屬於？", opts: ["焦點團體訪談", "次級資料蒐集", "文獻回顧", "描述性研究"], ans: 1, exp: "使用政府統計(既有資料)屬於次級資料蒐集，省時省成本。" },
-            { id: 41, type: 2, q: "企業在行銷研究時忽略「探索性研究」階段，最可能導致什麼後果？", opts: ["研究問題定義未釐清，後續研究焦點可能偏離", "樣本數無法達到推論需求", "結果無法進行量化分析", "抽樣一定會代表性不足"], ans: 0, exp: "探索性研究用於初步釐清問題，缺乏此階段易導致後續調查焦點模糊。" },
-            { id: 42, type: 2, q: "誠品書店舉辦焦點團體了解會員制度的看法，並依此改進。此研究屬於何種類型？", opts: ["探索性研究", "敘述性研究", "因果性研究", "量化研究"], ans: 0, exp: "焦點團體屬於探索性研究(質性)，深入了解消費者看法以制定改進策略。" },
-            { id: 43, type: 2, q: "愛合購電商決定分析過去三年的顧客交易紀錄與瀏覽行為，此舉主要優勢是？", opts: ["能直接取代問卷調查", "能觀察顧客長期行為軌跡並進行精準行銷", "能完全避免資料更新", "能確保顧客永不流失"], ans: 1, exp: "自有交易資料能長期追蹤真實行為並支持精準行銷，比單次調查更具策略價值。" },
-            { id: 44, type: 2, q: "朱元璋戰略「高築牆，廣積糧，緩稱王」。若應用於企業行銷策略，何者最符合「廣積糧」精神？", opts: ["大量投放廣告", "透過價格戰搶佔市佔", "提前宣告為市場領導者", "積極累積顧客資料庫與會員制度，建立長期資產"], ans: 3, exp: "「廣積糧」代表儲備資源以待持久戰，在行銷中對應「累積顧客/交易資料」。" },
-            { id: 45, type: 2, q: "連鎖健身房發現女性會員成長放緩，若要釐清原因並找出新招募機會，最適合採用哪一類研究問題？", opts: ["價格研究", "品牌形象研究", "通路研究", "市場機會研究"], ans: 3, exp: "成長放緩是市場未滿足訊號，需進行市場機會研究探索新客群與需求。" },
-            { id: 46, type: 2, q: "甜點品牌計畫在車站新開店，希望測試不同店內動線設計對顧客購買行為影響，應屬於哪一類研究？", opts: ["產品與服務研究", "市場機會研究", "品牌形象研究", "價格研究"], ans: 0, exp: "動線設計屬顧客接觸體驗(服務設計)，測試其影響屬於產品與服務研究。" },
-            { id: 47, type: 2, q: "必勝客想知道不同披薩促銷方案是否會影響顧客單次消費金額，最適合採用？", opts: ["因果性研究", "敘述性研究", "探索性研究", "個案研究"], ans: 0, exp: "驗證「促銷方案(自變數)」對「消費金額(因變數)」的影響，屬因果性研究。" },
-            { id: 48, type: 2, q: "研究者想量化台北市民對某高級餐廳「服務態度」的整體評價，以呈現市民普遍看法，應採用？", opts: ["探索性研究", "敘述性研究", "因果性研究", "質性研究"], ans: 1, exp: "為了客觀描繪普遍現象與特徵分布，應採用敘述性研究。" },
-            { id: 49, type: 2, q: "「墊腳石書店」想蒐集各年齡層到店頻率、停留時間，描繪閱讀與消費特徵。該研究最適合採用？", opts: ["敘述性研究", "因果性研究", "探索性研究", "二手資料分析"], ans: 0, exp: "重點在於描述顧客行為與特徵分布，未驗證因果，故為敘述性研究。" },
-            { id: 50, type: 2, q: "保險公司想驗證「不同廣告呈現是否會影響潛在客戶的投保意願」，何種設計最合適？", opts: ["時間序列分析", "實驗設計", "專家焦點訪談", "消費者輪廓描繪"], ans: 1, exp: "驗證「廣告→投保意願」的因果關係，應採實驗設計。" },
-            { id: 51, type: 2, q: "冰淇淋業者透過時間序列資料觀察不同季節銷量，並導入氣溫變化模型，判斷購買量是否因溫度變動。其研究設計目的為？", opts: ["敘述性研究，用於描述行為", "探索性研究，探討潛力", "因果性研究，驗證氣溫對銷量影響", "敘述性研究，識別族群"], ans: 2, exp: "時間序列分析檢證氣溫(自變數)是否為影響銷量(因變數)因素，屬因果性研究。" },
-            { id: 52, type: 2, q: "咖啡飲用行為調查顯示，年輕世代偏愛加氣泡水的花式喝法，年長世代偏好純粹美式。這屬於何種研究？", opts: ["探索性研究", "敘述性研究", "因果性研究", "時間序列研究"], ans: 1, exp: "敘述性研究用以衡量/描繪群體的偏好分布現象。" },
-            { id: 53, type: 2, q: "咖啡品牌想調查口味偏好，若研究人員直接在門市向購買的顧客發放問卷，此屬於？", opts: ["隨機抽樣", "非隨機抽樣", "集群抽樣", "分層隨機抽樣"], ans: 1, exp: "在門市發放是基於方便取得樣本(便利抽樣)，非隨機抽出，屬非隨機抽樣。" },
-            { id: 54, type: 2, q: "電信公司於會員資料庫中隨機抽取 5,000 人進行滿意度調查，此代表何種特徵？", opts: ["樣本缺乏代表性", "屬於隨機抽樣", "不可做推論", "完全依賴研究人員判斷"], ans: 1, exp: "從完整名單隨機抽取，確保平等機率，是隨機抽樣。" },
-            { id: 55, type: 2, q: "手搖飲品牌計畫從全國會員名單中使用電腦隨機抽取 2,000 人進行問卷，此屬於？", opts: ["非隨機抽樣", "隨機抽樣", "便利抽樣", "滾雪球抽樣"], ans: 1, exp: "電腦隨機抽取確保機率均等，屬隨機抽樣，能提升推論力。" },
-            { id: 56, type: 2, q: "小美想了解大學生最喜歡的午餐，將網路問卷放在 FB 社團邀請網友填寫。此為何種抽樣？", opts: ["隨機抽樣", "非隨機抽樣", "系統抽樣", "集群抽樣"], ans: 1, exp: "並非所有大學生都有相等機率看到並填寫，基於方便性發放，屬非隨機抽樣。" },
-            { id: 57, type: 2, q: "燦坤家電為快速獲新產品回饋，直接在門市攔截當日逛街顧客訪問，此為？", opts: ["隨機抽樣", "系統抽樣", "非隨機抽樣", "分層隨機抽樣"], ans: 2, exp: "只訪問現場顧客(非所有母體都有機會)，屬非隨機抽樣(便利抽樣)。" },
-            { id: 58, type: 2, q: "企業想進行全國腳踏車購買行為調查，但只採用非隨機抽樣，最致命的問題是？", opts: ["調查成本過高", "樣本無法代表整體母體，缺乏推論性", "問卷數量過多", "無法套用統計軟體"], ans: 1, exp: "非隨機抽樣無法保證代表性，若調查「全國」卻用特定地點樣本，結果將嚴重偏差。" },
-            { id: 59, type: 2, q: "連鎖藥妝店希望整理問卷中開放式意見，轉為可統計的類別變數，這屬於資料處理哪一階段？", opts: ["資料清理", "編碼與分類", "資料輸入與整理", "描述統計"], ans: 1, exp: "編碼與分類是將開放式文字答案轉化為可分析的量化/類別變數。" },
+            // ================= 實務題 (43題) Type 2 =================
+            { id: 26, type: 2, q: "行銷人員計畫針對「包裝咖啡消費行為偏好」的問卷調查，定義抽樣的母體(Population)最適合為？", opts: ["全國所有人", "不喝包裝咖啡的人", "曾經購買過包裝咖啡的人", "喜歡喝咖啡的人"], ans: 2, exp: "母體指的是研究者欲探討的整體對象。焦點是「包裝咖啡消費行為」，母體應指定曾經消費過包裝咖啡的人。" },
+            { id: 27, type: 2, q: "新創咖啡品牌進入市場前，委託調查消費者飲用習慣與定價接受度，並據此決定定位，這屬於行銷研究的哪項核心功能？", opts: ["蒐集、整理、分析市場資訊以輔助決策", "提高社群媒體曝光率", "增加銷售人員數量", "提高生產速度"], ans: 0, exp: "透過系統化資訊蒐集與分析來支持決策，正是行銷研究的典型應用。" },
+            { id: 28, type: 2, q: "行李箱品牌欲推出新飲品，老闆說：「我們先調查顧客喜好，確定市場機會再上市。」這屬於什麼活動？", opts: ["廣告設計", "行銷研究", "產品生產", "促銷活動"], ans: 1, exp: "這是一個蒐集市場與競爭者資訊，降低決策風險的過程，屬於行銷研究。" },
+            { id: 29, type: 2, q: "遊戲公司在研發新手遊前，先分析趨勢與對手，整理成報告給決策團隊，其主要目的為何？", opts: ["讓決策完全正確", "減少決策的不確定性", "確保遊戲開發費用", "降低行銷成本"], ans: 1, exp: "行銷研究的核心是減少決策的不確定性與風險，而非保證絕對成功。" },
+            { id: 30, type: 2, q: "某超市欲了解顧客對新開幕分店滿意度，先對常客進行初步訪談收集意見，這屬於哪個研究階段？", opts: ["探索性研究", "量化研究設計", "抽樣及樣本建置", "資料研究"], ans: 0, exp: "探索性研究(如訪談)用於初步蒐集資訊與釐清問題方向。" },
+            { id: 31, type: 2, q: "一家手機品牌鎖定大專生族群，採分層抽樣，從不同學校/年級抽一定比例樣本，這屬於哪個階段？", opts: ["研究問題的定義", "抽樣及樣本建置", "問題情境的產生", "探索性研究"], ans: 1, exp: "選定母體特徵並設定抽取比例，屬於抽樣及樣本建置階段。" },
+            { id: 32, type: 2, q: "保健食品公司分析問卷發現顧客更重視「成分透明度」而非「價格優惠」，因此推出產地追溯標籤。此為何階段成果應用？", opts: ["研究問題的定義", "抽樣及樣本建置", "資料研究", "策略建議"], ans: 3, exp: "將分析結果轉化為具體行動方案(推出標籤)，屬於策略建議階段。" },
+            { id: 33, type: 2, q: "信義房屋人資部想知道求職者最在意哪些品牌價值，但尚未確定方向。此時應啟動哪一階段行銷研究？", opts: ["探索性研究", "敘述性研究", "因果性研究", "時間序列研究"], ans: 0, exp: "當不確定「有哪些價值構面」時，應先進行探索性研究以釐清方向。" },
+            { id: 34, type: 2, q: "當企業出現「門市來客數下滑、會員續約率下降」等情況，最適合歸類為哪種問題來源？", opts: ["經營異常", "市場反應不如預期", "競爭行為改變", "外部趨勢觀察"], ans: 0, exp: "來客數與續約率等營運指標惡化，屬於典型的「經營異常」。" },
+            { id: 35, type: 2, q: "下列行銷研究問題情境，何者「不屬於」競爭行為改變？", opts: ["競品推出低價方案", "競品推出24小時客服", "競品導入AI功能", "自家新品上市後銷售不佳"], ans: 3, exp: "「自家新品銷售不佳」屬於「市場反應不如預期」，與對手行為無關。" },
+            { id: 36, type: 2, q: "門市店員察覺顧客結帳時對優惠內容感到疑惑導致效率慢，這最適合歸類為哪種問題來源？", opts: ["外部趨勢觀察", "內部觀察/經驗", "競爭行為改變", "市場反應不如預期"], ans: 1, exp: "第一線員工觀察到的顧客行為細節，屬於「內部觀察/經驗」。" },
+            { id: 37, type: 2, q: "因 ESG 議題發酵，越來越多消費者選擇「碳足跡標示」產品。這反映了哪一種問題來源？", opts: ["內部觀察", "市場反應不如預期", "外部趨勢觀察", "競爭行為改變"], ans: 2, exp: "社會價值觀轉變引發的消費偏好改變，是典型的「外部趨勢觀察」。" },
+            { id: 38, type: 2, q: "連鎖書店觀察到週末到店人數大幅減少，屬於哪一種問題情境？", opts: ["外部趨勢觀察", "經營異常", "市場反應不如預期", "競爭行為改變"], ans: 1, exp: "到店人數減少屬於經營指標性惡化(經營異常)。" },
+            { id: 39, type: 2, q: "手搖飲品牌在社群發現「減糖生活」話題升溫，顧客偏好低糖飲品，這屬於？", opts: ["內部觀察", "市場反應不如預期", "外部趨勢觀察", "競爭行為改變"], ans: 2, exp: "社群討論屬於外部環境趨勢，反映價值觀與消費習慣變化。" },
+            { id: 40, type: 2, q: "手搖飲欲了解新口味接受度，正式推出前訪談 10 位忠實顧客，這屬於？", opts: ["焦點團體訪談", "次級資料蒐集", "實地觀察", "文獻回顧"], ans: 0, exp: "小規模深度討論屬於焦點團體，用於獲得消費者深層意見。" },
+            { id: 41, type: 2, q: "旅遊平台想分析近五年觀光趨勢，直接下載觀光局統計資料來分析，這屬於？", opts: ["焦點團體訪談", "次級資料蒐集", "文獻回顧", "描述性研究"], ans: 1, exp: "使用政府統計(既有資料)屬於次級資料蒐集，省時省成本。" },
+            { id: 42, type: 2, q: "企業在行銷研究時忽略「探索性研究」階段，最可能導致什麼後果？", opts: ["研究問題定義未釐清，後續研究焦點可能偏離", "樣本數無法達到推論需求", "結果無法進行量化分析", "抽樣一定會代表性不足"], ans: 0, exp: "探索性研究用於初步釐清問題，缺乏此階段易導致後續調查焦點模糊。" },
+            { id: 43, type: 2, q: "誠品書店舉辦焦點團體了解會員制度的看法，並依此改進。此研究屬於何種類型？", opts: ["探索性研究", "敘述性研究", "因果性研究", "量化研究"], ans: 0, exp: "焦點團體屬於探索性研究(質性)，深入了解消費者看法以制定改進策略。" },
+            { id: 44, type: 2, q: "愛合購電商決定分析過去三年的顧客交易紀錄與瀏覽行為，此舉主要優勢是？", opts: ["能直接取代問卷調查", "能觀察顧客長期行為軌跡並進行精準行銷", "能完全避免資料更新", "能確保顧客永不流失"], ans: 1, exp: "自有交易資料能長期追蹤真實行為並支持精準行銷，比單次調查更具策略價值。" },
+            { id: 45, type: 2, q: "朱元璋戰略「高築牆，廣積糧，緩稱王」。若應用於企業行銷策略，何者最符合「廣積糧」精神？", opts: ["大量投放廣告", "透過價格戰搶佔市佔", "提前宣告為市場領導者", "積極累積顧客資料庫與會員制度，建立長期資產"], ans: 3, exp: "「廣積糧」代表儲備資源以待持久戰，在行銷中對應「累積顧客/交易資料」。" },
+            { id: 46, type: 2, q: "連鎖健身房發現女性會員成長放緩，若要釐清原因並找出新招募機會，最適合採用哪一類研究問題？", opts: ["價格研究", "品牌形象研究", "通路研究", "市場機會研究"], ans: 3, exp: "成長放緩是市場未滿足訊號，需進行市場機會研究探索新客群與需求。" },
+            { id: 47, type: 2, q: "甜點品牌計畫在車站新開店，希望測試不同店內動線設計對顧客購買行為影響，應屬於哪一類研究？", opts: ["產品與服務研究", "市場機會研究", "品牌形象研究", "價格研究"], ans: 0, exp: "動線設計屬顧客接觸體驗(服務設計)，測試其影響屬於產品與服務研究。" },
+            { id: 48, type: 2, q: "必勝客想知道不同披薩促銷方案是否會影響顧客單次消費金額，最適合採用？", opts: ["因果性研究", "敘述性研究", "探索性研究", "個案研究"], ans: 0, exp: "驗證「促銷方案(自變數)」對「消費金額(因變數)」的影響，屬因果性研究。" },
+            { id: 49, type: 2, q: "研究者想量化台北市民對某高級餐廳「服務態度」的整體評價，以呈現市民普遍看法，應採用？", opts: ["探索性研究", "敘述性研究", "因果性研究", "質性研究"], ans: 1, exp: "為了客觀描繪普遍現象與特徵分布，應採用敘述性研究。" },
+            { id: 50, type: 2, q: "「墊腳石書店」想蒐集各年齡層到店頻率、停留時間，描繪閱讀與消費特徵。該研究最適合採用？", opts: ["敘述性研究", "因果性研究", "探索性研究", "二手資料分析"], ans: 0, exp: "重點在於描述顧客行為與特徵分布，未驗證因果，故為敘述性研究。" },
+            { id: 51, type: 2, q: "保險公司想驗證「不同廣告呈現是否會影響潛在客戶的投保意願」，何種設計最合適？", opts: ["時間序列分析", "實驗設計", "專家焦點訪談", "消費者輪廓描繪"], ans: 1, exp: "驗證「廣告→投保意願」的因果關係，應採實驗設計。" },
+            { id: 52, type: 2, q: "冰淇淋業者透過時間序列資料觀察不同季節銷量，並導入氣溫變化模型，判斷購買量是否因溫度變動。其研究設計目的為？", opts: ["敘述性研究，用於描述行為", "探索性研究，探討潛力", "因果性研究，驗證氣溫對銷量影響", "敘述性研究，識別族群"], ans: 2, exp: "時間序列分析檢證氣溫(自變數)是否為影響銷量(因變數)因素，屬因果性研究。" },
+            { id: 53, type: 2, q: "咖啡飲用行為調查顯示，年輕世代偏愛加氣泡水的花式喝法，年長世代偏好純粹美式。這屬於何種研究？", opts: ["探索性研究", "敘述性研究", "因果性研究", "時間序列研究"], ans: 1, exp: "敘述性研究用以衡量/描繪群體的偏好分布現象。" },
+            { id: 54, type: 2, q: "咖啡品牌想調查口味偏好，若研究人員直接在門市向購買的顧客發放問卷，此屬於？", opts: ["隨機抽樣", "非隨機抽樣", "集群抽樣", "分層隨機抽樣"], ans: 1, exp: "在門市發放是基於方便取得樣本(便利抽樣)，非隨機抽出，屬非隨機抽樣。" },
+            { id: 55, type: 2, q: "電信公司於會員資料庫中隨機抽取 5,000 人進行滿意度調查，此代表何種特徵？", opts: ["樣本缺乏代表性", "屬於隨機抽樣", "不可做推論", "完全依賴研究人員判斷"], ans: 1, exp: "從完整名單隨機抽取，確保平等機率，是隨機抽樣。" },
+            { id: 56, type: 2, q: "手搖飲品牌計畫從全國會員名單中使用電腦隨機抽取 2,000 人進行問卷，此屬於？", opts: ["非隨機抽樣", "隨機抽樣", "便利抽樣", "滾雪球抽樣"], ans: 1, exp: "電腦隨機抽取確保機率均等，屬隨機抽樣，能提升推論力。" },
+            { id: 57, type: 2, q: "小美想了解大學生最喜歡的午餐，將網路問卷放在 FB 社團邀請網友填寫。此為何種抽樣？", opts: ["隨機抽樣", "非隨機抽樣", "系統抽樣", "集群抽樣"], ans: 1, exp: "並非所有大學生都有相等機率看到並填寫，基於方便性發放，屬非隨機抽樣。" },
+            { id: 58, type: 2, q: "燦坤家電為快速獲新產品回饋，直接在門市攔截當日逛街顧客訪問，此為？", opts: ["隨機抽樣", "系統抽樣", "非隨機抽樣", "分層隨機抽樣"], ans: 2, exp: "只訪問現場顧客(非所有母體都有機會)，屬非隨機抽樣(便利抽樣)。" },
+            { id: 59, type: 2, q: "企業想進行全國腳踏車購買行為調查，但只採用非隨機抽樣，最致命的問題是？", opts: ["調查成本過高", "樣本無法代表整體母體，缺乏推論性", "問卷數量過多", "無法套用統計軟體"], ans: 1, exp: "非隨機抽樣無法保證代表性，若調查「全國」卻用特定地點樣本，結果將嚴重偏差。" },
             { id: 60, type: 2, q: "PChome 電商平台欲預測雙11活動的流量與銷售走勢，最適合採用哪種分析方法？", opts: ["時間序列分析", "集群分析", "關聯分析", "描述統計"], ans: 0, exp: "時間序列分析依據歷史時間數據，用於預測未來的走勢。" },
             { id: 61, type: 2, q: "大型超市分析消費紀錄發現，買義大利麵的人常同時購買橄欖油。最可能採用的方法為？", opts: ["關聯分析", "描述統計", "集群分析", "迴歸分析"], ans: 0, exp: "關聯分析(如購物籃分析)能找出商品間共同購買的傾向。" },
             { id: 62, type: 2, q: "Walmart 發現晚上買尿布的男性常順便買啤酒。依 TIMS 觀點，兩者該放一起嗎？", opts: ["絕對要放一起", "絕對要分開", "無標準答案，需配合動線分析(目標導向放一起/探索型分開)", "應取消販售其中一項"], ans: 2, exp: "沒有標準答案。目標導向型顧客適合放一起加促便利；探索型顧客則適合分開陳列延長停留。" },
@@ -578,35 +619,14 @@
             { id: 64, type: 2, q: "企業透過調查發現，目標客群習慣在電商而非實體店購物。於是決定調整佈局。這最初是哪類研究問題的範疇？", opts: ["價格研究", "品牌研究", "通路研究", "推廣研究"], ans: 2, exp: "評估消費者購買的管道與偏好，並據此調整門市/電商資源，屬通路研究。" },
             { id: 65, type: 2, q: "化妝品公司利用 CRM 系統找出「高消費力、愛買抗老產品」的 VIP 顧客，並給予特定標籤。此過程最接近何種分析概念？", opts: ["迴歸分析", "關聯分析", "集群分析", "時間序列分析"], ans: 2, exp: "依據消費特徵與背景，將顧客進行分類(分群標籤)，屬於集群分析。" },
             { id: 66, type: 2, q: "某品牌花大錢請網紅代言，想確認該活動是否真有帶動業績。應進行哪類研究？", opts: ["市場機會研究", "產品與服務研究", "價格研究", "推廣策略研究"], ans: 3, exp: "評估廣告、代言人或公關活動的成效與影響力，屬推廣策略研究。" },
-            { id: 67, type: 2, q: "當你面對一份完全陌生的產業市場調查任務，長官要你下週交出「研究架構方向」，你第一步最該做什麼？", opts: ["立刻發放 1000 份問卷", "進行次級資料蒐集與文獻回顧 (探索性研究)", "直接隨機抓路人訪問", "建立迴歸分析模型"], ans: 1, exp: "面對未知/陌生領域，應先進行成本最低的探索性研究(次級資料/文獻)來釐清方向。" }
+            { id: 67, type: 2, q: "當你面對一份完全陌生的產業市場調查任務，長官要你下週交出「研究架構方向」，你第一步最該做什麼？", opts: ["立刻發放 1000 份問卷", "進行次級資料蒐集與文獻回顧 (探索性研究)", "直接隨機抓路人訪問", "建立迴歸分析模型"], ans: 1, exp: "面對未知/陌生領域，應先進行成本最低的探索性研究(次級資料/文獻)來釐清方向。" },
+            { id: 68, type: 2, q: "知名速食店想知道，把薯條的鹽巴減少 10% ，顧客會不會吃得出來並且抱怨？於是他們在A門市維持原配方，B門市改為減鹽配方。這屬於哪一種研究設計？", opts: ["探索性研究", "敘述性研究", "因果性研究 (實驗設計)", "次級資料蒐集"], ans: 2, exp: "透過控制變數(鹽巴量)，比較不同組別(門市A/B)的結果，這是典型的因果性研究(實驗設計)以驗證因果關係。" }
         ];
 
-        // AI specific mock questions
-        const aiMockBank = [
-            {
-                q: "【實務情境】知名速食店想知道，把薯條的鹽巴減少 10% ，顧客會不會吃得出來並且抱怨？ 於是他們在A門市維持原配方，B門市改為減鹽配方，觀察一個月的客訴量。這屬於哪一種研究設計？",
-                opts: ["探索性研究，因為在試水溫。","敘述性研究，為了描繪客群。","因果性研究 (實驗設計)，驗證鹽巴多寡是否導致客訴變動。","次級資料蒐集。"],
-                ans: 2,
-                exp: "TIMS 觀點(4-2-4)：透過控制變數(鹽巴量)，比較不同組別(門市A/B)的結果(客訴量)，這是典型的因果性研究(實驗設計)以驗證因果關係。"
-            },
-            {
-                q: "【實務情境】一家手搖飲店的老闆每天在店裡觀察，發現「下午三點過後，買無糖綠茶的女生特別多」，於是決定在下午三點推出無糖綠茶優惠。這個決策的起點，最符合哪一種「問題情境的產生」來源？",
-                opts: ["經營異常","市場反應不如預期","內部觀察 / 經驗","競爭行為改變"],
-                ans: 2,
-                exp: "課本 4-2-1：來自第一線人員(老闆自己)在門市日常營運中的敏銳觀察與經驗累積，屬於「內部觀察/經驗」。"
-            },
-            {
-                q: "【實務情境】你的行銷總監要求你立刻做一份「大學生對本品牌好感度」的調查。為了趕在明天開會報告，你把問卷丟到自己的個人 IG 限時動態請朋友填寫。請問這份調查結果有什麼致命缺陷？",
-                opts: ["沒有缺陷，因為回收速度很快。","屬於「非隨機抽樣(便利抽樣)」，樣本嚴重偏差，無法代表「所有大學生」母體。","屬於「敘述性研究」，無法驗證因果。","應該要改用語音電話訪問才對。"],
-                ans: 1,
-                exp: "課本 4-2-5：把問卷丟給自己朋友，朋友的同質性通常很高，這並非每個大學生都有相同機率填寫。這屬於非隨機(便利)抽樣，結果完全無法推論至整體母體。"
-            }
-        ];
-
-        let currentTab = 'standard';
-        let isSubmitted = false;
-        let selectedQuestions = []; 
-        let selectedAiQuestions = []; 
+        let currentTab = 'theory';
+        let isSubmitted = { theory: false, practical: false };
+        let selectedTheory = []; 
+        let selectedPractical = []; 
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -617,25 +637,20 @@
         }
 
         function generateRandomQuiz() {
-            if(isSubmitted) {
-                isSubmitted = false;
-                document.getElementById('score-display').classList.add('hidden');
-                
-                const btn = document.getElementById('submit-btn');
-                btn.innerHTML = '交卷並查看解析 <i class="fa-solid fa-paper-plane ml-3"></i>';
-                btn.classList.remove('bg-slate-400', 'cursor-not-allowed', 'shadow-none');
-                btn.classList.add('bg-orange-500', 'hover:bg-orange-600', 'shadow-lg');
-            }
+            isSubmitted = { theory: false, practical: false };
+            document.getElementById('score-display').classList.add('hidden');
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '批改本頁試卷 <i class="fa-solid fa-paper-plane ml-3"></i>';
+            btn.className = "w-full sm:w-auto bg-primary hover:bg-blue-800 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center text-lg";
 
-            // Pick 5 random questions from the full 68 question bank
-            const shuffledBank = shuffleArray([...fullQuestionBank]);
-            selectedQuestions = shuffledBank.slice(0, 5);
-            renderQuiz('quiz-standard', selectedQuestions, 'std');
+            const theoryBank = fullQuestionBank.filter(q => q.type === 1);
+            const practicalBank = fullQuestionBank.filter(q => q.type === 2);
 
-            // Pick 3 AI questions
-            const shuffledAi = shuffleArray([...aiMockBank]);
-            selectedAiQuestions = shuffledAi.slice(0, 3);
-            renderQuiz('quiz-ai', selectedAiQuestions, 'ai');
+            selectedTheory = shuffleArray([...theoryBank]).slice(0, 5);
+            selectedPractical = shuffleArray([...practicalBank]).slice(0, 5);
+
+            renderQuiz('quiz-theory', selectedTheory, 'theory');
+            renderQuiz('quiz-practical', selectedPractical, 'practical');
 
             setTimeout(() => {
                 document.getElementById('quiz-section').scrollIntoView({ behavior: 'smooth' });
@@ -645,25 +660,29 @@
         function renderQuiz(containerId, data, prefix) {
             const container = document.getElementById(containerId);
             container.innerHTML = data.map((item, index) => `
-                <div class="quiz-item border border-slate-200 rounded-2xl p-6 md:p-8 bg-white shadow-sm hover:shadow-md transition" data-correct="${item.ans}" data-prefix="${prefix}" data-idx="${index}">
+                <div class="quiz-item border border-slate-200 rounded-2xl p-6 md:p-8 bg-white shadow-sm hover:shadow-md transition" id="qbox_${prefix}_${index}">
                     <div class="flex items-start gap-3 mb-5">
-                        <span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-lg text-sm font-black shadow-inner shrink-0 mt-0.5">Q${index + 1}</span>
+                        <span class="bg-${prefix==='theory'?'blue':'orange'}-100 text-${prefix==='theory'?'blue':'orange'}-700 px-3 py-1 rounded-lg text-sm font-black shadow-inner shrink-0 mt-0.5">Q${index + 1}</span>
                         <h3 class="font-bold text-lg md:text-xl text-gray-800 leading-relaxed">${item.q}</h3>
                     </div>
                     <div class="space-y-3 pl-0 md:pl-14">
                         ${item.opts.map((opt, oIdx) => `
-                            <label class="quiz-option flex items-center p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-orange-50 hover:border-orange-200 transition group" id="opt_${prefix}_${index}_${oIdx}">
+                            <label class="quiz-option flex items-center p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition group" id="opt_${prefix}_${index}_${oIdx}">
                                 <div class="relative flex items-center justify-center mr-4 shrink-0">
-                                    <input type="radio" name="q_${prefix}_${index}" value="${oIdx}" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-full checked:border-orange-500 checked:bg-orange-500 transition cursor-pointer">
+                                    <input type="radio" name="q_${prefix}_${index}" value="${oIdx}" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-full checked:border-${prefix==='theory'?'blue':'orange'}-500 checked:bg-${prefix==='theory'?'blue':'orange'}-500 transition cursor-pointer">
                                     <div class="absolute inset-0 m-auto w-2 h-2 rounded-full bg-white scale-0 peer-checked:scale-100 transition duration-200 pointer-events-none"></div>
                                 </div>
-                                <span class="text-gray-700 text-base leading-tight group-hover:text-orange-900 transition">${opt}</span>
+                                <span class="text-gray-700 text-base leading-tight">${opt}</span>
                             </label>
                         `).join('')}
                     </div>
-                    <div class="explanation mt-6 md:ml-14 p-5 bg-gradient-to-r from-orange-50 to-white border-l-4 border-orange-400 rounded-r-xl text-sm text-gray-700 shadow-inner" id="exp_${prefix}_${index}">
-                        <div class="font-bold text-orange-600 mb-2 flex items-center text-base"><i class="fa-solid fa-book-open mr-2"></i> 官方詳解：</div> 
-                        <div class="leading-relaxed ai-content font-medium">${marked.parse(item.exp)}</div>
+                    <div class="explanation mt-6 md:ml-14 p-5 bg-slate-50 border-l-4 border-slate-400 rounded-r-xl text-sm text-gray-700 shadow-inner" id="exp_${prefix}_${index}">
+                        <div class="font-bold text-gray-700 mb-2 flex items-center text-base"><i class="fa-solid fa-book-open mr-2"></i> 官方詳解：</div> 
+                        <div class="leading-relaxed mb-4">${item.exp}</div>
+                        <button onclick="callAiTeacher('${prefix}', ${index})" class="mt-2 text-xs bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold px-4 py-2 rounded-lg transition flex items-center gap-2 border border-purple-200 shadow-sm">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> 呼叫 TONY AI 老師針對此題進行 1 對 1 盲點解析
+                        </button>
+                        <div id="ai_resp_${prefix}_${index}" class="mt-3 hidden"></div>
                     </div>
                 </div>
             `).join('');
@@ -671,43 +690,53 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('quiz-standard').classList.toggle('hidden', tab !== 'standard');
-            document.getElementById('quiz-ai').classList.toggle('hidden', tab !== 'ai');
+            document.getElementById('quiz-theory').classList.toggle('hidden', tab !== 'theory');
+            document.getElementById('quiz-practical').classList.toggle('hidden', tab !== 'practical');
             
-            const btnStd = document.getElementById('tab-standard');
-            const btnAi = document.getElementById('tab-ai');
+            const btnTheory = document.getElementById('tab-theory');
+            const btnPractical = document.getElementById('tab-practical');
 
-            if(tab === 'standard') {
-                btnStd.className = "px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition whitespace-nowrap shadow-sm";
-                btnAi.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition flex items-center gap-2 whitespace-nowrap";
+            if(tab === 'theory') {
+                btnTheory.className = "px-5 py-2.5 rounded-md font-bold bg-blue-600 text-white transition whitespace-nowrap shadow-sm";
+                btnPractical.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-1 whitespace-nowrap";
             } else {
-                btnAi.className = "px-5 py-2.5 rounded-md font-bold bg-purple-600 text-white transition flex items-center gap-2 whitespace-nowrap shadow-sm";
-                btnStd.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition whitespace-nowrap";
+                btnPractical.className = "px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition flex items-center gap-1 whitespace-nowrap shadow-sm";
+                btnTheory.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition whitespace-nowrap";
+            }
+
+            const btn = document.getElementById('submit-btn');
+            const scoreDisplay = document.getElementById('score-display');
+            if(isSubmitted[currentTab]) {
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> 批改完成';
+                btn.className = "w-full sm:w-auto bg-slate-400 text-white font-black py-4 px-10 rounded-xl shadow-none cursor-not-allowed flex items-center justify-center text-lg";
+                scoreDisplay.classList.remove('hidden');
+            } else {
+                btn.innerHTML = '批改本頁試卷 <i class="fa-solid fa-paper-plane ml-3"></i>';
+                btn.className = "w-full sm:w-auto bg-primary hover:bg-blue-800 text-white font-black py-4 px-10 rounded-xl shadow-lg transition transform hover:-translate-y-1 flex items-center justify-center text-lg";
+                scoreDisplay.classList.add('hidden');
             }
         }
 
-        async function submitQuiz() {
-            if (isSubmitted) {
+        function submitQuiz() {
+            if (isSubmitted[currentTab]) {
                 Swal.fire({
-                    title: '已經交卷囉！',
-                    text: '若想挑戰不同題目，請點擊右上角「重新抽題」。',
+                    title: '此頁籤已經交卷囉！',
+                    text: '您可以切換到另一個頁籤作答，或點擊「重新抽題」。',
                     icon: 'info',
-                    confirmButtonColor: '#f97316'
+                    confirmButtonColor: '#1e3a8a'
                 });
                 return;
             }
 
-            const prefix = currentTab === 'standard' ? 'std' : 'ai';
-            const data = currentTab === 'standard' ? selectedQuestions : selectedAiQuestions;
+            const prefix = currentTab;
+            const data = currentTab === 'theory' ? selectedTheory : selectedPractical;
             let score = 0;
             let answeredCount = 0;
-            const scorePerQ = 100 / data.length;
+            const scorePerQ = 100 / data.length; 
             
-            const apiKey = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('tims_gemini_api_key');
-
             const btn = document.getElementById('submit-btn');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-3"></i> 系統批改中...';
-            btn.classList.remove('hover:-translate-y-1', 'bg-orange-500', 'hover:bg-orange-600', 'shadow-lg');
+            btn.classList.remove('hover:-translate-y-1', 'bg-primary', 'hover:bg-blue-800');
             btn.classList.add('bg-slate-500', 'shadow-none', 'cursor-wait');
 
             data.forEach((item, index) => {
@@ -734,10 +763,6 @@
                 inputs.forEach(input => input.disabled = true);
             });
 
-            if (currentTab === 'ai' && apiKey && answeredCount > 0) {
-                await generateAiExplanations(data, apiKey);
-            }
-
             btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> 批改完成';
             btn.classList.remove('bg-slate-500', 'cursor-wait');
             btn.classList.add('bg-slate-400', 'cursor-not-allowed');
@@ -747,7 +772,7 @@
                     icon: 'warning', 
                     title: '有題目未作答', 
                     text: '系統已自動為您標示正確解答並顯示解析。',
-                    confirmButtonColor: '#f97316'
+                    confirmButtonColor: '#1e3a8a'
                 });
             }
 
@@ -770,50 +795,81 @@
                 }
             }, 10);
 
-            isSubmitted = true;
+            isSubmitted[currentTab] = true;
         }
 
-        async function generateAiExplanations(questions, key) {
-            for (let i = 0; i < questions.length; i++) {
-                const item = questions[i];
-                const selected = document.querySelector(`input[name="q_ai_${i}"]:checked`);
-                if (!selected) continue;
+        async function callAiTeacher(prefix, index) {
+            const key = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('tims_gemini_api_key');
+            if(!key) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '未設定 API Key',
+                    text: '請在畫面右上角輸入並儲存您的 Gemini API Key，才能呼叫 TONY AI 老師！',
+                    confirmButtonColor: '#1e3a8a'
+                });
+                return;
+            }
 
-                const userOptIndex = parseInt(selected.value);
-                const userOptText = item.opts[userOptIndex];
-                const isCorrect = userOptIndex === item.ans;
+            const data = prefix === 'theory' ? selectedTheory : selectedPractical;
+            const item = data[index];
+            const selected = document.querySelector(`input[name="q_${prefix}_${index}"]:checked`);
+            const userOptText = selected ? item.opts[parseInt(selected.value)] : '未作答';
+            const isCorrect = selected ? parseInt(selected.value) === item.ans : false;
 
-                const expDiv = document.getElementById(`exp_ai_${i}`);
-                expDiv.innerHTML += `<div class="mt-4 pt-4 border-t border-purple-200 text-purple-700 font-bold flex items-center"><i class="fa-solid fa-spinner fa-spin mr-3 text-xl"></i> 正在呼叫 Gemini 分析您的作答盲點...</div>`;
+            const aiRespDiv = document.getElementById(`ai_resp_${prefix}_${index}`);
+            aiRespDiv.classList.remove('hidden');
+            aiRespDiv.innerHTML = `<div class="p-4 bg-purple-50 rounded-xl border border-purple-100 text-purple-700 font-bold flex items-center shadow-inner"><i class="fa-solid fa-spinner fa-spin mr-3 text-xl"></i> TONY AI 老師正在分析您的盲點...</div>`;
 
-                const prompt = `
-                    你是一位資深的行銷學教授。學生剛完成了一題行銷企劃證照考題：
-                    題目：「${item.q}」
-                    學生的選項：「${userOptText}」
-                    這是${isCorrect ? '正確' : '錯誤'}的。正確答案是：「${item.opts[item.ans]}」。
-                    請用繁體中文，針對該學生的選擇，給予一段簡短(約50-80字)的一對一指導解析。語氣要像導師一樣溫暖專業。
+            const prompt = `
+                你現在是「TONY 楊文澤老師」，一位資深的行銷學教授與科技顧問。
+                學生剛完成了一題 TIMS 初階行銷企劃證照考題：
+                題目：「${item.q}」
+                學生的選項：「${userOptText}」
+                這是${isCorrect ? '正確' : '錯誤'}的。正確答案是：「${item.opts[item.ans]}」。
+                
+                請用繁體中文，針對該學生的選擇，給予一段簡短(約80-100字)的一對一指導解析。
+                語氣要像 TONY 老師一樣，溫暖、專業，且一針見血地點出學生的觀念盲點。
+                不要重複題目，直接開始解說。
+            `;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${key}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ role: "user", parts: [{ text: prompt }] }],
+                        generationConfig: { maxOutputTokens: 300, temperature: 0.7 }
+                    })
+                });
+                
+                const responseData = await response.json();
+
+                if (!response.ok || responseData.error) {
+                    throw new Error(responseData.error ? responseData.error.message : 'HTTP Error');
+                }
+                
+                const aiFeedback = responseData.candidates[0].content.parts[0].text;
+                
+                aiRespDiv.innerHTML = `
+                    <div class="p-5 bg-gradient-to-br from-purple-50 to-white rounded-xl border border-purple-200 shadow-sm relative overflow-hidden mt-2">
+                        <div class="absolute right-0 top-0 opacity-10 text-6xl -mt-4 -mr-4 text-purple-600"><i class="fa-solid fa-robot"></i></div>
+                        <div class="flex items-start gap-3 relative z-10">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-10 h-10 rounded-full border-2 border-purple-200 shrink-0 object-cover">
+                            <div>
+                                <strong class="text-purple-800 block mb-1">TONY AI 老師專屬指導：</strong>
+                                <div class="text-sm text-gray-700 leading-relaxed ai-content">${marked.parse(aiFeedback)}</div>
+                            </div>
+                        </div>
+                    </div>
                 `;
 
-                try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ role: "user", parts: [{ text: prompt }] }],
-                            generationConfig: { maxOutputTokens: 256, temperature: 0.7 }
-                        })
-                    });
-                    
-                    if(!response.ok) throw new Error('API Error');
-                    const data = await response.json();
-                    const aiFeedback = data.candidates[0].content.parts[0].text;
-                    
-                    expDiv.innerHTML = expDiv.innerHTML.replace(/<div class="mt-4.*<\/div>/, `<div class="mt-4 pt-4 border-t border-purple-200 bg-purple-50 p-4 rounded-xl text-purple-900 ai-content shadow-inner"><strong><i class="fa-solid fa-robot mr-2 text-lg"></i> AI 專屬指導：</strong><br><div class="mt-2 text-base">${marked.parse(aiFeedback)}</div></div>`);
-
-                } catch (e) {
-                    console.error("AI Generation failed", e);
-                    expDiv.innerHTML = expDiv.innerHTML.replace(/<div class="mt-4.*<\/div>/, `<div class="mt-4 pt-4 border-t border-red-200 text-red-500 text-sm font-bold"><i class="fa-solid fa-triangle-exclamation mr-2"></i> AI 專屬解析載入失敗，請檢查 API Key 狀態。</div>`);
-                }
+            } catch (e) {
+                console.error("AI Generation failed:", e);
+                aiRespDiv.innerHTML = `
+                    <div class="p-4 bg-red-50 rounded-xl border border-red-200 text-red-600 text-sm font-bold flex items-center shadow-inner mt-2">
+                        <i class="fa-solid fa-triangle-exclamation mr-2"></i> AI 專屬解析載入失敗。系統訊息：${e.message}
+                        <br><span class="text-xs font-normal text-gray-500 mt-1 block">請確認您的 API Key 是否正確，以及該 Key 是否具備使用 gemini-3.8-flash 模型的權限。</span>
+                    </div>`;
             }
         }
 
@@ -824,7 +880,7 @@
                 Swal.fire({ 
                     icon: 'success', 
                     title: '儲存成功', 
-                    text: 'API Key 已暫存，後續作答 AI 情境題將啟用專屬智能批改。', 
+                    text: 'API Key 已暫存，錯題 AI 解析功能已啟用！', 
                     timer: 2000, 
                     showConfirmButton: false,
                     confirmButtonColor: '#1e3a8a'
@@ -836,7 +892,6 @@
             const savedKey = localStorage.getItem('tims_gemini_api_key');
             if(savedKey) document.getElementById('apiKeyInput').value = savedKey;
             
-            // Generate TOC dynamic active state
             const scrollArea = document.getElementById('scroll-area');
             const tocLinks = document.querySelectorAll('.toc-link');
             
@@ -868,7 +923,6 @@
 
             generateRandomQuiz();
         });
-
     </script>
 </body>
 </html>
