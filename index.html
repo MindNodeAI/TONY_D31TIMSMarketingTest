@@ -91,7 +91,6 @@
                     <div class="relative">
                         <div class="flex justify-between items-center mb-1">
                             <label class="block text-xs font-bold text-gray-700">密碼</label>
-                            <!-- 新增：忘記密碼按鈕 -->
                             <a href="javascript:void(0)" onclick="window.handleForgotPassword()" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition">忘記密碼？</a>
                         </div>
                         <input type="password" id="loginPassword" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition" placeholder="請輸入密碼">
@@ -149,8 +148,7 @@
                 <div class="flex items-center gap-4">
                     <div class="flex items-center justify-center shrink-0">
                         <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" 
-                             alt="TIMS Logo" 
-                             class="h-10 md:h-12 object-contain drop-shadow-sm">
+                             alt="TIMS Logo" class="h-10 md:h-12 object-contain drop-shadow-sm">
                     </div>
                     <div class="hidden sm:block">
                         <h1 class="text-xl md:text-2xl font-black text-gray-800 tracking-tight">TIMS 初階行銷企劃證照考試準備平台</h1>
@@ -159,11 +157,15 @@
                 </div>
                 
                 <div class="flex items-center gap-3">
-                    <div class="text-right hidden md:block">
+                    <!-- Admin Button (Hidden by default) -->
+                    <button id="adminBtn" onclick="window.switchAppView('admin')" class="hidden text-xs bg-red-50 text-red-600 hover:bg-red-100 font-bold px-3 py-1.5 rounded-lg transition border border-red-200 shadow-sm">
+                        <i class="fa-solid fa-users-gear mr-1"></i> 管理後台
+                    </button>
+                    <div class="text-right hidden md:block border-l pl-3 ml-1">
                         <p class="text-xs font-bold text-gray-800" id="userDisplayName">Hi, 學習者</p>
                         <p class="text-[10px] text-gray-500" id="userRoleDisplay">學員</p>
                     </div>
-                    <button onclick="window.handleLogout()" class="text-xs border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold px-3 py-1.5 rounded-lg transition shadow-sm">
+                    <button onclick="window.handleLogout()" class="text-xs border border-gray-300 text-gray-600 hover:bg-gray-100 font-bold px-3 py-1.5 rounded-lg transition shadow-sm ml-2">
                         <i class="fa-solid fa-right-from-bracket mr-1"></i> 登出
                     </button>
                 </div>
@@ -240,7 +242,6 @@
                                 <span class="bg-purple-100 text-purple-800 text-xs px-3 py-1.5 rounded-full font-bold shadow-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 生成式 AI 創作者</span>
                                 <span class="bg-green-100 text-green-800 text-xs px-3 py-1.5 rounded-full font-bold shadow-sm"><i class="fa-solid fa-chalkboard-user mr-1"></i> 創業導師</span>
                             </div>
-                            <!-- 查看完整簡歷按鈕 -->
                             <button onclick="window.showFullProfile()" class="inline-flex items-center text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl transition shadow-sm border border-gray-200">
                                 <i class="fa-regular fa-address-card mr-2"></i> 查看完整經歷
                             </button>
@@ -392,55 +393,88 @@
                 </a>
             </div>
         </main>
+    </div>
 
-        <!-- TONY 老師 AI 小助理 (Global in Dashboard) -->
-        <button id="chatbot-fab" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary to-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300 z-[60] border-2 border-white">
-            <i class="fa-solid fa-robot text-2xl"></i>
-        </button>
+    <!-- 管理員後台 -->
+    <div id="admin-dashboard" class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 hidden flex-col pb-20">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-black text-gray-800"><i class="fa-solid fa-users-gear text-red-600 mr-2"></i> 系統管理員後台</h2>
+                <p class="text-sm text-gray-500 mt-1">目前已註冊會員列表 (由 Firebase Firestore 即時撈取)</p>
+            </div>
+            <button onclick="window.switchAppView('main')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg font-bold transition shadow-sm">
+                <i class="fa-solid fa-arrow-left mr-2"></i> 返回大廳
+            </button>
+        </div>
 
-        <div id="chat-window" class="hidden-chat fixed bottom-24 right-6 w-80 md:w-96 h-[450px] bg-white rounded-2xl shadow-[0_15px_40px_-15px_rgba(0,0,0,0.3)] flex flex-col z-[60] border border-gray-200" style="min-width: 280px; min-height: 350px;">
-            <div id="resize-handle" class="absolute top-0 left-0 w-8 h-8 cursor-nwse-resize z-50 flex items-start justify-start p-1.5 opacity-30 hover:opacity-100 transition bg-gradient-to-br from-gray-400 to-transparent rounded-tl-2xl rounded-br-lg" title="拖曳調整大小">
-                <i class="fa-solid fa-up-right-and-down-left-from-center text-[10px] text-white -rotate-45"></i>
-            </div>
-            <div class="bg-gradient-to-r from-primary to-blue-800 text-white p-3.5 flex justify-between items-center shrink-0 rounded-t-2xl relative pl-8">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-full h-full rounded-full object-cover">
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-sm leading-tight">TONY 老師 AI 小助理</h3>
-                    </div>
-                </div>
-                <div class="flex items-center gap-1 z-10">
-                    <button id="close-chat" class="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center transition" title="關閉">
-                        <i class="fa-solid fa-xmark text-lg"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 text-sm">
-                <div class="flex gap-3">
-                    <div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-1 shadow-sm border border-blue-200 overflow-hidden">
-                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-full h-full object-cover">
-                    </div>
-                    <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-700 chat-content">
-                        <p>你好！我是 TONY 老師的 AI 小助理 👋<br>準備好迎戰證照了嗎？有任何問題隨時問我喔！</p>
-                    </div>
-                </div>
-            </div>
-            <div class="p-3 bg-white border-t border-gray-200 shrink-0 flex gap-2 rounded-b-2xl">
-                <textarea id="chat-input" class="flex-1 border border-gray-300 rounded-xl p-2 resize-none h-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition" placeholder="輸入您的問題..."></textarea>
-                <button id="send-chat" class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-blue-800 transition shrink-0 shadow-sm">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead class="bg-slate-50 border-b border-gray-200">
+                        <tr>
+                            <th class="p-4 font-bold text-gray-700">真實姓名</th>
+                            <th class="p-4 font-bold text-gray-700">Email</th>
+                            <th class="p-4 font-bold text-gray-700">身分標籤</th>
+                            <th class="p-4 font-bold text-gray-700">系統權限</th>
+                            <th class="p-4 font-bold text-gray-700">註冊時間</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-user-list" class="divide-y divide-gray-100">
+                        <!-- Users will be injected here -->
+                        <tr><td colspan="5" class="p-8 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> 載入會員資料中...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
+    <!-- TONY 老師 AI 小助理 -->
+    <button id="chatbot-fab" class="fixed bottom-6 right-6 w-14 h-14 bg-gradient-to-r from-primary to-blue-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform duration-300 z-[60] border-2 border-white">
+        <i class="fa-solid fa-robot text-2xl"></i>
+    </button>
+
+    <div id="chat-window" class="hidden-chat fixed bottom-24 right-6 w-80 md:w-96 h-[450px] bg-white rounded-2xl shadow-[0_15px_40px_-15px_rgba(0,0,0,0.3)] flex flex-col z-[60] border border-gray-200" style="min-width: 280px; min-height: 350px;">
+        <div id="resize-handle" class="absolute top-0 left-0 w-8 h-8 cursor-nwse-resize z-50 flex items-start justify-start p-1.5 opacity-30 hover:opacity-100 transition bg-gradient-to-br from-gray-400 to-transparent rounded-tl-2xl rounded-br-lg" title="拖曳調整大小">
+            <i class="fa-solid fa-up-right-and-down-left-from-center text-[10px] text-white -rotate-45"></i>
+        </div>
+        <div class="bg-gradient-to-r from-primary to-blue-800 text-white p-3.5 flex justify-between items-center shrink-0 rounded-t-2xl relative pl-8">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center shrink-0">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-full h-full rounded-full object-cover">
+                </div>
+                <div>
+                    <h3 class="font-bold text-sm leading-tight">TONY 老師 AI 小助理</h3>
+                </div>
+            </div>
+            <div class="flex items-center gap-1 z-10">
+                <button id="close-chat" class="w-7 h-7 rounded-md hover:bg-white/20 flex items-center justify-center transition" title="關閉">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+        </div>
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 text-sm">
+            <div class="flex gap-3">
+                <div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-1 shadow-sm border border-blue-200 overflow-hidden">
+                    <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-full h-full object-cover">
+                </div>
+                <div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-700 chat-content">
+                    <p>你好！我是 TONY 老師的 AI 小助理 👋<br>準備好迎戰證照了嗎？有任何問題隨時問我喔！</p>
+                </div>
+            </div>
+        </div>
+        <div class="p-3 bg-white border-t border-gray-200 shrink-0 flex gap-2 rounded-b-2xl">
+            <textarea id="chat-input" class="flex-1 border border-gray-300 rounded-xl p-2 resize-none h-12 text-sm focus:outline-none focus:ring-2 focus:ring-primary transition" placeholder="輸入您的問題..."></textarea>
+            <button id="send-chat" class="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center hover:bg-blue-800 transition shrink-0 shadow-sm">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
     <script type="module">
-        // 匯入 Firebase 模組 (新增 sendPasswordResetEmail)
+        // 匯入 Firebase 模組
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCj3L_Eyee7puC_24vhfZ9nP1rl3ljGPCA",
@@ -497,11 +531,12 @@
             }
         };
 
-        // UI切換：載入遮罩 vs 大廳 vs 登入
+        // UI切換：載入遮罩 vs 大廳 vs 登入 vs 管理後台
         window.switchAppView = (view) => {
             const loader = document.getElementById('initial-loader');
             const authGate = document.getElementById('auth-gate');
             const mainApp = document.getElementById('main-app');
+            const adminDash = document.getElementById('admin-dashboard');
 
             if(loader) loader.classList.add('opacity-0', 'pointer-events-none');
             
@@ -509,6 +544,7 @@
                 if(loader) loader.classList.add('hidden');
                 authGate.classList.add('hidden');
                 mainApp.classList.add('hidden');
+                adminDash.classList.add('hidden');
 
                 if(view === 'auth') {
                     authGate.classList.remove('hidden');
@@ -516,8 +552,45 @@
                 } else if(view === 'main') {
                     mainApp.classList.remove('hidden');
                     mainApp.classList.add('flex');
+                } else if(view === 'admin') {
+                    adminDash.classList.remove('hidden');
+                    adminDash.classList.add('flex');
+                    window.loadAdminUsers(); // Load users when switching to admin
                 }
             }, 300); // Wait for fade out
+        };
+
+        // 載入管理員後台名單
+        window.loadAdminUsers = async () => {
+            const tbody = document.getElementById('admin-user-list');
+            try {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i> 撈取資料中...</td></tr>';
+                const usersSnapshot = await getDocs(collection(db, "users"));
+                let html = '';
+                
+                usersSnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const date = data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleString('zh-TW', { hour12: false }) : '無紀錄';
+                    const roleBadge = data.role === 'admin' 
+                        ? '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold border border-red-200">管理員</span>' 
+                        : '<span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-bold border border-gray-200">學員</span>';
+                    
+                    html += `
+                        <tr class="hover:bg-blue-50 transition">
+                            <td class="p-4 border-b border-gray-100 text-gray-800 font-bold">${data.realName || '未提供'}</td>
+                            <td class="p-4 border-b border-gray-100 text-gray-600">${data.email || '未提供'}</td>
+                            <td class="p-4 border-b border-gray-100 text-gray-600">${data.identity || '未提供'}</td>
+                            <td class="p-4 border-b border-gray-100">${roleBadge}</td>
+                            <td class="p-4 border-b border-gray-100 text-gray-500 text-sm">${date}</td>
+                        </tr>
+                    `;
+                });
+                
+                tbody.innerHTML = html || '<tr><td colspan="5" class="p-8 text-center text-gray-500">目前沒有任何會員資料</td></tr>';
+            } catch(error) {
+                console.error("Error loading users:", error);
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-red-500 font-bold"><i class="fa-solid fa-triangle-exclamation mr-2"></i> 無法讀取資料，請確認您的帳號是否具備 Admin 權限，且 Firestore Rule 已正確更新。</td></tr>`;
+            }
         };
 
         // Email 登入
@@ -537,7 +610,7 @@
             }
         };
 
-        // 忘記密碼處理函式 (新增)
+        // 忘記密碼處理函式
         window.handleForgotPassword = async () => {
             const { value: email } = await Swal.fire({
                 title: '<div class="text-xl font-black text-primary">忘記密碼？</div>',
@@ -691,10 +764,19 @@
                         const userData = userDocSnap.data();
                         document.getElementById('userDisplayName').innerText = `Hi, ${userData.realName}`;
                         document.getElementById('userRoleDisplay').innerText = userData.identity;
+                        
+                        // Check if admin to show button
+                        if (userData.role === 'admin') {
+                            document.getElementById('adminBtn').classList.remove('hidden');
+                        } else {
+                            document.getElementById('adminBtn').classList.add('hidden');
+                        }
+                        
                     } else {
                         // Fallback if doc doesn't exist
                         document.getElementById('userDisplayName').innerText = `Hi, ${user.displayName || '學員'}`;
                         document.getElementById('userRoleDisplay').innerText = '一般訪客';
+                        document.getElementById('adminBtn').classList.add('hidden');
                     }
                     window.switchAppView('main');
                 } catch(error) {
@@ -719,7 +801,7 @@
                         <div>
                             <h4 class="font-bold text-lg text-blue-800 border-l-4 border-secondary pl-3 mb-2 bg-gray-50 py-1">現職 Current</h4>
                             <ul class="space-y-2 pl-2">
-                                <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 龍華科技大學 數位行銷暨跨境商務系 兼任講師</li>
+                                <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 龍華科大 數位行銷講師</li>
                                 <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 智策慧 品牌行銷科技顧問</li>
                             </ul>
                         </div>
@@ -747,9 +829,9 @@
                         <div>
                             <h4 class="font-bold text-lg text-blue-800 border-l-4 border-secondary pl-3 mb-2 bg-gray-50 py-1">學歷 Education</h4>
                             <ul class="space-y-2 pl-2">
-                                <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 國立台灣大學 EMBA 商學組</li>
+                                <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 台大 EMBA 商學組</li>
                                 <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 美國 Arizona State University 互動多媒體設計</li>
-                                <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 國立台北科技大學 工業設計</li>
+                                <li class="flex items-start"><i class="fa-solid fa-angle-right text-secondary mt-1 mr-2 text-xs"></i> 北科大 工業設計</li>
                             </ul>
                         </div>
 
@@ -820,7 +902,7 @@
 
             const apiKey = document.getElementById('apiKeyInputMain')?.value.trim() || localStorage.getItem('tims_gemini_api_key');
             if (!apiKey) {
-                appendMessage('ai', '請先在上方儲存您的 Gemini API Key，小助理才能為您解答喔！<br><a href="https://aistudio.google.com/app/apikey" target="_blank" class="inline-block mt-2 text-blue-600 hover:text-blue-800 underline font-bold transition"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>點此免費申請 Gemini API 金鑰</a>'); return;
+                appendMessage('ai', '請先在上方設定區儲存您的 Gemini API Key，小助理才能為您解答喔！<br><br><a href="https://aistudio.google.com/app/apikey" target="_blank" class="inline-block bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-200 transition"><i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>點此免費申請 Gemini 金鑰</a>'); return;
             }
 
             const typingId = 'typing-' + Date.now();
