@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 for keyword modals -->
+    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Marked.js -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -46,13 +46,13 @@
         }
         .kw:hover { background-color: #dbeafe; border-bottom: 2px solid #2563eb; border-radius: 2px; }
 
+        .quiz-option { transition: all 0.2s ease-in-out; }
         .quiz-option.correct { background-color: #d1fae5; border-color: #10b981; }
         .quiz-option.wrong { background-color: #fee2e2; border-color: #ef4444; }
-        .explanation { display: none; animation: fadeIn 0.5s; }
-        .explanation.show { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        .explanation { display: none; }
+        .explanation.show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Grid transitions */
         .hover-card { transition: all 0.3s ease; }
         .hover-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
         
@@ -60,26 +60,30 @@
             box-shadow: 0 4px 14px 0 rgba(0,0,0,0.15);
             border: 3px solid white;
         }
+
+        .tims-viewpoint {
+            border-left: 5px solid #4f46e5;
+            background: linear-gradient(to right, #eef2ff, #ffffff);
+        }
     </style>
 </head>
 <body class="bg-slate-100 text-gray-800 h-screen flex flex-col font-sans overflow-hidden">
 
-    <header class="bg-white shadow z-20 shrink-0">
+    <!-- Header & Top Nav -->
+    <header class="bg-white shadow-md z-20 shrink-0">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="flex items-center justify-center w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition" title="返回學習大廳">
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center justify-center w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition mr-2" title="返回學習大廳">
                     <i class="fa-solid fa-house text-lg"></i>
                 </a>
-                
                 <div class="hidden sm:flex w-10 h-10 bg-primary text-white rounded-lg items-center justify-center shadow-inner">
                     <i class="fa-solid fa-chart-pie text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-lg md:text-xl font-black text-gray-800 tracking-tight">TIMS 互動式教材 <span class="text-primary">第二章</span></h1>
-                    <p class="text-xs text-gray-500 font-medium">點擊藍色虛線底線的 <span class="kw text-xs" onclick="showKw('關鍵字')">關鍵字</span> 可展開解析</p>
+                    <h1 class="text-xl font-black text-gray-800 tracking-tight">TIMS 互動式教材 <span class="text-primary">第二章</span></h1>
+                    <p class="text-xs text-gray-500 font-medium hidden md:block">點擊藍色虛線底線的 <span class="kw text-xs" onclick="showKw('關鍵字')">關鍵字</span> 可展開解析</p>
                 </div>
             </div>
-            
             <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200 hidden md:flex">
                 <i class="fa-solid fa-robot text-purple-500 ml-2"></i>
                 <input type="password" id="apiKeyInput" placeholder="輸入 Gemini API Key..." class="text-xs px-2 py-1.5 border rounded focus:outline-none focus:ring-1 focus:ring-purple-400 w-48 bg-white">
@@ -88,9 +92,8 @@
         </div>
     </header>
 
-    <!-- Main Layout -->
     <div class="flex flex-1 overflow-hidden max-w-7xl mx-auto w-full">
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar -->
         <aside class="w-64 bg-white border-r border-slate-200 shadow-sm flex flex-col hidden lg:flex shrink-0 my-4 ml-4 rounded-xl overflow-hidden z-10">
             <div class="p-5 bg-gradient-to-br from-primary to-blue-800 text-white shadow-inner">
                 <div class="text-xs text-blue-200 mb-1 font-bold tracking-widest">CHAPTER 02</div>
@@ -104,15 +107,13 @@
                 <a href="#section-5" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 市場選擇策略類型</a>
                 <a href="#section-6" class="toc-link block px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-slate-50 hover:text-primary transition"><i class="fa-solid fa-hashtag w-5 text-gray-300"></i> 產品知覺定位圖</a>
                 <div class="my-4 border-t border-slate-100"></div>
-                <a href="#quiz-section" class="block px-3 py-2 rounded-lg text-sm font-black text-orange-600 bg-orange-50 hover:bg-orange-100 transition shadow-sm"><i class="fa-solid fa-pen-clip w-5"></i> 雙軌測驗 (44題庫)</a>
+                <a href="#quiz-section" class="block px-3 py-2 rounded-lg text-sm font-black text-orange-600 bg-orange-50 hover:bg-orange-100 transition shadow-sm"><i class="fa-solid fa-pen-clip w-5"></i> 雙軌測驗 (60題庫)</a>
             </nav>
         </aside>
 
-        <!-- Main Content Area -->
-        <main class="flex-1 flex flex-col overflow-hidden relative my-0 lg:my-4 rounded-none lg:rounded-xl bg-surface">
-            <div class="flex-1 overflow-y-auto px-4 md:px-8 pb-24 scroll-smooth" id="scroll-area">
+        <main class="flex-1 flex flex-col overflow-hidden relative my-0 md:my-4 rounded-none lg:rounded-xl bg-surface scroll-smooth">
+            <div class="flex-1 overflow-y-auto px-4 md:px-8 pb-20" id="scroll-area">
                 
-                <!-- Title Header -->
                 <div class="py-8 border-b border-slate-200">
                     <h2 class="text-slate-500 font-bold tracking-widest text-sm mb-2">市場的缺口，就是品牌的入口</h2>
                     <h1 class="text-4xl md:text-5xl font-black text-gray-900 tracking-tight">市場分析 <span class="text-primary font-light">Market Analysis</span></h1>
@@ -121,7 +122,7 @@
                 <!-- 2-1 & 2-2 & 2-4 -->
                 <section id="section-1" class="py-10 border-b border-slate-200 scroll-mt-4">
                     <div class="flex items-center gap-3 mb-6">
-                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-1</div>
+                        <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-1 / 2-2</div>
                         <h2 class="text-2xl font-bold text-gray-800">市場定義與為何需要區隔</h2>
                     </div>
                     
@@ -138,10 +139,10 @@
 
                     <div class="flex items-center gap-3 mb-4">
                         <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-4</div>
-                        <h3 class="font-bold text-xl text-gray-800">市場的類型</h3>
+                        <h3 class="font-bold text-xl text-gray-800">市場的類型 (依地理範圍)</h3>
                     </div>
                     <p class="text-gray-700 mb-4">隨著時代變遷，市場樣貌逐漸多樣化，從地方市集擴展到全球：</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div class="bg-white p-5 rounded-xl border border-gray-200 hover-card">
                             <h4 class="font-bold text-primary mb-2 flex items-center"><i class="fa-solid fa-map-location-dot mr-2"></i> 1. 國內市場</h4>
                             <p class="text-sm text-gray-600 mb-3">行銷活動僅限本國境內。背景：交通物流完善、內需穩定、法規支持。</p>
@@ -155,8 +156,14 @@
                         <div class="bg-white p-5 rounded-xl border border-gray-200 hover-card">
                             <h4 class="font-bold text-primary mb-2 flex items-center"><i class="fa-solid fa-globe mr-2"></i> 3. 全球市場</h4>
                             <p class="text-sm text-gray-600 mb-3">將全球視為單一市場(具共通性)，強調<strong class="text-red-500">標準化產品與策略一致性</strong>。</p>
-                            <p class="text-xs bg-gray-50 p-2 rounded border border-gray-100"><strong class="text-gray-800">【例】Nike：</strong>世界各地販售相同鞋款與使用一致的品牌識別。</p>
+                            <p class="text-xs bg-gray-50 p-2 rounded border border-gray-100"><strong class="text-gray-800">【例】Nike：</strong>世界各地販售相同核心鞋款與使用一致的品牌識別。</p>
                         </div>
+                    </div>
+
+                    <!-- TIMS Viewpoint -->
+                    <div class="tims-viewpoint p-6 rounded-xl my-6 shadow-sm border border-slate-200">
+                        <h4 class="font-bold text-tims text-lg mb-2 flex items-center"><i class="fa-solid fa-earth-americas mr-2"></i> TIMS 觀點：全球化 vs 在地化 的市場抉擇</h4>
+                        <p class="text-gray-700 text-sm leading-relaxed">進入國際或全球市場時，企業常面臨兩難：究竟要「標準化（全球市場）」以降低成本，還是「客製化（國際市場）」以符合當地口味？若產品依賴強烈的文化認同（如食品），通常需採取在地化調整；若是科技產品或運動鞋，則多採全球標準化策略以維持一致的品牌形象。</p>
                     </div>
 
                     <!-- TONY Teacher Reminder -->
@@ -169,7 +176,7 @@
                     </div>
                 </section>
 
-                <!-- 2-3 消費與組織市場 -->
+                <!-- 2-3 B2C/B2B -->
                 <section id="section-2" class="py-10 border-b border-slate-200 scroll-mt-4">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-3</div>
@@ -180,7 +187,7 @@
                         兩者看似都在買東西，但背後的動機、購買方式與決策流程截然不同。消費市場為滿足個人日常，組織市場則是為了後續生產或營利採購。
                     </p>
 
-                    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
+                    <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
                         <table class="w-full text-left text-sm">
                             <thead class="bg-slate-50 border-b border-gray-200">
                                 <tr>
@@ -190,28 +197,34 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-4 font-bold bg-gray-50 border-r border-gray-200">組成對象</td>
-                                    <td class="p-4 border-r border-gray-200">一般消費者、個人、家庭</td>
-                                    <td class="p-4">工廠、零售商、政府單位、企業</td>
+                                    <td class="p-4 border-r border-gray-200 text-gray-600">一般消費者、個人、家庭</td>
+                                    <td class="p-4 text-gray-600">工廠、零售商、政府單位、企業</td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-4 font-bold bg-gray-50 border-r border-gray-200">採購特徵</td>
-                                    <td class="p-4 border-r border-gray-200">單次購買量<strong class="text-red-500 bg-red-50 px-1">少</strong>、地理<strong class="text-red-500 bg-red-50 px-1">分散</strong>、購買次數多</td>
-                                    <td class="p-4">單次購買量<strong class="text-blue-600 bg-blue-50 px-1">多</strong>、地理<strong class="text-blue-600 bg-blue-50 px-1">集中</strong>、購買頻率低</td>
+                                    <td class="p-4 border-r border-gray-200 text-gray-600">單次購買量<strong class="text-red-500 bg-red-50 px-1 ml-1 rounded">少</strong>、地理分散、購買頻率高</td>
+                                    <td class="p-4 text-gray-600">單次購買量<strong class="text-blue-600 bg-blue-50 px-1 ml-1 rounded">大</strong>、地理<strong class="text-blue-600 bg-blue-50 px-1 ml-1 rounded">集中</strong>、購買頻率低</td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-4 font-bold bg-gray-50 border-r border-gray-200">決策過程</td>
-                                    <td class="p-4 border-r border-gray-200">非專家購買、參與決策人數少、<strong class="text-gray-800">快速、情感導向</strong>、易受價格/促銷影響</td>
-                                    <td class="p-4">專家購買、參與決策人數<strong class="text-blue-600 bg-blue-50 px-1">多(採購中心)</strong>、<strong class="text-gray-800">長期、理性結構化</strong>，需多次溝通</td>
+                                    <td class="p-4 border-r border-gray-200 text-gray-600">非專家購買、參與人數少、<strong class="text-gray-800">快速、情感導向</strong>、易受促銷影響</td>
+                                    <td class="p-4 text-gray-600">專家購買、參與人數<strong class="text-blue-600 bg-blue-50 px-1 mx-1 rounded">多(採購中心)</strong>、<strong class="text-gray-800">長期、理性結構化</strong></td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-4 font-bold bg-gray-50 border-r border-gray-200">行銷重點</td>
-                                    <td class="p-4 border-r border-gray-200">明確標價、品牌形象、使用體驗、促銷吸引</td>
-                                    <td class="p-4">議價制/專案報價、解決問題、效率導向、<strong class="text-indigo-600">關係經營、專業信任</strong></td>
+                                    <td class="p-4 border-r border-gray-200 text-gray-600">品牌形象、情感連結、促銷吸引</td>
+                                    <td class="p-4 text-gray-600">專案報價、效率導向、<strong class="text-indigo-600">關係經營與專業信任</strong></td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- TIMS Viewpoint -->
+                    <div class="tims-viewpoint p-6 rounded-xl my-6 shadow-sm border border-slate-200">
+                        <h4 class="font-bold text-tims text-lg mb-2 flex items-center"><i class="fa-solid fa-handshake mr-2"></i> TIMS 觀點：B2B 行銷除了理性，感性訴求重要嗎？</h4>
+                        <p class="text-gray-700 text-sm leading-relaxed">B2B 市場決策雖然高度理性結構化，但當多家供應商的規格、價格差異不大時，最終決定勝負的往往是「專業信任、文化認同與關係經營」等感性因素。這也是為什麼 B2B 企業也需要經營雇主品牌或社會責任形象。</p>
                     </div>
 
                     <!-- TONY Teacher Reminder -->
@@ -228,13 +241,13 @@
                 <section id="section-3" class="py-10 border-b border-slate-200 scroll-mt-4">
                     <div class="flex flex-col md:flex-row gap-8">
                         <!-- SWOT -->
-                        <div class="md:w-1/2">
+                        <div class="md:w-1/2 flex flex-col">
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-5</div>
                                 <h2 class="text-2xl font-bold text-gray-800">SWOT 分析</h2>
                             </div>
-                            <p class="text-sm text-gray-600 mb-4">幫助企業全面評估內部資源與外部變化，作為策略擬定的基礎。</p>
-                            <div class="grid grid-cols-2 gap-3 text-sm">
+                            <p class="text-sm text-gray-600 mb-4 flex-1">幫助企業全面評估內部資源與外部變化，作為策略擬定的基礎。</p>
+                            <div class="grid grid-cols-2 gap-3 text-sm mb-4">
                                 <div class="bg-white border-t-4 border-blue-500 shadow-sm p-4 rounded-b-xl hover-card">
                                     <strong class="text-blue-800 text-lg block mb-1">S 優勢 <span class="text-xs font-normal text-gray-500">(內部)</span></strong>
                                     <span class="text-xs text-gray-600">企業內部具備的有利條件與資源，可協助達成目標。</span>
@@ -252,18 +265,23 @@
                                     <span class="text-xs text-gray-600">外部可能產生風險的變化，如競爭壓力、法規限制。</span>
                                 </div>
                             </div>
+                            <!-- TIMS Viewpoint -->
+                            <div class="tims-viewpoint p-4 rounded-xl shadow-sm border border-slate-200 mt-auto">
+                                <h4 class="font-bold text-tims text-sm mb-1"><i class="fa-solid fa-code-compare mr-1"></i> TIMS 觀點：SWOT 的界線</h4>
+                                <p class="text-xs text-gray-700">區分內外部的核心在於「企業能否直接控制」。產品設計、人員素質是內部(S/W)；而總體經濟、政策、對手行為則是外部(O/T)。</p>
+                            </div>
                         </div>
 
                         <!-- BCG -->
-                        <div class="md:w-1/2">
+                        <div class="md:w-1/2 flex flex-col">
                             <div class="flex items-center gap-3 mb-4">
                                 <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-6</div>
                                 <h2 class="text-2xl font-bold text-gray-800">BCG 矩陣</h2>
                             </div>
                             <p class="text-sm text-gray-600 mb-4">以「相對市場占有率」與「市場成長率」評估事業地位與資源配置。</p>
                             
-                            <div class="relative bg-white border border-gray-300 p-2 rounded-xl shadow-sm">
-                                <table class="w-full text-center border-collapse text-sm">
+                            <div class="relative bg-white border border-gray-300 p-2 rounded-xl shadow-sm flex-1 flex flex-col justify-center">
+                                <table class="w-full text-center border-collapse text-sm h-full">
                                     <tr>
                                         <th class="border border-gray-200 p-2 bg-slate-100 w-1/4 relative">
                                             <span class="absolute top-1 right-2 text-xs text-gray-500">市佔率</span>
@@ -300,24 +318,24 @@
                     </div>
 
                     <!-- TONY Teacher Reminder -->
-                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4 mt-6">
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4 mt-8">
                         <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
                         <div>
                             <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
-                            <p class="text-sm text-gray-800 font-medium">很多同學容易搞混 SWOT，請記住一條鐵律：「優勢 (S) 跟 劣勢 (W) 是你可以自己控制的『內部資源』，比如你的品牌力、員工素質；而 機會 (O) 跟 威脅 (T) 是你無法控制的『外部環境』，比如政府法規、對手降價」。遇到情境題，先判斷是內部還是外部，答案就呼之欲出了！</p>
+                            <p class="text-sm text-gray-800 font-medium">很多同學容易搞混 SWOT，請記住一條鐵律：「優勢 (S) 跟 劣勢 (W) 是你可以自己控制的『內部資源』，比如你的品牌力、員工素質；而 機會 (O) 跟 威脅 (T) 是你無法控制的『外部環境』，比如政府法規、對手降價」。遇見情境題，先判斷是內部還是外部，答案就呼之欲出了！</p>
                         </div>
                     </div>
                 </section>
 
-                <!-- 2-7 & 2-8 STP & Variables -->
+                <!-- 2-7 & 2-8 STP -->
                 <section id="section-4" class="py-10 border-b border-slate-200 scroll-mt-4">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-7</div>
                         <h2 class="text-2xl font-bold text-gray-800">STP 策略架構 與 區隔變數</h2>
                     </div>
 
-                    <!-- STP Flow -->
                     <p class="text-gray-700 mb-6">在面對競爭激烈且需求多元的市場中，受限於企業有限資源，必須明確選定目標市場並制定差異化策略。這就是 STP 架構的核心：</p>
+                    
                     <div class="flex flex-col md:flex-row justify-between gap-4 mb-10">
                         <div class="bg-white p-6 rounded-xl border border-blue-200 shadow-sm flex-1 text-center group hover:-translate-y-2 transition cursor-pointer relative" onclick="showKw('Segmentation')">
                             <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-2xl font-black mx-auto mb-4 group-hover:scale-110 transition">S</div>
@@ -340,12 +358,22 @@
                         </div>
                     </div>
 
-                    <!-- Segmentation Variables Table -->
+                    <!-- TIMS Viewpoint -->
+                    <div class="tims-viewpoint p-6 rounded-xl shadow-sm border border-slate-200 mb-8 bg-white">
+                        <h4 class="font-bold text-tims text-lg mb-3 flex items-center"><i class="fa-solid fa-circle-exclamation mr-2 text-red-500"></i> TIMS 觀點：市場區隔常見的失敗原因</h4>
+                        <p class="text-gray-700 text-sm mb-3">市場區隔不是愈細愈好，也不是劃分出來就能當作目標市場。若不符合評估準則 (異質性、可衡量、足量、可接近、可實踐)，就會導致失敗：</p>
+                        <ul class="list-none text-sm text-gray-700 space-y-2">
+                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>區隔過細 (缺乏足量性)：</strong> 市場太小，切得太碎，導致資源無法回收，無法支撐產品開發與行銷成本。</li>
+                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>無法接近 (缺乏可接近性)：</strong> 族群雖存在，但受限於地理、媒體或通路，企業無法有效觸及進行行銷溝通。</li>
+                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>變數選錯 (缺乏異質性)：</strong> 所用的區隔依據與購買行為無關，無法轉化為差異化的具體策略。</li>
+                        </ul>
+                    </div>
+
                     <div class="flex items-center gap-3 mb-4">
                         <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-8</div>
                         <h3 class="font-bold text-xl text-gray-800">市場區隔之變數 (B2C vs B2B)</h3>
                     </div>
-                    <p class="text-gray-700 mb-4 text-sm">市場區隔不只用在消費者(B2C)市場，對企業客戶(B2B)同樣重要。雖然兩者都可依地理、人口、心理與行為進行劃分，但背後的觀察重點與分析角度卻大不相同：</p>
+                    <p class="text-gray-700 mb-4 text-sm">市場區隔不只用在消費者(B2C)市場，對企業客戶(B2B)同樣重要。兩者背後的觀察重點與分析角度大不相同：</p>
                     
                     <div class="overflow-x-auto bg-white rounded-xl shadow-sm border border-gray-200">
                         <table class="w-full text-left text-sm">
@@ -357,48 +385,28 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100">
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-3 font-bold bg-gray-50 border-r">地理變數</td>
                                     <td class="p-3 text-sm border-r">居住地區、居住氣候、人口密度</td>
                                     <td class="p-3 text-sm">銷售區域、業務範圍</td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-3 font-bold bg-gray-50 border-r">人口統計變數</td>
                                     <td class="p-3 text-sm border-r">性別、年齡、所得、職業、教育、<span class="font-bold text-red-600 bg-red-50 px-1 rounded">家庭生命週期</span></td>
                                     <td class="p-3 text-sm"><span class="font-bold text-indigo-600 bg-indigo-50 px-1 rounded">組織規模</span>、成立年數、員工人數、產業類型</td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-3 font-bold bg-gray-50 border-r">心理統計變數</td>
                                     <td class="p-3 text-sm border-r">人格特質、<span class="font-bold text-red-600 bg-red-50 px-1 rounded">生活型態</span>、信念、態度、價值觀</td>
-                                    <td class="p-3 text-sm"><span class="font-bold text-indigo-600 bg-indigo-50 px-1 rounded">組織文化、領導風格、採購導向</span>、組織核心價值觀</td>
+                                    <td class="p-3 text-sm"><span class="font-bold text-indigo-600 bg-indigo-50 px-1 rounded">組織文化、領導風格、採購導向</span></td>
                                 </tr>
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 transition">
                                     <td class="p-3 font-bold bg-gray-50 border-r">行為變數</td>
-                                    <td class="p-3 text-sm border-r">追求利益、使用頻率、使用動機、使用情境、品牌忠誠</td>
-                                    <td class="p-3 text-sm">降低生產成本、提升生產效率、提升品質、<span class="font-bold text-indigo-600 bg-indigo-50 px-1 rounded">降低風險、過往合作歷程與忠誠度</span></td>
+                                    <td class="p-3 text-sm border-r">追求利益、使用頻率、使用情境、品牌忠誠</td>
+                                    <td class="p-3 text-sm">追求效率/品質、<span class="font-bold text-indigo-600 bg-indigo-50 px-1 rounded">過往合作歷程與忠誠度</span></td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                        <div class="bg-red-50 border border-red-100 p-5 rounded-xl">
-                            <h4 class="font-bold text-red-800 text-base mb-2"><i class="fa-solid fa-users mr-1"></i> B2C 實務案例</h4>
-                            <ul class="text-sm text-gray-700 space-y-2 list-disc pl-4">
-                                <li><strong>【地理變數】吉立餐廳：</strong>長期在板橋深耕，加強在地化經營。</li>
-                                <li><strong>【家庭生命週期】金融保險業：</strong>新婚期推壽險；子女擴展期推教育基金/房貸。</li>
-                                <li><strong>【心理變數】食品電商：</strong>依「生活型態」將客群分為運動健身族與家庭煮夫/婦。</li>
-                                <li><strong>【行為變數】登機流程：</strong>依據「追求利益(舒適/快速)」與付費行為，將艙等區分為商務艙優先，經濟艙接續。</li>
-                            </ul>
-                        </div>
-                        <div class="bg-indigo-50 border border-indigo-100 p-5 rounded-xl">
-                            <h4 class="font-bold text-indigo-800 text-base mb-2"><i class="fa-solid fa-building mr-1"></i> B2B 實務案例</h4>
-                            <ul class="text-sm text-gray-700 space-y-2 list-disc pl-4">
-                                <li><strong>【心理變數】寶齡青春源：</strong>將醫療診所之企業客戶，依據「是否具備 ESG 永續政策 (組織文化)」來進行市場劃分。</li>
-                                <li><strong>【心理變數】辦公設備商：</strong>針對企業員工對舒適、人體工學需求，採購導向偏向可調節桌椅與智慧系統。</li>
-                                <li><strong>【行為變數】AWS：</strong>依據企業客戶「過去合作金額與續約狀況 (過往合作歷程)」劃分等級，制定分層維繫策略。</li>
-                            </ul>
-                        </div>
                     </div>
 
                     <!-- TONY Teacher Reminder -->
@@ -411,7 +419,7 @@
                     </div>
                 </section>
 
-                <!-- 2-9 & 2-10 選擇策略 -->
+                <!-- 2-9 & 2-10 策略類型 -->
                 <section id="section-5" class="py-10 border-b border-slate-200 scroll-mt-4">
                     <div class="flex items-center gap-3 mb-6">
                         <div class="bg-primary text-white font-black px-3 py-1 rounded-md shadow-sm">2-10</div>
@@ -425,49 +433,49 @@
                             <div class="text-primary text-3xl mb-3"><i class="fa-solid fa-bullseye"></i></div>
                             <h3 class="font-bold text-gray-800 text-lg mb-2">1. 集中行銷 (利基行銷)</h3>
                             <p class="text-sm text-gray-600 mb-3">聚焦單一市場區隔，提供專門化產品或服務。通常用於中小企業，資源有限但專業能力強。</p>
-                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 寶齡青春源專攻醫美診所</span>
+                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 寶齡青春源專攻醫美</span>
                         </div>
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-card cursor-pointer" onclick="showKw('差異化行銷')">
                             <div class="text-primary text-3xl mb-3"><i class="fa-solid fa-layer-group"></i></div>
                             <h3 class="font-bold text-gray-800 text-lg mb-2">2. 差異化行銷</h3>
                             <p class="text-sm text-gray-600 mb-3">同時針對兩個以上市場區隔，提供不同產品。適合中大型企業，擴大市佔率、分散風險。</p>
-                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 歐舒丹推不同包裝與產品線</span>
+                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 歐舒丹推不同產品線</span>
                         </div>
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-card cursor-pointer" onclick="showKw('產品專業化行銷')">
                             <div class="text-primary text-3xl mb-3"><i class="fa-solid fa-box-open"></i></div>
                             <h3 class="font-bold text-gray-800 text-lg mb-2">3. 產品專業化行銷</h3>
                             <p class="text-sm text-gray-600 mb-3">提供<strong class="text-gray-800">單一產品</strong>給<strong class="text-gray-800">多個市場</strong>。專精於產品技術與品質，依不同族群銷售。</p>
-                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 醫療級智慧床墊賣給各單位</span>
+                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 顯微鏡賣給醫院與學校</span>
                         </div>
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-card cursor-pointer" onclick="showKw('市場專業化行銷')">
                             <div class="text-primary text-3xl mb-3"><i class="fa-solid fa-store"></i></div>
                             <h3 class="font-bold text-gray-800 text-lg mb-2">4. 市場專業化行銷</h3>
                             <p class="text-sm text-gray-600 mb-3">提供<strong class="text-gray-800">多種產品</strong>給<strong class="text-gray-800">單一市場</strong>。深耕特定族群，建立完整解決方案。</p>
-                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 專為慢跑者出各種鞋/服裝</span>
+                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 專為慢跑者出各種配備</span>
                         </div>
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-card cursor-pointer" onclick="showKw('無差異化行銷')">
                             <div class="text-primary text-3xl mb-3"><i class="fa-solid fa-users-line"></i></div>
                             <h3 class="font-bold text-gray-800 text-lg mb-2">5. 無差異化行銷</h3>
                             <p class="text-sm text-gray-600 mb-3">又稱大眾行銷。提供一種產品給所有消費者，不分區隔。強調規模經濟與普及率。</p>
-                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 速食店推標準化漢堡套餐</span>
+                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 速食店標準化漢堡</span>
                         </div>
                         <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover-card cursor-pointer" onclick="showKw('個人化行銷')">
                             <div class="text-primary text-3xl mb-3"><i class="fa-solid fa-user-tag"></i></div>
                             <h3 class="font-bold text-gray-800 text-lg mb-2">6. 個人化行銷</h3>
                             <p class="text-sm text-gray-600 mb-3">又稱客製化行銷，為每位消費者量身訂製產品或服務。提高消費者體驗與互動。</p>
-                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 電商根據紀錄推薦相機周邊</span>
+                            <span class="text-xs bg-blue-50 text-blue-700 font-bold px-2 py-1 rounded">例: 電商個人化推薦</span>
                         </div>
                     </div>
 
-                    <div class="tims-viewpoint p-6 rounded-r-xl shadow-sm border border-indigo-100 mt-8">
-                        <h4 class="font-bold text-tims text-xl mb-3 flex items-center"><i class="fa-solid fa-circle-exclamation mr-2"></i> TIMS 觀點：市場區隔常見的失敗原因</h4>
-                        <p class="text-gray-700 text-sm mb-3">市場區隔不是愈細愈好，也不是劃分出來就能當作目標市場。若不符合評估準則 (異質性、可衡量、足量、可接近、可實踐)，就會導致失敗：</p>
-                        <ul class="list-none text-sm text-gray-700 space-y-2">
-                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>區隔過細 (缺乏足量性)：</strong> 市場太小，切得太碎，導致資源無法回收，無法支撐產品開發與行銷成本。</li>
-                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>無法接近 (缺乏可接近性)：</strong> 行銷打不到，族群雖存在，但受限於地理、媒體或通路，企業無法有效觸及。</li>
-                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>變數選錯 (缺乏異質性)：</strong> 無行銷價值，所用的區隔依據與購買行為無關，無法轉化為差異化的具體策略。</li>
-                            <li><i class="fa-solid fa-xmark text-red-500 mr-2"></i><strong>競爭激烈：</strong> 你所認為的藍海市場，其實在市場競爭環境中已成為紅海市場。</li>
-                        </ul>
+                    <!-- TONY Teacher Reminder -->
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4 mt-8">
+                        <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
+                        <div>
+                            <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
+                            <p class="text-sm text-gray-800 font-medium">同學最常死在「產品專業化」跟「市場專業化」的選擇題！教你一個秒殺口訣：把「化」前面的字當作「主角（單一）」。<br>
+                            👉 <strong>產品</strong>專業化 = 單一產品，賣給多個市場。<br>
+                            👉 <strong>市場</strong>專業化 = 單一市場，提供多種產品。</p>
+                        </div>
                     </div>
                 </section>
 
@@ -480,12 +488,12 @@
                     
                     <div class="flex flex-col md:flex-row gap-8 items-center bg-white p-8 rounded-2xl border border-gray-200 shadow-sm">
                         <div class="md:w-1/2">
-                            <p class="text-base text-gray-700 leading-relaxed mb-5">這是一種視覺化工具，用來呈現消費者心中對不同品牌或產品的「認知差異」。通常以 X 軸與 Y 軸代表兩個關鍵的產品屬性，將競爭品牌依照消費者的主觀感受標示在圖上。</p>
+                            <p class="text-base text-gray-700 leading-relaxed mb-5">這是一種視覺化工具，用來呈現<strong class="text-blue-600">消費者心中</strong>對不同品牌或產品的「認知差異」。通常以 X 軸與 Y 軸代表兩個關鍵的產品屬性，將競爭品牌標示在圖上。</p>
                             <h4 class="font-bold text-primary text-lg mb-3">四大功能與意義：</h4>
                             <ul class="list-disc pl-5 text-sm text-gray-700 space-y-2">
                                 <li><strong>了解市場印象：</strong> 呈現消費者怎麼看各品牌的優劣與特色。</li>
                                 <li><strong>分析競爭位置：</strong> 比較自家產品與競品在消費者知覺上的差距或相似度。</li>
-                                <li class="text-red-600 font-bold">找出市場機會點： 發現目前尚未被滿足的定位空間 (市場缺口)。</li>
+                                <li><strong>找出市場機會點：</strong> 發現目前尚未被滿足的定位空間 (市場缺口)。</li>
                                 <li><strong>輔助品牌溝通策略：</strong> 根據消費者認知選擇適合的品牌核心價值。</li>
                             </ul>
                             <div class="mt-4 bg-gray-50 p-3 rounded border border-gray-200 text-xs text-gray-600">
@@ -516,32 +524,38 @@
                                 
                                 <!-- Empty Spot / Opportunity -->
                                 <div class="absolute top-[25%] right-[25%] w-10 h-10 border-2 border-dashed border-green-500 bg-green-50 rounded-full flex items-center justify-center animate-pulse cursor-pointer"></div>
-                                <span class="absolute top-[25%] right-[25%] mt-12 -ml-6 text-xs text-green-700 font-black bg-white px-1">市場缺口<br>(機會點)</span>
+                                <span class="absolute top-[25%] right-[25%] mt-12 -ml-6 text-xs text-green-700 font-black bg-white px-1 shadow-sm">空白區塊</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- TIMS Viewpoint -->
+                    <div class="tims-viewpoint p-6 rounded-xl shadow-sm border border-slate-200 mt-6 bg-white">
+                        <h4 class="font-bold text-tims text-lg mb-2"><i class="fa-solid fa-lightbulb mr-2 text-yellow-500"></i> TIMS 觀點：定位圖上的空白區塊，是藍海還是死海？</h4>
+                        <p class="text-gray-700 text-sm leading-relaxed">定位圖上的「空白區塊」代表目前市場上沒有競爭者佔據這個位置，它是一個潛在的「市場缺口」。但企業不能直接盲目投入，因為這個空白可能是因為「這個屬性組合根本不符合顧客需求」（例如：又貴品質又差）。必須經過驗證確定有「足量性」與「實踐性」，才能確認它是真正的機會點。</p>
+                    </div>
+
                     <!-- TONY Teacher Reminder -->
-                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-8 shadow-sm flex items-start gap-4">
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-xl my-6 shadow-sm flex items-start gap-4">
                         <img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-14 h-14 rounded-full teacher-avatar shrink-0 object-cover" alt="TONY 老師">
                         <div>
                             <h4 class="font-black text-amber-800 text-lg mb-1 flex items-center">TONY 楊老師的貼心重點提醒</h4>
-                            <p class="text-sm text-gray-800 font-medium">注意！定位圖上的「空白區塊」代表目前市場上沒有競爭者佔據這個位置，所以它是一個潛在的「機會點（市場缺口）」。但別高興得太早，空白區塊也可能是因為「這個屬性組合根本不符合顧客需求」而成為死海。一定要經過驗證才能投入資源喔！</p>
+                            <p class="text-sm text-gray-800 font-medium">考場陷阱題注意！產品知覺定位圖畫出來的位置，是依據「消費者主觀填寫的問卷」所形成的認知，<strong class="text-red-600">絕對不是企業內部自己評估、自己想像的位置</strong>！行銷永遠要從消費者的腦袋裡找答案。</p>
                         </div>
                     </div>
                 </section>
 
                 <!-- 模擬測驗系統 -->
-                <div id="quiz-section" class="bg-white rounded-2xl shadow-lg border-t-8 border-secondary overflow-hidden scroll-mt-6 mt-12">
+                <div id="quiz-section" class="bg-white rounded-2xl shadow-lg border-t-8 border-secondary overflow-hidden scroll-mt-6 mt-10">
                     <div class="p-5 md:p-6 bg-gray-50 border-b flex flex-col md:flex-row justify-between items-center gap-4">
                         <h2 class="text-xl md:text-2xl font-bold text-gray-800 flex items-center">
                             <i class="fa-solid fa-pen-clip text-secondary mr-2"></i> 
                             第二章 雙軌模擬測驗 
-                            <span class="text-xs ml-2 bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-bold">全題庫 44 題</span>
+                            <span class="text-xs ml-2 bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-bold">全題庫 60 題</span>
                         </h2>
                         <div class="flex bg-white rounded-lg p-1 border shadow-sm text-sm w-full md:w-auto overflow-x-auto">
-                            <button id="tab-theory" onclick="switchTab('theory')" class="px-5 py-2.5 rounded-md font-bold bg-blue-600 text-white transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-book-open mr-1"></i> 理論觀念題 (42%)</button>
-                            <button id="tab-practical" onclick="switchTab('practical')" class="px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-lightbulb text-orange-500 mr-1"></i> 實務情境題 (58%)</button>
+                            <button id="tab-theory" onclick="switchTab('theory')" class="px-5 py-2.5 rounded-md font-bold bg-blue-600 text-white transition whitespace-nowrap shadow-sm"><i class="fa-solid fa-book-open mr-1"></i> 理論觀念題 (50%)</button>
+                            <button id="tab-practical" onclick="switchTab('practical')" class="px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-1 whitespace-nowrap"><i class="fa-solid fa-lightbulb text-orange-500 mr-1"></i> 實務情境題 (50%)</button>
                         </div>
                     </div>
 
@@ -610,9 +624,9 @@
             }
         }
 
-        // === 44 Question Bank (100% Extracted from PDF) ===
+        // === 60 Question Bank (30 Theory + 30 Practical) ===
         const fullQuestionBank = [
-            // 理論題
+            // ================= 理論題 (30題) =================
             { id: 1, type: 1, q: "根據行銷學觀點，下列何者最能正確描述「市場」的本質？", opts: ["市場是交易價格最透明的實體空間", "市場是指產品販售的地點與通路", "市場是買賣雙方為滿足需求與進行價值交換而互動的場域", "市場只包含已購買產品的現有顧客"], ans: 2, exp: "市場的核心概念是雙方為滿足需求與進行「價值交換」而互動的場域，重點在於需求、資源與交換意願。" },
             { id: 2, type: 1, q: "下列哪一項不是構成一個「市場」所需的基本條件？", opts: ["存在彼此有需求的雙方", "雙方皆具備可交換的資源", "雙方願意進行互動與價值交換", "雙方需簽署正式契約"], ans: 3, exp: "市場形成不一定要有正式契約(如日常買菜)。必備條件是雙方有需求、資源與交換意願。" },
             { id: 3, type: 1, q: "市場區隔的主要目的為何？", opts: ["提高企業產品多樣性", "增加廣告預算規模", "將市場劃分為需求相似的顧客群", "降低市場價格標準"], ans: 2, exp: "市場區隔是將異質性高的整體市場劃分為「同質性高」(需求相似)的群體，以便進行後續精準行銷。" },
@@ -620,7 +634,7 @@
             { id: 5, type: 1, q: "下列何者為消費市場(B2C)常見的特徵？", opts: ["專業購買者參與決策", "決策流程複雜", "購買量通常較少", "地理位置多集中於特定區域"], ans: 2, exp: "B2C市場特徵為：單次購買量少、地理分散、非專業購買者。選項C為正確特徵。" },
             { id: 6, type: 1, q: "下列何者最能正確描述「組織市場(B2B)」？", opts: ["以個人需求為導向的市場", "主要由非營利單位構成的市場", "涉及情感導向購買的市場", "購買目的是為了後續營利或加工使用"], ans: 3, exp: "組織市場(B2B)重點在於採購後用於後續生產、加工或營利使用。" },
             { id: 7, type: 1, q: "關於B2C與B2B市場特徵的配對，下列何者為正確？", opts: ["B2B：地理集中、決策人數多", "B2C：專家購買、購買次數少", "B2B：購買量少、決策人數少", "B2C：地理集中、購買次數少"], ans: 0, exp: "組織市場(B2B)具有地理集中(如工業區)、團隊決策(採購中心)等特徵，選項A正確。" },
-            { id: 8, type: 1, q: "下列何者不是 B2B 市場的特徵？", opts: ["決策人數少", "地理分布集中", "易受價格與促銷影響", "專業人員參與決策"], ans: 3, exp: "根據官方題庫，B2B市場的特徵不包含易受促銷與廣告情感影響(這是B2C的特徵)。此題選項有出入，以最明顯的非B2C特徵為準。" },
+            { id: 8, type: 1, q: "下列何者不是 B2B 市場的特徵？", opts: ["決策人數少", "地理分布集中", "易受價格與促銷影響", "專業人員參與決策"], ans: 3, exp: "B2B 市場的特徵是決策人數多(採購中心)、理性長期，而非衝動受促銷影響。此題問『不是』B2B的特徵，故選項C(易受價格與促銷影響，這是B2C特徵)應為最佳解。但選項A(決策人數少)也不是B2B特徵。依據題意修正為「非B2B特徵為感性衝動」。", ans: 2 }, // Fixed question logic
             { id: 9, type: 1, q: "哪一項最能體現「全球市場」的概念？", opts: ["僅限本國城市進行產品測試", "依各國文化設計在地化產品", "僅在開發中國家銷售產品", "將世界視為一個整體市場以進行統一策略"], ans: 3, exp: "全球市場概念為全球一致性思維，將世界視為單一市場，進行標準化產品與行銷策略。" },
             { id: 10, type: 1, q: "關於國內市場與國際市場的比較，下列敘述何者正確？", opts: ["國內市場必須採多國語言包裝", "國內市場通常僅面對國內法規與政策", "國際市場不需考慮當地文化差異", "國際市場物流管理較簡單"], ans: 1, exp: "國內市場的優勢之一是法規環境與文化背景相對一致，僅需面對國內政策。" },
             { id: 11, type: 1, q: "對於下列市場類型與其背景條件的配對，何者正確？", opts: ["全球市場－內需穩定、物流便利", "國內市場－通訊科技全球化", "國際市場－因應市場結構與文化調整策略", "國際市場－以單一策略全球統一執行"], ans: 2, exp: "國際市場因跨國界，需因應當地市場結構與文化進行在地化調整。全球市場才強調單一標準化策略。" },
@@ -640,62 +654,41 @@
             { id: 25, type: 1, q: "下列何者屬於 B2C 市場的人口統計變數？", opts: ["組織規模", "產業類型", "家庭生命週期", "領導風格"], ans: 2, exp: "家庭生命週期是針對個人與家庭的變數，屬B2C類別。" },
             { id: 26, type: 1, q: "下列哪一組為正確的 B2B 市場區隔變數配對？", opts: ["員工人數－心理統計變數", "銷售區域－地理變數", "採購導向－人口統計變數", "價值觀－行為變數"], ans: 1, exp: "銷售區域屬空間性區隔，為B2B地理變數之一。其他配對皆錯誤。" },
             { id: 27, type: 1, q: "關於 B2C 與 B2B 市場心理變數的比較，下列敘述何者正確？", opts: ["B2C偏重品牌忠誠，B2B偏重消費頻率", "B2C關注生活型態，B2B關注組織文化與採購導向", "B2B關注地理氣候條件，B2C則不考慮", "B2C多為組織理性決策，B2B多為個人感性決策"], ans: 1, exp: "心理變數中，B2C著重生活形態，B2B則強調組織文化與採購導向。" },
-            { id: 28, type: 1, q: "下列何者屬於「行為變數」在 B2B 市場中的應用？", opts: ["價值觀、態度", "領導風格、組織文化", "降低風險、過往合作歷程", "員工人數、成立年數"], ans: 2, exp: "降低風險與合作歷程屬於 B2B 常見的行為性分析指標。" },
-            { id: 29, type: 1, q: "若企業將組織市場劃分為以下三群：①台北辦公室地區 ②重視效率與品質的客戶 ③年營收超過10億的大型製造商，此三者應分別屬於哪一類變數？", opts: ["地理、心理、行為", "地理、行為、人口統計", "地理、心理、人口統計", "人口統計、心理、地理"], ans: 1, exp: "①台北為地理；②重視效率為行為(追求利益)；③營收/規模為人口統計變數。" },
-            { id: 30, type: 1, q: "下列何者最能正確描述市場區隔準則中「可接近性」的意義？", opts: ["區隔之間需有需求差異", "區隔規模要大到足以獲利", "區隔須能使企業有效觸及與行銷", "區隔能代表企業價值觀"], ans: 2, exp: "可接近性是指企業是否能實際觸及該族群，進行行銷活動與產品配送。" },
-            { id: 31, type: 1, q: "當一個區隔族群需求差異明顯，但企業無法有效接觸時，最可能違反哪項評估準則？", opts: ["可實踐性", "可接近性", "可衡量性", "足量性"], ans: 1, exp: "即使族群存在，若通路或媒體接觸不到(無法有效接觸)，就是「可接近性」問題。" },
-            { id: 32, type: 1, q: "下列何者不是市場區隔評估的五項準則之一？", opts: ["可實踐性", "可接近性", "足量性", "可持久性"], ans: 3, exp: "五項為：異質性、可衡量性、足量性、可接近性、可實踐性。「可持久性」並非五項之一。" },
-            { id: 33, type: 1, q: "一家企業對區隔族群進行評估時，發現該族群規模太小，且若要觸及該族群客戶導致行銷成本過高，再加上品牌也無法針對其開發商品。此問題最可能涉及哪三項評估準則？", opts: ["可接近性、異質性、可實踐性", "足量性、可接近性、可實踐性", "可衡量性、異質性、足量性", "可實踐性、可衡量性、異質性"], ans: 1, exp: "規模太小(足量性不足)；觸及成本過高(可接近性不足)；無法開發商品(可實踐性不足)。" },
-            { id: 34, type: 1, q: "下列何者為「集中行銷」策略的主要特徵？", opts: ["提供多種產品給單一市場", "一種產品對所有顧客", "聚焦單一市場，提供專門產品", "為每位顧客量身打造產品"], ans: 2, exp: "集中行銷又稱利基行銷，主打單一小型市場提供專屬產品。" },
-            { id: 35, type: 1, q: "下列哪一組配對正確描述了市場選擇策略與其說明？", opts: ["個人化行銷 → 每位顧客個別設計", "無差異化行銷 → 針對特定利基市場", "差異化行銷 → 單一市場專攻", "市場專業化行銷 → 單項產品賣多族群"], ans: 0, exp: "個人化行銷強調客製化，針對個別顧客。" },
-            { id: 36, type: 1, q: "差異化行銷與無差異化行銷最大的差異在於？", opts: ["是否針對單一市場", "是否提供多種產品", "是否依市場區隔設計不同產品", "是否為中小企業使用"], ans: 2, exp: "差異化針對多市場區隔設計不同產品；無差異化則不區隔，提供同一產品給大眾。" },
-            { id: 37, type: 1, q: "下列哪一項策略最符合「提供單一產品給多個不同市場區隔」的概念？", opts: ["產品專業化行銷", "差異化行銷", "集中行銷", "市場專業化行銷"], ans: 0, exp: "單一產品賣給多個市場(如顯微鏡賣給醫院和學校)，為產品專業化行銷。" },
-            { id: 38, type: 1, q: "企業提供多種產品給一個明確的目標族群，並持續推出新產品滿足該族群，此為？", opts: ["差異化行銷", "無差異化行銷", "產品專業化行銷", "市場專業化行銷"], ans: 3, exp: "多種產品服務單一市場區隔，為市場專業化行銷。" },
-            { id: 39, type: 1, q: "下列何者最能正確描述「產品知覺定位圖」的用途？", opts: ["用來檢查產品售價與利潤比", "呈現顧客主觀感受下的品牌認知差異", "記錄產品開發時程與成本分配", "建立產品的技術規格標準"], ans: 1, exp: "定位圖用於理解消費者對產品屬性的主觀認知與比較差異。" },
-            { id: 40, type: 1, q: "關於產品知覺定位圖的功能與說明，下列何者配對正確？", opts: ["輔助品牌溝通策略－選擇適合的品牌主張", "分析競爭位置－比較各品牌利潤率", "找出市場機會點－尋找市場已被滿足點", "了解市場印象－呈現企業獲利差異"], ans: 0, exp: "知覺定位圖幫助品牌依據顧客觀感，制定溝通策略與主張。" },
-            { id: 41, type: 1, q: "下列關於「產品知覺定位圖」的敘述，何者正確？", opts: ["均以價格與包裝為X/Y軸", "一定以企業內部評估為主", "每一品牌位置代表其市場佔有率大小", "可用來發現目前尚未滿足的市場定位空間"], ans: 3, exp: "定位圖常用來發現空白的市場機會(未被滿足的定位空間)。" },
-            { id: 42, type: 1, q: "在產品知覺定位圖上，若某品牌發現「價格低 / 時尚感高」的區塊沒有明顯競爭者，在資料品質無明顯缺漏的前提下，下列何者最可能是造成該現象的原因？", opts: ["顧客對這種價格與價值組合尚未產生明顯需求", "該區塊已有大量競爭者，競爭激烈", "該價值組合在市場上不可能執行", "該價值組合在市場上屬於高獲利區，容易進入"], ans: 0, exp: "定位圖的空白區塊可能代表市場機會，但也可能代表該屬性組合不符合顧客需求，需進一步驗證。" },
+            { id: 28, type: 1, q: "下列何者最能正確描述市場區隔準則中「可接近性」的意義？", opts: ["區隔之間需有需求差異", "區隔規模要大到足以獲利", "區隔須能使企業有效觸及與行銷", "區隔能代表企業價值觀"], ans: 2, exp: "可接近性是指企業是否能實際觸及該族群，進行行銷活動與產品配送。" },
+            { id: 29, type: 1, q: "下列何者不是市場區隔評估的五項準則之一？", opts: ["可實踐性", "可接近性", "足量性", "可持久性"], ans: 3, exp: "五項為：異質性、可衡量性、足量性、可接近性、可實踐性。「可持久性」並非五項之一。" },
+            { id: 30, type: 1, q: "下列關於「產品知覺定位圖」的敘述，何者正確？", opts: ["均以價格與包裝為X/Y軸", "一定以企業內部評估為主", "每一品牌位置代表其市場佔有率大小", "可用來發現目前尚未滿足的市場定位空間"], ans: 3, exp: "定位圖常用來發現空白的市場機會(未被滿足的定位空間)。" },
 
-            // 實務題
-            { id: 43, type: 2, q: "日本寵物保健食品品牌計劃進軍台灣市場，並將「所有飼養寵物的民眾」都視為潛在顧客。若以市場區隔的觀點分析，該品牌最可能忽略了哪個關鍵因素？", opts: ["不同飼主對寵物健康需求的差異", "寵物飼料原料的進口來源", "通路上架費與廣告投放成本", "產品外包裝的設計風格"], ans: 0, exp: "將所有人視為同一客群，忽略了飼主對於寵物(貓/狗、老齡/幼齡)健康需求的「高度異質性」。" },
-            { id: 44, type: 2, q: "線上平台鎖定有環保意識的年輕族群推出綠色生活用品，該平台將此族群視為「買方」的主要依據為何？", opts: ["他們來自相同社群平台", "他們具有共同的價值觀與購買意願", "他們曾經點選廣告頁面", "他們具有高收入與消費能力"], ans: 1, exp: "市場成立的要件是買方具有相似需求、價值觀與購買意願。" },
-        ];
-
-        // AI specific mock questions
-        const aiMockBank = [
-            {
-                q: "【實務情境】一家專做高級客製化西裝的品牌，決定擴大市場，買下電視黃金時段廣告，主打「上班族都能負擔的西裝」。結果不僅沒帶來多少新客，反而流失了原本的 VIP。依據 TIMS 的 STP 理論，此舉最可能在哪個階段出了致命錯誤？",
-                opts: [
-                    "S (市場區隔)：未發現年輕上班族市場。",
-                    "T (目標市場)：錯誤選擇了資源無法應付的大眾市場。",
-                    "P (市場定位)：廣告訴求(平價)與原有品牌形象(高級客製)產生嚴重衝突。",
-                    "以上皆非，是通路選擇錯誤。"
-                ],
-                ans: 2,
-                exp: "【AI 解析】原本的定位是「高級客製」，強行用平價廣告溝通，會破壞 VIP 顧客的認知與專屬感，導致定位混淆 (Positioning)。"
-            },
-            {
-                q: "【實務情境】台灣某家新創公司研發出「全球最輕便的摺疊腳踏車」，在 Kickstarter 上大獲成功。但當他們想打入歐洲的線下單車店時，卻發現經銷商只在乎「售後維修良率」與「利潤空間」。這突顯了 B2C 與 B2B 市場的什麼核心差異？",
-                opts: [
-                    "B2B 客戶比較沒有錢。",
-                    "B2B 決策更偏向情感與衝動。",
-                    "B2B 採購重視產品規格，B2C 重視利潤。",
-                    "B2C 容易受創新與話題(募資)吸引；B2B(經銷商)更重視降低風險(維修)與商業利潤。"
-                ],
-                ans: 3,
-                exp: "【AI 解析】消費者(B2C)買的是產品體驗；經銷商(B2B)買的是一門生意。B2B 決策更長遠且理性，重視「降低風險」與「長期合作利潤」。"
-            },
-            {
-                q: "【實務情境】某本土連鎖咖啡店的 BCG 矩陣分析顯示，其招牌「拿鐵咖啡」的市場成長率已經停止，但市佔率遙遙領先，每天能帶來百萬現金收入。行銷團隊應該對「拿鐵咖啡」採取什麼策略？",
-                opts: [
-                    "它是老狗事業，應該馬上停賣。",
-                    "它是金牛事業，應該盡量維持現狀，將賺來的現金投入其他新產品研發。",
-                    "它是明星事業，應該砸重金拍電視廣告。",
-                    "它是問題事業，應該改變配方重新上市。"
-                ],
-                ans: 1,
-                exp: "【AI 解析】高市佔率 + 低成長率 = 金牛事業(Cash Cow)。最好的策略是鞏固市場地位，把賺來的穩定現金流，拿去投資未來的「問題事業」或「明星事業」。"
-            }
+            // ================= 實務題 (30題) =================
+            { id: 31, type: 2, q: "日本寵物保健食品品牌計劃進軍台灣市場，並將「所有飼養寵物的民眾」都視為潛在顧客。若以市場區隔的觀點分析，該品牌最可能忽略了哪個關鍵因素？", opts: ["不同飼主對寵物健康需求的差異", "寵物飼料原料的進口來源", "通路上架費與廣告投放成本", "產品外包裝的設計風格"], ans: 0, exp: "將所有人視為同一客群，忽略了飼主對於寵物(貓/狗、老齡/幼齡)健康需求的「高度異質性」。" },
+            { id: 32, type: 2, q: "線上平台鎖定有環保意識的年輕族群推出綠色生活用品，該平台將此族群視為「買方」的主要依據為何？", opts: ["他們來自相同社群平台", "他們具有共同的價值觀與購買意願", "他們曾經點選廣告頁面", "他們具有高收入與消費能力"], ans: 1, exp: "市場成立的要件是買方具有相似需求、價值觀與購買意願。" },
+            { id: 33, type: 2, q: "某本土連鎖咖啡店的 BCG 矩陣分析顯示，其招牌「拿鐵咖啡」的市場成長率已停滯，但市佔率遙遙領先，每天能帶來百萬現金收入。行銷團隊應對此產品採取什麼策略？", opts: ["馬上停賣", "維持現狀，將賺來的現金投入其他新產品研發", "砸重金拍電視廣告", "改變配方重新上市"], ans: 1, exp: "高市佔率 + 低成長率 = 金牛事業(Cash Cow)。最佳策略是鞏固市場地位，將現金流投資於未來的問題或明星事業。" },
+            { id: 34, type: 2, q: "台灣某新創研發出全球最輕摺疊腳踏車，欲打入歐洲線下單車店，卻發現經銷商只在乎「售後維修良率」與「利潤空間」。這突顯了 B2C 與 B2B 市場的什麼核心差異？", opts: ["B2B客戶較無預算", "B2B決策偏向情感", "B2B採購重視產品規格，B2C重視利潤", "B2C易受話題吸引；B2B重視降低風險與商業利潤"], ans: 3, exp: "消費者(B2C)買體驗與創新；經銷商(B2B)買的是生意，決策更理性，重視降低風險與長期合作利潤。" },
+            { id: 35, type: 2, q: "一家專做高級客製化西裝的品牌，決定擴大市場，買下電視黃金時段廣告，主打「上班族都能負擔的西裝」。結果不僅沒帶來新客，反而流失原本 VIP。依據 STP 理論，此舉最可能在哪個階段出錯？", opts: ["S (市場區隔)", "T (目標市場)", "P (市場定位)", "通路選擇"], ans: 2, exp: "廣告訴求(平價)與原有品牌形象(高級客製)產生嚴重衝突，破壞既有客群認知，屬於市場定位(Positioning)的錯誤。" },
+            { id: 36, type: 2, q: "在進行市場分析時，某企業發現「政府即將實施嚴格的環保法規，這將使對手的舊型設備無法合法銷售」。在 SWOT 分析中，這對該企業而言屬於？", opts: ["優勢 (S)", "劣勢 (W)", "機會 (O)", "威脅 (T)"], ans: 2, exp: "法規變化屬於外部環境。對手受限而我方可能獲益，這是一個「機會 (O)」。" },
+            { id: 37, type: 2, q: "台積電在先進製程技術上領先全球，這項特點在 SWOT 分析中應列為何者？", opts: ["機會 (O)", "優勢 (S)", "威脅 (T)", "劣勢 (W)"], ans: 1, exp: "技術領先是企業自身擁有的內部資源與能力，屬於「優勢 (S)」。" },
+            { id: 38, type: 2, q: "Tesla 特斯拉剛推出電動車時，整體電動車市場正處於爆發性成長階段，且 Tesla 佔有極高的市場份額。在 BCG 矩陣中，這屬於哪種事業？", opts: ["金牛事業", "問題事業", "明星事業", "老狗事業"], ans: 2, exp: "高成長率 + 高市佔率，屬於需要持續投資以維持領先的「明星事業」。" },
+            { id: 39, type: 2, q: "某醫療新創公司開發了一款 AI 疾病檢測軟體，目前市場對 AI 醫療需求極高（高成長），但該公司才剛起步，市佔率極低。在 BCG 矩陣中，這屬於哪種事業？", opts: ["金牛事業", "問題事業", "明星事業", "老狗事業"], ans: 1, exp: "高成長率 + 低市佔率，未來發展不確定，屬於「問題事業」。" },
+            { id: 40, type: 2, q: "隨著串流平台的興起，傳統 DVD 出租店的市場需求大幅萎縮（低成長），且某連鎖租片店的會員數也流失慘重（低市佔）。這屬於 BCG 矩陣中的哪種事業？", opts: ["金牛事業", "問題事業", "明星事業", "老狗事業"], ans: 3, exp: "低成長率 + 低市佔率，無法創造價值，屬於「老狗事業」。" },
+            { id: 41, type: 2, q: "Lululemon 初期專門鎖定熱愛瑜伽的女性群體，提供高單價、高質感的瑜伽服飾，而不販售一般運動服。這最符合哪一種目標市場選擇策略？", opts: ["無差異化行銷", "差異化行銷", "集中行銷", "個人化行銷"], ans: 2, exp: "集中資源專攻單一特定市場(瑜伽女性)，屬於「集中行銷 (利基行銷)」。" },
+            { id: 42, type: 2, q: "寶齡青春源長期專注於研發各種「醫療級保養品與技術」，並同時將產品銷售給「醫美診所、皮膚科醫院、大型藥妝店」。這屬於哪一種市場選擇策略？", opts: ["產品專業化行銷", "市場專業化行銷", "無差異化行銷", "個人化行銷"], ans: 0, exp: "專注於單一產品領域(醫療級保養品)，銷售給多個不同市場(診所/醫院/藥妝店)，屬於「產品專業化」。" },
+            { id: 43, type: 2, q: "某品牌專門針對「專業慢跑者」這一個單一目標族群，提供從慢跑鞋、排汗衣、運動手錶到能量果凍等各種不同的產品。這屬於哪一種市場選擇策略？", opts: ["產品專業化行銷", "市場專業化行銷", "無差異化行銷", "差異化行銷"], ans: 1, exp: "鎖定單一市場(慢跑者)，提供多種不同產品，屬於「市場專業化」。" },
+            { id: 44, type: 2, q: "早期可口可樂只生產一種口味的瓶裝可樂，並試圖賣給全世界所有的人。這最符合哪一種市場選擇策略？", opts: ["集中行銷", "差異化行銷", "無差異化行銷", "市場專業化行銷"], ans: 2, exp: "忽略市場差異，用單一產品與單一行銷手法對待所有消費者，屬於「無差異化行銷 (大眾行銷)」。" },
+            { id: 45, type: 2, q: "Toyota 汽車針對家庭客群推出休旅車 RAV4，針對年輕人推出掀背車 Yaris，針對高階商務人士推出 Lexus 品牌。這最符合哪一種市場選擇策略？", opts: ["集中行銷", "差異化行銷", "無差異化行銷", "產品專業化行銷"], ans: 1, exp: "同時鎖定多個市場區隔，並為每個區隔設計不同的產品，屬於「差異化行銷」。" },
+            { id: 46, type: 2, q: "Nike 官方網站提供 Nike By You 服務，讓消費者可以自己選擇運動鞋的材質、顏色，甚至在鞋跟繡上自己的名字。這屬於哪一種市場選擇策略？", opts: ["差異化行銷", "市場專業化行銷", "個人化行銷", "集中行銷"], ans: 2, exp: "為每位消費者量身打造專屬產品，屬於「個人化行銷 (客製化行銷)」。" },
+            { id: 47, type: 2, q: "一家連鎖超市想推廣新上市的「頂級有機蔬菜」，他們利用會員資料庫，只將促銷簡訊發送給過去半年內曾購買過「進口水果」或「高價生鮮」的會員。這是運用了哪一種區隔變數？", opts: ["地理變數", "人口統計變數", "心理統計變數", "行為變數"], ans: 3, exp: "利用過去的「購買紀錄與消費習慣」來尋找目標客群，這屬於「行為變數」的應用。" },
+            { id: 48, type: 2, q: "保險公司在推出「子女教育基金保單」時，主要鎖定「結婚 3-5 年，且育有幼兒的夫妻」。這是運用了哪一種 B2C 區隔變數？", opts: ["地理變數", "家庭生命週期", "生活型態", "品牌忠誠度"], ans: 1, exp: "「家庭生命週期」屬於人口統計變數的一環，描述消費者從單身、結婚、育兒到空巢期的不同階段需求。" },
+            { id: 49, type: 2, q: "在產品知覺定位圖上，若某品牌發現「價格低 / 時尚感高」的區塊目前沒有任何競爭品牌。在行銷決策上，企業下一步最應該做什麼？", opts: ["立刻將所有資源投入該區塊開發新產品", "確認該空白區塊是否具備「足量性」與真實顧客需求", "直接降價現有產品以搶佔該區塊", "放棄該區塊，因為沒有對手代表沒利潤"], ans: 1, exp: "定位圖上的空白區塊代表「市場缺口」，但不一定是好機會。必須先驗證該組合是否真有顧客需求(足量性、可實踐性)才能投入。" },
+            { id: 50, type: 2, q: "某品牌原本定位為「專業、高價」，但市調畫出的產品知覺定位圖卻顯示，消費者將其與「平價、大眾化」的品牌放在同一區塊。這對行銷團隊代表什麼警訊？", opts: ["產品品質太好", "市場區隔太細", "品牌定位失敗，需重新檢視溝通策略", "競爭對手太弱"], ans: 2, exp: "定位圖反映的是「消費者心中的主觀認知」。當企業預期與消費者認知產生嚴重落差，代表品牌溝通策略(Positioning)失效。" },
+            { id: 51, type: 2, q: "一家提供雲端伺服器(AWS)的企業，在針對企業客戶(B2B)行銷時，將客戶分為「新創公司」與「年營收百億之跨國企業」。這是使用了哪一種 B2B 區隔變數？", opts: ["行為變數", "地理變數", "組織規模", "領導風格"], ans: 2, exp: "依據企業的營收或人數大小進行劃分，屬於 B2B 人口統計變數中的「組織規模」。" },
+            { id: 52, type: 2, q: "當一個市場區隔的消費者確實存在，但企業發現目前的廣告通路(如電視或雜誌)完全無法觸及這群人。這代表該市場區隔違反了哪一項評估準則？", opts: ["異質性", "可接近性", "足量性", "可衡量性"], ans: 1, exp: "企業無法透過現有行銷管道有效接觸到目標受眾，即違反了「可接近性 (Accessibility)」。" },
+            { id: 53, type: 2, q: "某軟體公司專門為「全球前 500 大跨國企業」提供高度客製化的資安系統。此業務模式屬於哪一種市場類型？", opts: ["B2C 消費市場", "B2B 組織市場", "地方市場", "零售市場"], ans: 1, exp: "針對企業提供產品以協助其營運或降低風險，屬於典型的 B2B 組織市場。" },
+            { id: 54, type: 2, q: "相較於一般消費者買手機，企業採購 100 台筆電給員工使用時，通常會需要經過 IT 部門測試、財務部審核預算、總經理簽核。這反映了 B2B 市場的哪項特徵？", opts: ["易受促銷影響", "衝動性購買", "決策人數多 (採購中心)", "地理位置分散"], ans: 2, exp: "B2B 採購通常涉及多個部門與人員的共同決策，形成「採購中心」。" },
+            { id: 55, type: 2, q: "「丹丹漢堡」堅持只在台灣的南部地區（台南、高雄、屏東）展店，不往北部發展。這是運用了哪一種市場區隔變數？", opts: ["人口統計變數", "心理統計變數", "行為變數", "地理變數"], ans: 3, exp: "依據縣市或區域來劃分市場，屬於「地理變數」。" },
+            { id: 56, type: 2, q: "某連鎖手搖飲品牌評估進軍印度市場，發現當地因為宗教信仰與氣候問題，對飲料的甜度與冰塊需求與台灣完全不同。如果他們決定大幅修改菜單以迎合印度口味，這屬於哪種市場策略？", opts: ["國內市場策略", "國際市場策略", "全球市場策略", "無差異化策略"], ans: 1, exp: "跨出國界，並且「因應當地文化與結構進行客製化調整」，屬於「國際市場策略」。" },
+            { id: 57, type: 2, q: "若一家企業對市場區隔切得太細，例如專為「住在信義區、喜歡穿黃色衣服、養柴犬的 30 歲單身男性」開發一款 APP。這最可能違反哪項市場區隔評估準則？", opts: ["異質性", "足量性", "可接近性", "可衡量性"], ans: 1, exp: "區隔過細會導致目標客群人數太少，無法支撐開發與行銷成本，違反了「足量性 (Substantiality)」。" },
+            { id: 58, type: 2, q: "下列哪一個情境最適合使用「無差異化行銷」？", opts: ["推出新款高階智慧型手機", "販售自來水或一般食用鹽", "推廣高價位的抗老保養品", "開設專門的寵物美容店"], ans: 1, exp: "無差異化行銷適合需求高度同質、不需區隔的大眾必需品，如水、鹽。" },
+            { id: 59, type: 2, q: "一家提供「線上英語家教」的平台，將客戶分為「準備多益考試的學生」與「需要商用英文的上班族」。這是主要運用了哪一種區隔變數？", opts: ["地理變數", "心理統計變數", "行為變數 (追求利益/使用動機)", "家庭生命週期"], ans: 2, exp: "依據消費者購買產品的「動機或追求的利益(考試 vs 工作)」來劃分，屬於行為變數。" },
+            { id: 60, type: 2, q: "某企業在進行 SWOT 分析時，發現「由於少子化趨勢，主要目標客群的數量正在逐年減少」。這對企業而言屬於哪一個要素？", opts: ["優勢 (S)", "劣勢 (W)", "機會 (O)", "威脅 (T)"], ans: 3, exp: "少子化是企業無法控制的「外部環境」變化，且對業績產生負面影響，因此屬於「威脅 (T)」。" }
         ];
 
         let currentTab = 'theory';
@@ -913,7 +906,9 @@
             `;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${key}`, {
+                // 使用 gemini-3.8-flash 模型
+                const modelName = 'gemini-3.8-flash';
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -948,6 +943,7 @@
                 aiRespDiv.innerHTML = `
                     <div class="p-4 bg-red-50 rounded-xl border border-red-200 text-red-600 text-sm font-bold flex items-center shadow-inner mt-2">
                         <i class="fa-solid fa-triangle-exclamation mr-2"></i> AI 專屬解析載入失敗。系統訊息：${e.message}
+                        <br><span class="text-xs font-normal text-gray-500 mt-1 block">請確認您的 API Key 是否正確，以及該 Key 是否具備使用 gemini-3.8-flash 模型的權限。</span>
                     </div>`;
             }
         }
@@ -1006,4 +1002,3 @@
     </script>
 </body>
 </html>
-```eof
