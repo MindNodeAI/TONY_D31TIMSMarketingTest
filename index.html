@@ -431,7 +431,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -447,6 +447,31 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
         const googleProvider = new GoogleAuthProvider();
+
+        // 處理手機端 Google 登入 Redirect 回來的結果
+        getRedirectResult(auth).then(async (result) => {
+            if (result) {
+                const user = result.user;
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                if (!userDocSnap.exists()) {
+                    await setDoc(userDocRef, {
+                        realName: user.displayName || 'Google 用戶',
+                        email: user.email,
+                        identity: '一般訪客',
+                        role: 'user',
+                        createdAt: serverTimestamp(),
+                        loginCount: 1,
+                        lastLoginAt: serverTimestamp()
+                    });
+                }
+            }
+        }).catch((error) => {
+            console.error("Redirect login error:", error);
+            if (error.code !== 'auth/redirect-cancelled-by-user') {
+                Swal.fire('登入失敗', 'Google 登入過程發生錯誤，請嘗試使用 Safari 或 Chrome 瀏覽器。', 'error');
+            }
+        });
 
         window.switchAuthView = (view) => {
             document.getElementById('login-form').classList.add('hidden');
@@ -506,26 +531,48 @@
 
         // Google 登入
         window.handleGoogleLogin = async () => {
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            
+            // 阻擋 LINE/FB 內建瀏覽器 (會導致 Google 登入 403 錯誤)
+            if (ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1 || ua.indexOf('Line') > -1) {
+                return Swal.fire({
+                    title: '瀏覽器限制',
+                    text: 'LINE / FB 內建瀏覽器不支援 Google 登入。請點擊右上角「使用系統預設瀏覽器 (Safari / Chrome)」開啟網頁再試一次。',
+                    icon: 'warning',
+                    confirmButtonText: '我知道了'
+                });
+            }
+
             try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                // Check if doc exists, if not create it
-                const userDocRef = doc(db, "users", user.uid);
-                const userDocSnap = await getDoc(userDocRef);
-                if (!userDocSnap.exists()) {
-                    await setDoc(userDocRef, {
-                        realName: user.displayName || 'Google 用戶',
-                        email: user.email,
-                        identity: '一般訪客',
-                        role: 'user',
-                        createdAt: serverTimestamp(),
-                        loginCount: 1,
-                        lastLoginAt: serverTimestamp()
-                    });
+                // 判斷是否為手機，手機改用 Redirect 避免 Popup 被阻擋
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(ua);
+                
+                if (isMobile) {
+                    await signInWithRedirect(auth, googleProvider);
+                } else {
+                    const result = await signInWithPopup(auth, googleProvider);
+                    const user = result.user;
+                    // Check if doc exists, if not create it
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+                    if (!userDocSnap.exists()) {
+                        await setDoc(userDocRef, {
+                            realName: user.displayName || 'Google 用戶',
+                            email: user.email,
+                            identity: '一般訪客',
+                            role: 'user',
+                            createdAt: serverTimestamp(),
+                            loginCount: 1,
+                            lastLoginAt: serverTimestamp()
+                        });
+                    }
                 }
-                // Observer handles the rest
             } catch(error) {
-                Swal.fire('登入失敗', error.message, 'error');
+                if (error.code === 'auth/popup-blocked') {
+                    Swal.fire('登入失敗', '彈出視窗被阻擋，請允許彈出視窗，或使用一般帳密登入。', 'error');
+                } else {
+                    Swal.fire('登入失敗', error.message, 'error');
+                }
             }
         };
 
