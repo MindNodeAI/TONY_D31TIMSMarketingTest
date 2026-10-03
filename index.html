@@ -89,7 +89,11 @@
                         <input type="email" id="loginEmail" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition" placeholder="example@email.com">
                     </div>
                     <div class="relative">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">密碼</label>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-gray-700">密碼</label>
+                            <!-- 新增：忘記密碼按鈕 -->
+                            <a href="javascript:void(0)" onclick="window.handleForgotPassword()" class="text-xs text-blue-600 hover:text-blue-800 font-bold transition">忘記密碼？</a>
+                        </div>
                         <input type="password" id="loginPassword" class="w-full pl-4 pr-10 py-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:bg-white transition" placeholder="請輸入密碼">
                         <button type="button" onclick="window.togglePassword('loginPassword', 'loginEyeIcon')" class="absolute right-3 top-[28px] text-gray-400 hover:text-gray-600 transition">
                             <i id="loginEyeIcon" class="fa-solid fa-eye-slash"></i>
@@ -433,8 +437,9 @@
     </div>
 
     <script type="module">
+        // 匯入 Firebase 模組 (新增 sendPasswordResetEmail)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signInWithRedirect, getRedirectResult, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -532,17 +537,76 @@
             }
         };
 
-        // Google 登入
+        // 忘記密碼處理函式 (新增)
+        window.handleForgotPassword = async () => {
+            const { value: email } = await Swal.fire({
+                title: '<div class="text-xl font-black text-primary">忘記密碼？</div>',
+                html: '<p class="text-sm text-gray-600 mb-2 text-left">請輸入您註冊時使用的 Email 信箱，系統將發送重設密碼連結給您。</p>',
+                input: 'email',
+                inputPlaceholder: 'example@email.com',
+                showCancelButton: true,
+                confirmButtonText: '發送重設連結',
+                cancelButtonText: '取消',
+                confirmButtonColor: '#1e3a8a',
+                customClass: { popup: 'rounded-2xl shadow-2xl border border-slate-100' }
+            });
+
+            if (email) {
+                try {
+                    Swal.fire({
+                        title: '處理中',
+                        html: '正在發送重設密碼信件...',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading() }
+                    });
+                    
+                    await sendPasswordResetEmail(auth, email);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '信件已送出！',
+                        text: '請前往您的信箱收信，並依循信中連結重設密碼。',
+                        confirmButtonColor: '#1e3a8a'
+                    });
+                } catch (error) {
+                    console.error("Reset password error:", error);
+                    let errMsg = '發送失敗，請稍後再試。';
+                    if (error.code === 'auth/user-not-found') errMsg = '找不到此 Email 註冊的帳號。';
+                    else if (error.code === 'auth/invalid-email') errMsg = 'Email 格式錯誤。';
+                    
+                    Swal.fire('發送失敗', errMsg, 'error');
+                }
+            }
+        };
+
+        // Google 登入 (處理 LINE WebView 跳轉)
         window.handleGoogleLogin = async () => {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             
-            // 阻擋 LINE/FB 內建瀏覽器 (會導致 Google 登入 403 錯誤)
-            if (ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1 || ua.indexOf('Line') > -1) {
+            // 阻擋與引導 LINE/FB 內建瀏覽器 (會導致 Google 登入 403 錯誤)
+            if (ua.indexOf('Line') > -1) {
+                // 如果是 LINE，加上特殊參數強制跳轉外部瀏覽器
+                if (window.location.search.indexOf('openExternalBrowser=1') === -1) {
+                    let newUrl = window.location.href;
+                    newUrl += (newUrl.indexOf('?') > -1 ? '&' : '?') + 'openExternalBrowser=1';
+                    window.location.href = newUrl;
+                    return;
+                }
+            } else if (ua.indexOf('FBAN') > -1 || ua.indexOf('FBAV') > -1 || ua.indexOf('Instagram') > -1) {
+                // 如果是 FB / IG，跳出友善提示並提供複製連結
                 return Swal.fire({
                     title: '瀏覽器限制',
-                    text: 'LINE / FB 內建瀏覽器不支援 Google 登入。請點擊右上角「使用系統預設瀏覽器 (Safari / Chrome)」開啟網頁再試一次。',
+                    html: `
+                        <p class="text-sm text-gray-600 mb-4">Facebook / Instagram 內建瀏覽器基於安全政策，不支援 Google 登入。</p>
+                        <p class="text-sm text-gray-800 font-bold mb-2">請複製以下網址，貼到系統瀏覽器 (Safari 或 Chrome) 中開啟：</p>
+                        <div class="flex gap-2">
+                            <input type="text" id="copyUrlInput" value="${window.location.href}" class="flex-1 bg-gray-100 border border-gray-300 rounded p-2 text-xs text-gray-600" readonly>
+                            <button onclick="navigator.clipboard.writeText(document.getElementById('copyUrlInput').value); Swal.showValidationMessage('已複製！');" class="bg-blue-600 text-white px-3 py-2 rounded text-xs font-bold whitespace-nowrap">複製網址</button>
+                        </div>
+                    `,
                     icon: 'warning',
-                    confirmButtonText: '我知道了'
+                    showConfirmButton: false,
+                    showCloseButton: true
                 });
             }
 
@@ -742,7 +806,7 @@
                 msgDiv.classList.add('flex-row-reverse');
                 msgDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center shrink-0 mt-1 shadow-sm"><i class="fa-solid fa-user"></i></div><div class="bg-blue-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm chat-content max-w-[85%] break-words"><p>${text}</p></div>`;
             } else {
-                msgDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-1 shadow-sm border border-blue-200 overflow-hidden"><img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-full h-full object-cover"></div><div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-700 chat-content max-w-[85%] overflow-x-auto">${marked.parse(text)}</div>`;
+                msgDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-1 shadow-sm border border-blue-200 overflow-hidden"><img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" class="w-full h-full object-cover"></div><div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-700 chat-content max-w-[85%] overflow-x-auto">${marked.parse(text)}</div>`;
             }
             chatMessages.appendChild(msgDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -762,7 +826,7 @@
             const typingId = 'typing-' + Date.now();
             const typingDiv = document.createElement('div');
             typingDiv.id = typingId; typingDiv.className = 'flex gap-3 mt-4';
-            typingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-1 shadow-sm overflow-hidden"><img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1787580326393_ChatGPT%20Image%202026%E5%B9%B46%E6%9C%8819%E6%97%A5%20%E4%B8%8A%E5%8D%8811_16_14.png?alt=media&token=3c85de41-f36f-46e5-a97a-7bc7eb83a027" class="w-full h-full object-cover"></div><div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-500 chat-content flex items-center gap-1"><i class="fa-solid fa-circle text-[8px] animate-bounce"></i><i class="fa-solid fa-circle text-[8px] animate-bounce" style="animation-delay: 0.2s"></i><i class="fa-solid fa-circle text-[8px] animate-bounce" style="animation-delay: 0.4s"></i></div>`;
+            typingDiv.innerHTML = `<div class="w-8 h-8 rounded-full bg-blue-100 text-primary flex items-center justify-center shrink-0 mt-1 shadow-sm overflow-hidden"><img src="https://firebasestorage.googleapis.com/v0/b/k16-tony-ai-wisdom-platform.firebasestorage.app/o/assets%2F6av64EOvvqQNAIoXqcPfHC5BBeF3%2F1785039560457_1.png?alt=media&token=19b27497-4101-4436-bc80-b299741b7984" class="w-full h-full object-cover"></div><div class="bg-white border border-gray-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-gray-500 chat-content flex items-center gap-1"><i class="fa-solid fa-circle text-[8px] animate-bounce"></i><i class="fa-solid fa-circle text-[8px] animate-bounce" style="animation-delay: 0.2s"></i><i class="fa-solid fa-circle text-[8px] animate-bounce" style="animation-delay: 0.4s"></i></div>`;
             chatMessages.appendChild(typingDiv); chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
