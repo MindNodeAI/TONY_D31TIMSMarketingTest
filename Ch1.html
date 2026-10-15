@@ -83,7 +83,7 @@
 </head>
 <body class="bg-slate-50 text-gray-800 h-screen flex flex-col font-sans overflow-hidden">
 
-    <!-- 頂部導覽列 (固定高度，不隨內容捲動) -->
+    <!-- 頂部導覽列 -->
     <header class="bg-white shadow-sm z-50 shrink-0 relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
             <div class="flex items-center gap-4">
@@ -100,8 +100,14 @@
             </div>
             <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200 hidden md:flex">
                 <i class="fa-solid fa-robot text-purple-500 ml-2"></i>
-                <input type="password" id="apiKeyInput" placeholder="輸入 Gemini API Key..." class="text-xs px-2 py-1.5 border rounded focus:outline-none focus:ring-1 focus:ring-purple-400 w-48 bg-white">
-                <button onclick="saveApiKey()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded transition shadow-sm font-bold">儲存金鑰</button>
+                <div class="relative flex items-center">
+                    <input type="password" id="apiKeyInput" placeholder="輸入 Gemini API Key..." class="text-xs px-2 py-1.5 pr-6 border rounded focus:outline-none focus:ring-1 focus:ring-purple-400 w-48 bg-white">
+                    <!-- 新增：一鍵清除 API Key 的小按鈕，解決無法準確貼上的問題 -->
+                    <button onclick="document.getElementById('apiKeyInput').value=''" class="absolute right-1.5 text-gray-400 hover:text-red-500 transition cursor-pointer" title="清除金鑰">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <button onclick="saveApiKey()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-3 py-1.5 rounded transition shadow-sm font-bold">儲存設定</button>
             </div>
         </div>
     </header>
@@ -870,7 +876,9 @@
         }
 
         async function callAiTeacher(prefix, index) {
+            // 新增這段修正：檢查並抓取最近儲存的 API Key，不管有沒有重整頁面
             const key = document.getElementById('apiKeyInput').value.trim() || localStorage.getItem('tims_gemini_api_key');
+            
             if(!key) {
                 Swal.fire({
                     icon: 'warning',
@@ -904,8 +912,8 @@
             `;
 
             try {
-                // 使用 gemini-3.8-flash 模型
-                const modelName = 'gemini-3.8-flash';
+                // 模型修正為最新的 gemini-1.5-flash 以確保最佳相容性
+                const modelName = 'gemini-1.5-flash';
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -917,6 +925,7 @@
                 
                 const responseData = await response.json();
 
+                // 錯誤捕捉與處理機制
                 if (!response.ok || responseData.error) {
                     throw new Error(responseData.error ? responseData.error.message : 'HTTP Error');
                 }
@@ -939,13 +948,23 @@
             } catch (e) {
                 console.error("AI Generation failed:", e);
                 aiRespDiv.innerHTML = `
-                    <div class="p-4 bg-red-50 rounded-xl border border-red-200 text-red-600 text-sm font-bold flex items-center shadow-inner mt-2">
-                        <i class="fa-solid fa-triangle-exclamation mr-2"></i> AI 專屬解析載入失敗。系統訊息：${e.message}
-                        <br><span class="text-xs font-normal text-gray-500 mt-1 block">請確認您的 API Key 是否正確，以及該 Key 是否具備使用 gemini-3.8-flash 模型的權限。</span>
+                    <div class="p-4 bg-red-50 rounded-xl border border-red-200 text-red-600 text-sm font-bold flex items-start shadow-inner mt-2">
+                        <i class="fa-solid fa-triangle-exclamation mr-2 mt-1"></i>
+                        <div>
+                            AI 專屬解析載入失敗。<br>
+                            <span class="text-xs text-red-500 font-normal mt-1 block">系統訊息：${e.message}</span>
+                            <span class="text-xs font-normal text-gray-600 mt-2 block pt-2 border-t border-red-200">
+                                <strong>💡 解決建議：</strong><br>
+                                1. 請檢查您的 API Key 是否複製完整（通常是 AIzaSy 開頭）。<br>
+                                2. 請確認該 Key 具備呼叫 <code>gemini-1.5-flash</code> 模型的權限。<br>
+                                3. 請試著點擊上方輸入框旁邊的 <i class="fa-solid fa-xmark text-gray-400"></i> 清空按鈕，重新貼上後再點一次「儲存」。
+                            </span>
+                        </div>
                     </div>`;
             }
         }
 
+        // 優化 API Key 儲存邏輯
         function saveApiKey() {
             const input = document.getElementById('apiKeyInput').value.trim();
             if(input) {
@@ -957,6 +976,15 @@
                     timer: 2000, 
                     showConfirmButton: false,
                     confirmButtonColor: '#1e3a8a'
+                });
+            } else {
+                localStorage.removeItem('tims_gemini_api_key');
+                Swal.fire({
+                    icon: 'info',
+                    title: '已清除金鑰',
+                    text: '您已清空 API Key，如需使用 AI 功能請重新輸入。',
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             }
         }
@@ -1052,6 +1080,7 @@
             appendMessage('user', text);
             chatInput.value = '';
 
+            // 確保每次發問都抓到最新的 Key
             const apiKey = document.getElementById('apiKeyInput')?.value.trim() || localStorage.getItem('tims_gemini_api_key');
             if (!apiKey) {
                 appendMessage('ai', '請先在上方儲存您的 Gemini API Key，小助理才能為您解答喔！'); return;
@@ -1064,17 +1093,19 @@
             chatMessages.appendChild(typingDiv); chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
+                // Chatbot 同步切換至 gemini-1.5-flash
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "你是一位資深的行銷學教授，也就是 TONY 老師的 AI 小助理。學生問：\n" + text }] }] })
                 });
                 const data = await response.json();
                 document.getElementById(typingId)?.remove();
+                
                 if (!response.ok || data.error) throw new Error(data.error ? data.error.message : 'API 錯誤');
                 appendMessage('ai', data.candidates[0].content.parts[0].text);
             } catch (e) {
                 document.getElementById(typingId)?.remove();
-                appendMessage('ai', `<span class="text-red-500"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線發生錯誤：${e.message}</span>`);
+                appendMessage('ai', `<span class="text-red-500"><i class="fa-solid fa-triangle-exclamation mr-1"></i> 連線發生錯誤：${e.message}<br>請確認您的金鑰正確並具有 <code>gemini-1.5-flash</code> 使用權限。</span>`);
             }
         };
 
