@@ -606,8 +606,8 @@
             { id: 60, type: 2, q: "網紅在 IG 貼出一款行動電源的使用心得，並附上專屬的折扣碼與購買連結，粉絲點擊連結後即可完成下單。這最符合哪一種非實體通路？", opts: ["社群導購", "電視購物", "群眾募資", "品牌自營網站"], ans: 0, exp: "利用社群媒體內容(KOL推薦)引導粉絲直接進行購買，屬於社群導購通路。" }
         ];
 
-        let currentTab = 'theory';
-        let isSubmitted = { theory: false, practical: false };
+        let currentTab = 'standard';
+        let isSubmitted = { standard: false, ai: false };
         let selectedTheory = []; 
         let selectedPractical = []; 
 
@@ -620,7 +620,7 @@
         }
 
         function generateRandomQuiz() {
-            isSubmitted = { theory: false, practical: false };
+            isSubmitted = { standard: false, ai: false };
             document.getElementById('score-display').classList.add('hidden');
             const btn = document.getElementById('submit-btn');
             btn.innerHTML = '批改本頁試卷 <i class="fa-solid fa-paper-plane ml-3"></i>';
@@ -632,8 +632,8 @@
             selectedTheory = shuffleArray([...theoryBank]).slice(0, 5);
             selectedPractical = shuffleArray([...practicalBank]).slice(0, 5);
 
-            renderQuiz('quiz-theory', selectedTheory, 'theory');
-            renderQuiz('quiz-practical', selectedPractical, 'practical');
+            renderQuiz('quiz-standard', selectedTheory, 'std');
+            renderQuiz('quiz-ai', selectedPractical, 'ai');
 
             setTimeout(() => {
                 document.getElementById('quiz-section').scrollIntoView({ behavior: 'smooth' });
@@ -642,17 +642,18 @@
 
         function renderQuiz(containerId, data, prefix) {
             const container = document.getElementById(containerId);
+            if (!container) return; // 加上安全檢查防呆
             container.innerHTML = data.map((item, index) => `
                 <div class="quiz-item border border-slate-200 rounded-2xl p-6 md:p-8 bg-white shadow-sm hover:shadow-md transition" id="qbox_${prefix}_${index}">
                     <div class="flex items-start gap-3 mb-5">
-                        <span class="bg-${prefix==='theory'?'blue':'orange'}-100 text-${prefix==='theory'?'blue':'orange'}-700 px-3 py-1 rounded-lg text-sm font-black shadow-inner shrink-0 mt-0.5">Q${index + 1}</span>
+                        <span class="bg-${prefix==='std'?'orange':'purple'}-100 text-${prefix==='std'?'orange':'purple'}-700 px-3 py-1 rounded-lg text-sm font-black shadow-inner shrink-0 mt-0.5">Q${index + 1}</span>
                         <h3 class="font-bold text-lg md:text-xl text-gray-800 leading-relaxed">${item.q}</h3>
                     </div>
                     <div class="space-y-3 pl-0 md:pl-14">
                         ${item.opts.map((opt, oIdx) => `
                             <label class="quiz-option flex items-center p-4 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50 transition group" id="opt_${prefix}_${index}_${oIdx}">
                                 <div class="relative flex items-center justify-center mr-4 shrink-0">
-                                    <input type="radio" name="q_${prefix}_${index}" value="${oIdx}" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-full checked:border-${prefix==='theory'?'blue':'orange'}-500 checked:bg-${prefix==='theory'?'blue':'orange'}-500 transition cursor-pointer">
+                                    <input type="radio" name="q_${prefix}_${index}" value="${oIdx}" class="peer appearance-none w-5 h-5 border-2 border-slate-300 rounded-full checked:border-${prefix==='std'?'orange':'purple'}-500 checked:bg-${prefix==='std'?'orange':'purple'}-500 transition cursor-pointer">
                                     <div class="absolute inset-0 m-auto w-2 h-2 rounded-full bg-white scale-0 peer-checked:scale-100 transition duration-200 pointer-events-none"></div>
                                 </div>
                                 <span class="text-gray-700 text-base leading-tight">${opt}</span>
@@ -673,18 +674,18 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('quiz-theory').classList.toggle('hidden', tab !== 'theory');
-            document.getElementById('quiz-practical').classList.toggle('hidden', tab !== 'practical');
+            document.getElementById('quiz-standard').classList.toggle('hidden', tab !== 'standard');
+            document.getElementById('quiz-ai').classList.toggle('hidden', tab !== 'ai');
             
-            const btnTheory = document.getElementById('tab-theory');
-            const btnPractical = document.getElementById('tab-practical');
+            const btnStd = document.getElementById('tab-standard');
+            const btnAi = document.getElementById('tab-ai');
 
-            if(tab === 'theory') {
-                btnTheory.className = "px-5 py-2.5 rounded-md font-bold bg-blue-600 text-white transition whitespace-nowrap shadow-sm";
-                btnPractical.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition flex items-center gap-1 whitespace-nowrap";
+            if(tab === 'standard') {
+                btnStd.className = "px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition whitespace-nowrap shadow-sm";
+                btnAi.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition flex items-center gap-2 whitespace-nowrap";
             } else {
-                btnPractical.className = "px-5 py-2.5 rounded-md font-bold bg-orange-500 text-white transition flex items-center gap-1 whitespace-nowrap shadow-sm";
-                btnTheory.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-100 transition whitespace-nowrap";
+                btnAi.className = "px-5 py-2.5 rounded-md font-bold bg-purple-600 text-white transition flex items-center gap-2 whitespace-nowrap shadow-sm";
+                btnStd.className = "px-5 py-2.5 rounded-md font-bold text-gray-500 hover:bg-gray-50 transition whitespace-nowrap";
             }
 
             const btn = document.getElementById('submit-btn');
@@ -711,8 +712,8 @@
                 return;
             }
 
-            const prefix = currentTab;
-            const data = currentTab === 'theory' ? selectedTheory : selectedPractical;
+            const prefix = currentTab === 'standard' ? 'std' : 'ai';
+            const data = currentTab === 'standard' ? selectedTheory : selectedPractical;
             let score = 0;
             let answeredCount = 0;
             const scorePerQ = 100 / data.length; 
@@ -793,7 +794,7 @@
                 return;
             }
 
-            const data = prefix === 'theory' ? selectedTheory : selectedPractical;
+            const data = prefix === 'std' ? selectedTheory : selectedPractical;
             const item = data[index];
             const selected = document.querySelector(`input[name="q_${prefix}_${index}"]:checked`);
             const userOptText = selected ? item.opts[parseInt(selected.value)] : '未作答';
@@ -810,18 +811,18 @@
                 學生的選項：「${userOptText}」
                 這是${isCorrect ? '正確' : '錯誤'}的。正確答案是：「${item.opts[item.ans]}」。
                 
-                請用繁體中文，針對該學生的選擇，給予一段簡短(約80-100字)的一對一指導解析。
+                請務必使用「繁體中文 (Traditional Chinese)」，針對該學生的選擇，給予一段約80~150字的一對一指導解析。
                 語氣要像 TONY 老師一樣，溫暖、專業，且一針見血地點出學生的觀念盲點。
                 不要重複題目，直接開始解說。
             `;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${key}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ role: "user", parts: [{ text: prompt }] }],
-                        generationConfig: { maxOutputTokens: 300, temperature: 0.7 }
+                        generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
                     })
                 });
                 
@@ -921,9 +922,12 @@
             chatMessages.appendChild(typingDiv); chatMessages.scrollTop = chatMessages.scrollHeight;
 
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey}`, {
                     method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ role: "user", parts: [{ text: "你是一位資深的行銷學教授，也就是 TONY 老師的 AI 小助理。學生問：\n" + text }] }] })
+                    body: JSON.stringify({ 
+                        contents: [{ role: "user", parts: [{ text: "你是一位資深的行銷學教授，也就是 TONY 老師的 AI 小助理。請務必使用「繁體中文 (Traditional Chinese)」回答。學生問：\n" + text }] }],
+                        generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
+                    })
                 });
                 const data = await response.json();
                 document.getElementById(typingId)?.remove();

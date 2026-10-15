@@ -625,7 +625,7 @@
                 題目：「${item.q}」
                 學生的選擇：「${userOptText}」
                 正確答案是：「${correctOptText}」。
-                請用繁體中文，針對該學生的錯誤選項，給予一段簡短 (約50-80字) 的一對一指導解析，點出他的盲點。語氣溫暖且專業。
+                請務必使用「繁體中文 (Traditional Chinese)」，針對該學生的錯誤選項，給予一段約80~150字的一對一指導解析，點出他的盲點。語氣溫暖且專業。
             `;
 
             try {
@@ -634,7 +634,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ role: "user", parts: [{ text: prompt }] }],
-                        generationConfig: { maxOutputTokens: 256, temperature: 0.7 }
+                        generationConfig: { maxOutputTokens: 800, temperature: 0.7 }
                     })
                 });
 
